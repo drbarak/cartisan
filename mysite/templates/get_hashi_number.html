@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="text-align:center">
+        <h1>Enter the Hashi puzzle number to run</h1>
+        <form action="" method="post" novalidate>
+            {{ form.hidden_tag() }}
+            <p><p>
+            {{ form.hashi_num.label }}<br>
+            {{ form.hashi_num(size=2) }}
+            <p><p>
+            {{ form.solve() }}
+            {{ form.home() }}
+            </p>
+        </form>
+    </div>
+{% endblock %}

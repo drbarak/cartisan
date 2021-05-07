@@ -1,0 +1,31 @@
+<html>
+    <head>
+      {% if title %}
+      <title>{{ title }} - Hashi</title>
+      {% else %}
+      <title>Welcome to Hashi</title>
+      {% endif %}
+    </head>
+    <body>
+        <div>
+            Microblog:
+            <a href="/main_menu">Home</a>
+            <a href="/create">Create</a>
+            <a href="/load">Load</a>
+            <a href="/getHnum">Solve</a>
+        </div>
+        <hr>
+
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <ul>
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </body>
+</html>

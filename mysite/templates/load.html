@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="text-align:center">
+        <h1>Load puzzle from external file</h1>
+        <form action="" method="post" novalidate enctype='multipart/form-data' encoding='multipart/form-data'>
+            {{ form.hidden_tag() }}
+            <p><p>
+            {{ form.file_name() }}
+            <p><p>
+            {{ form.load() }}
+            {{ form.home() }}
+            </p>
+        </form>
+    </div>
+{% endblock %}

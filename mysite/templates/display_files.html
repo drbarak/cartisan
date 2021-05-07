@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="text-align:center">
+        <h1>List of Hashi puzzels</h1>
+            <p><p>
+<!--<p>All images scraped from instagram.com/{{user_name}}</p>-->
+            {% for hist in hists %}
+                <p>{{hist}}</p>
+            {% endfor %}
+    </div>
+{% endblock %}
