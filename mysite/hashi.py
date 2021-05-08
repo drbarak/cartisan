@@ -1,15 +1,13 @@
+from flask_app import app
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-#import globals
-
-#guiClass = globals.myGlob()
 
 #pip3.8 install --user dataframe-image
 import dataframe_image as dfi
 
 def p(msg, msg2=''):
-    guiClass.app.logger.warning(f'{msg} {msg2}')
+    app.logger.warning(f'{msg} {msg2}')
 def d(msg): p(msg)
 
 def val(x):
@@ -51,7 +49,7 @@ def disp_to_file(df, path, sub_fname=''):
 def getPos(df, values):
   pos=[]
   rows = df.loc[df.isin(values).any(axis=1)].index.to_list()
-  cols = df.loc[df.isin(values).any(axis=0)].index.to_list()
+  cols = df.loc[:,df.isin(values).any(axis=0)].index.to_list()
   for r in rows:
     for c in cols:
       for v in values:
@@ -1975,33 +1973,39 @@ def solve_hashi(plot=False, show=False):
     p()
     p(sav_links)
 
-def main(gui_class, test=True, WEB=False, fileid='31'):
-  global hashi, fname, rows, cols, lists
+def main(test=True, WEB=False, fileid='31'):
+    global hashi, fname, rows, cols, lists, f_id
 
-  global guiClass, f_id
-  guiClass = gui_class
+    files.clear()
 
-  files.clear()
-  j = int(fileid)
-  if j < 0:
-    start, end = 2, abs(j) + 1
-  else:
-    start, end = j, j + 1
-  for i in range(start, end):
-    f_id = f'{i}'
-    fname = f'{fname_}{i}'
-    f_name = f'{fname}.xlsx'
-    try:
-      hashi = pd.read_excel(f_name, header=None)
-    except:
-      f_name = f'{fname}.csv'
-      try:
-        hashi = pd.read_csv(f_name, header=None)
-      except:
-        return 'File not found: ' + f_name
+    if type(fileid) == str:
+      j = int(fileid)
+      if j < 0:
+        start, end = 2, abs(j) + 1
+      else:
+        start, end = j, j + 1
+      for i in range(start, end):
+        f_id = f'{i:02}'
+        fname = f'{fname_}{f_id}'
+        f_name = f'{fname}.xlsx'
+        try:
+          hashi = pd.read_excel(f_name, header=None)
+        except:
+          f_name = f'{fname}.csv'
+          try:
+            hashi = pd.read_csv(f_name, header=None)
+          except:
+            return #'File not found: ' + f_name
+    else:
+        hashi = fileid.copy()
+        fname = None
+    p(f'main fname {fname}')
     hashi.replace(' ', 0, inplace=True)
     hashi.fillna(0, inplace=True)
-    hashi = hashi.apply(pd.to_numeric, downcast='integer')
+    try:
+        hashi = hashi.apply(pd.to_numeric, downcast='integer')
+    except: # all data must be numeric
+        return
     rows = len(hashi)
     cols = len(hashi.columns)
 
@@ -2011,7 +2015,8 @@ def main(gui_class, test=True, WEB=False, fileid='31'):
 
     result = solve_hashi(plot=not test)
     if result != None:
-        disp_to_file(df_sol, fname, '_solution')
+        if fname != None:
+            disp_to_file(df_sol, fname, '_solution')
         result = files #'<link href="https://www.pythonanywhere.com/user/drbarak/files/home/drbarak/mysie/Hashi32_solution.png">'
 
-  return result
+    return result

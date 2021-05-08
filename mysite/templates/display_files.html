@@ -6,7 +6,10 @@
             <p><p>
 <!--<p>All images scraped from instagram.com/{{user_name}}</p>-->
             {% for hist in hists %}
-                <p>{{hist}}</p>
+                {% if loop.index0 % 3 == 0 %}
+                    <p></p>
+                {% endif %}
+                {{hist}},
             {% endfor %}
     </div>
 {% endblock %}

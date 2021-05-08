@@ -7,4 +7,4 @@ class Config(object):
     ALLOWED_EXTENSIONS = {'csv'}
 
 class Globals:
-    app = None
+    nrows = 0

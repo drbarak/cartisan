@@ -5,7 +5,3 @@ class Config(object):
     DEBUG = True
     MAX_CONTENT_PATH = 10000
     UPLOAD_FOLDER = '/home/drbarak/mysite/csv'
-
-
-class Globals:
-  app = None
