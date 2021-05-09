@@ -1,0 +1,8 @@
+.ssh/
+.local/
+.bashrc
+.vimrc
+__pycache__/
+.cache/
+.viminfo
+.bash_history

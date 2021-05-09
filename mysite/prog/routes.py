@@ -34,20 +34,20 @@ def run_hashi(n):
     p(result)
     if len(result) < 5:
         for i in range(len(result), 5):
-            result.append('')
-    return f'''
+            result.append('x')
+    return  f'''
     <!doctype html>
         <body>
-            <h2>Hashi solution for puzzle {n}</h2>
-            <p></p>
-            <p><a href=https://www.pythonanywhere.com/user/drbarak/files{result[0]}>table</a></p>
-            <p><a href=https://www.pythonanywhere.com/user/drbarak/files{result[1]} >solution plot</a></p>
-            <p><a href=https://www.pythonanywhere.com/user/drbarak/files{result[2]}>solution page 1</a></p>
+            <h2>Hashi solution for puzzle {n} t4</h2>
+            <p>[{result[0]}, {result[1]}, {result[2]}, {result[3]}]</p>
+            <p><a href=http://drbarak.pythonanywhere.com/Hashi_table.png>table</a></p>
+            <p><a href=/home/drbarak/mysite/Hashi_table.png>solution plot</a></p>
+            <p><a href=https://www.pythonanywhere.com/user/drbarak[/home/drbarak/mysite/png/Hashi_table.png>solution page 1</a></p>
             {'' if result[3] == ''  else
-                '<p><a href=https://www.pythonanywhere.com/user/drbarak/files{result[3]}>solution page 2</a></p>'
+                '<p><a href=/home/drbarak/mysite/Hashi_table.png>solution page 2</a></p>'
             }
             {'' if result[4] == ''  else
-                '<p><a href=https://www.pythonanywhere.com/user/drbarak/files{result[4]}>solution page 3</a></p>'
+                '<p><a href=https://www.pythonanywhere.com/user/drbarak/{result[0]}>solution page 3</a></p>'
             }
             <p></p>
             <p></p>
