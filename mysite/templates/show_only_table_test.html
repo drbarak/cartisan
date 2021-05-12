@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<html>
+    <style>
+        table {
+        border: 1px solid black;
+        background-color: yellow;
+        }
+        th td:first-child {
+            background-color: yellow;
+border: 1px solid black;
+}
+    </style>
+<table>
+  <caption>Table caption</caption>
+  <thead>
+    <tr>
+      <th>Alpha</th>
+      <td>Beta</td>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>1</th>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+</html>
+{% endblock %}

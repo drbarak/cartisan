@@ -3,7 +3,7 @@
 {% block content %}
     <div style="text-align:center">
 
-        <h1>Hashi Options - {{ title }}</h1>
+        <h1>Hashi - {{ title }}</h1>
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
             <p><p>
@@ -12,6 +12,52 @@
             <p>{{ form.solve() }}<p>
             <p><p>
             <p>{{ form.create() }}<p>
+            <div class="boxed" style= "text-align:left">
+                <style>
+                    .boxed {
+                          width: 600px;
+                          border: 3px solid green;
+                          padding: 5px;
+                          margin: 5px;
+                          margin-left: auto;
+                          margin-right: auto;
+                            }
+                </style>
+Hashi is a fun mind-tizzing playing puzzle which consists of
+a rectangular arrangement of circles, called "islands", containing numbers.
+<br><br>
+The number inside each island determines how many lines, called "bridges",
+are connected to this island. The numbers are beween 1 to 8, since the
+largest number of bridges connected to an internal (not at a corner or a side) island is 8
+<br><br>
+The object of the game is to build horizontal and vertical
+bridges between islands such that the number of bridges
+to each island is the same as the number specified inside
+that island.
+<br><br>
+In addition, there can only at least one bridge, but no more than two bridges,
+connecting two islands.
+<br><br>
+Also, a bridge can not cross other bridges, and
+all islands must be interconnected, enabling passage
+from any island to another, when the puzzle is
+completed.
+            </div>
+             <br>
+           <div class="boxed" style= "text-align:left">
+Here we allow you to UPLOAD a csv (Comma Delimited) file that contains a complete Hashi
+puzzle - if the puzzle is for 5X5 sqaure, the file should consists of 5 rows of spaces and digits,
+where each row conains 5 columns of spaces and digits (a digit of zero denotes an empty space).
+<br><br>
+One can also RUN one of the ready puzzles, each one is identified by a number,
+currently from 1 to 36. The puzzle is then solved allowing you to display/print the puzzle, the solution, and a list
+of the steps to solve the puzzle, so you can see and learn how to solve the puzzle.
+<br><br>
+The last option allows one to CREATE a puzzle, usually found in a newspaper, into a reqtangular table,
+and to solve it, again displaying/printing the table, the solution and the list of steps.
+            </div>
+
+<p><a href="https://www.conceptispuzzles.com/index.aspx?uri=puzzle/hashi/techniques" target="_blank">Techniques on how to solve Hashi puzzles</a></p>
         </form>
     </div>
 {% endblock %}

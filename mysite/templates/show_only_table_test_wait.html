@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div style="text-align:center">
+        <form action="/table_result" method="post" novalidate onsubmit="return doSomething();" class="my-form">
+            <h1>
+                {% if title == 'Show' %}
+                    New
+                {% endif %}
+                Hashi puzzle
+            </h1>
+            <p>{{error}}</p>
+            <p><p>
+            <table class="center">
+                <style>
+                    th, td {padding: 3px;}
+                    table.center {
+                          margin-left: auto;
+                          margin-right: auto;
+                        }
+                        .circle {
+                          width: 25px;
+                          height: 25px;
+                          line-height: 25px;
+                          border-radius: 50%;
+                          border: 6px solid #000;
+                          font-size: 30px;
+                          color: #fff;
+                          text-align: center;
+                          #background: #000
+                        }
+                </style>
+                <tr>
+                    {% for col in range(ncols + 1) %}
+                            {% if col == 0 %}
+                                <td></td>
+                            {% else %}
+                                <th style="font-size:25px">{{col - 1}}</th>
+                             {% endif %}
+                    {% endfor %}
+                </tr>
+                    {% for row in range(nrows) %}
+                  <tr>
+                        {% for col in range(ncols + 1) %}
+                            {% if col == 0 %}
+                                <td>
+                                    <style>
+                                        .rowlabel {
+                                            font-size: 20px;
+                                            text-align:right;
+                                            padding: 3px;
+                                        }
+                                    </style>
+                                    <div class="rowlabel">{{row}}</div>
+                                </td>
+                            {% else %}
+                                {% set value = "" %}
+                                {% if form %}
+                                    {% set key = "{}_{}".format(row,col-1) %}
+                                    {% set value = form[key] | replace("['", '') | replace("']", '') %}
+                                {% endif %}
+                                {% if value == ""  %}
+                                    <td></td>
+                                {% else %}
+                                    <td class="circle">{{value}}</td>
+                                {% endif %}
+                             {% endif %}
+                        {% endfor %}
+                   {% endfor %}
+                  </tr>
+            </table>
+            <p></p>
+            <p>
+                <input id="save" type = "submit" value = "Solve" name="solve"/>
+            </p>
+<script>
+function doSomething() {
+    alert('Form submitted!');
+    return true;
+}
+</script>
+        </form>
+    </div>
+{% endblock %}

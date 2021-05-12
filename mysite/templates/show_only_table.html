@@ -13,33 +13,55 @@
             <p><p>
             <table class="center">
                 <style>
-                    th, td {padding: 1px;}
+                    th, td {padding: 4px;}
                     table.center {
                           margin-left: auto;
                           margin-right: auto;
+                          border-spacing: 20px;
+                        }
+                        .circle {
+                          width: 25px;
+                          #height: 25px;
+                          line-height: 25px;
+                          border-radius: 50%;
+                          border: 3px solid #000;
+                          font-size: 20px;
+                          text-align: center;
                         }
                 </style>
-                <tr>
                     {% for col in range(ncols + 1) %}
                             {% if col == 0 %}
                                 <td></td>
                             {% else %}
-                                <th>{{col - 1}}</th>
+                                <th style="font-size:25px">{{col - 1}}</th>
                              {% endif %}
                     {% endfor %}
-                </tr>
                     {% for row in range(nrows) %}
                   <tr>
                         {% for col in range(ncols + 1) %}
                             {% if col == 0 %}
-                                <td>{{row}}  </td>
+                                <td>
+                                    <style>
+                                        .rowlabel {
+                                            font-size: 20px;
+                                            text-align:right;
+                                            padding: 3px;
+                                            #border: 3px solid purple;
+                                        }
+                                    </style>
+                                    <div class="rowlabel"><b>{{row}}</b></div>
+                                </td>
                             {% else %}
                                 {% set value = "" %}
                                 {% if form %}
                                     {% set key = "{}_{}".format(row,col-1) %}
                                     {% set value = form[key] | replace("['", '') | replace("']", '') %}
                                 {% endif %}
-                                <td><input name="{{row}}_{{col - 1}}" size="1" type="text" value={{value}}></td>
+                                {% if value == ""  %}
+                                    <td></td>
+                                {% else %}
+                                    <td class="circle">{{value}}</td>
+                                {% endif %}
                              {% endif %}
                         {% endfor %}
                    {% endfor %}
@@ -47,12 +69,7 @@
             </table>
             <p></p>
             <p>
-                {% if title == 'Show' %}
-                    <input id="save" type = "submit" value = "Save and Solve" name="save"/>
-                {% else %}
-                    <input id="save" type = "submit" value = "Solve" name="solve"/>
-                {% endif %}
-                <input id="home" type = "submit" value = "Home" name="home"/>
+                <input id="save" type = "submit" value = "Solve" name="solve"/>
             </p>
         </form>
     </div>

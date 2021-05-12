@@ -3,11 +3,7 @@
 {% block content %}
     <div style="text-align:center">
         <h1>Enter the Hashi puzzle number to run</h1>
-            {% for field, errors in form.errors.items() %}
-                <small class="form-text text-muted ">
-                    {{ ', '.join(errors) }}
-                </small>
-            {% endfor %}
+        {{error}}
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
             <p><p>
