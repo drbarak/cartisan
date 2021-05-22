@@ -15,12 +15,13 @@ class SolveForm(FlaskForm):
     home = SubmitField('Home')
 
 class CreateForm(FlaskForm):
-    nrows = IntegerField('Number of row/cols (2-20)', validators=[DataRequired()])
+    nrows = IntegerField('Number of rows (2-20)', validators=[DataRequired()])
+    ncols = IntegerField('Number of rows (2-20)', validators=[DataRequired()])
     create = SubmitField('Create Table')
     home = SubmitField('Home')
 
 class LoadForm(FlaskForm):
     file_name = FileField('CSV file name to load', render_kw={'title':''},
             validators=[FileRequired(), FileAllowed(['csv'])])
-    load = SubmitField('Load File')
+    load = SubmitField('Load File', render_kw={"onclick": "myFunction()"})
     home = SubmitField('Home')

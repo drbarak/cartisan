@@ -3,11 +3,23 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
+import base64
+from io import BytesIO
+from matplotlib.figure import Figure
+
 #pip3.8 install --user dataframe-image
 import dataframe_image as dfi
 
-def p(msg, msg2=''):
-    app.logger.warning(f'{msg} {msg2}')
+def p(msg=None, *args):
+    try:
+        if msg is None: return
+    except: # if there is an error (eg. msg is a DataFrame (on some version of pyhton) can not test for None)
+        pass  # if the is an excpetion we know it is not None
+    msg = f'{msg}'
+    for k in args:
+        msg = msg + f' {k}'
+    app.logger.warning(msg)
+
 def d(msg): p(msg)
 
 def val(x):
@@ -49,7 +61,7 @@ def disp_to_file(df, path, sub_fname=''):
 def getPos(df, values):
   pos=[]
   rows = df.loc[df.isin(values).any(axis=1)].index.to_list()
-  cols = df.loc[:,df.isin(values).any(axis=0)].index.to_list()
+  cols = df.loc[:, df.isin(values).any(axis=0)].columns.to_list()
   for r in rows:
     for c in cols:
       for v in values:
@@ -57,8 +69,6 @@ def getPos(df, values):
           pos.append((r, c))
   return pos
 
-nodes = {}
-roads = {}
 def make_nodes(hashi):
   n = -1
   for i in range(rows):
@@ -121,40 +131,88 @@ def make_links():
   links_org = deepcopy(links)
   return links, links_org
 
-def plot_table(df):
+def set_ticks(ax, cols, rows):
+    ax.set_xlim(cols, -1)
+    ax.set_ylim(rows, -1)
+    a0 = (np.arange(-1, cols + 1, 1))
+    #p('a0 = ', a0)
+    ax.set_xticks(a0)
+    a0_list = [''] + list(a0)[1:-1] + ['']
+    #p(a0_list)
+    ax.set_xticklabels(a0_list[::-1])
+    a1 = (np.arange(-1, rows + 1, 1))
+    #p('a1 = ',a1)
+    ax.set_yticks(a1)
+    a1_list = [''] + list(a1)[1:-1] + ['']
+    #p(a1_list)
+    ax.set_yticklabels(a1_list)
+
+def plot_table(df, WEB=False, partial=False):
     if DEBUG: p('In plot_table')
 
-    fig, ax = plt.subplots(dpi=144)
+    if WEB:
+        fig = Figure()
+        ax = fig.subplots()
+    else:
+        fig, ax = plt.subplots(dpi=144)
+
     ax.set_facecolor('w')  # white background
 
-    df_ = df.T
+    df_ = df
     rows = len(df_)
     cols = len(df_.columns)
-    plt.xlim(-1, rows)
-    plt.ylim(cols, -1)
-
-    for i in range(rows):
-      for j in range(cols):
+    '''
+    plt.xlim(rows, -1)
+    plt.ylim(rows + 1, -1)
+    plt.yticks(np.arange(0, rows, 1))
+    plt.xticks(np.arange(-1, cols + 1, 1))
+    for j in range(cols):
+      for i in range(rows):
         if val(df_.iloc[i,j]) == 0:
           continue
         ax.text(i, j, df_.iloc[i, j],
            ha="center", va="center",
            bbox=dict(boxstyle="circle", facecolor='white', alpha=1, edgecolor='black')
            )
+    '''
+    set_ticks(ax, cols, rows)
+    for i in range(rows):
+      for j in range(cols):
+        if df_.iloc[i,cols - j - 1] == 0:
+          continue
+        ax.text(j, i, df_.iloc[i, cols - j - 1],#f'{i}_{cols - j - 1}',
+           ha="center", va="center",
+           bbox=dict(boxstyle="circle", facecolor='white', alpha=1, edgecolor='black')
+           )
+    if partial:
+        return fig, ax
+    if WEB:    # Save it to a temporary buffer.
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        # Embed the result in the html output.
+        data = base64.b64encode(buf.getbuffer()).decode("ascii")
+        #p('in plot table', len(data))
+        return data
     png_path = f'{root}png/Hashi{f_id}_table.png'
-    plt.savefig(png_path)
+    fig.savefig(png_path)
     files.append(png_path)
 
 import matplotlib.transforms as transforms
 
-def plot_trip(l):
+def plot_trip(l, WEB=False, ax=None, fig=None):
   p('In plot_trip')
   l_ = {}
   if DEBUG: p('in plot_trip', len(l.keys()), l)
-  fig, ax = plt.subplots(dpi=144)
+  draw = False
+  if ax is None:
+      draw = True
+      if WEB:
+        fig = Figure()
+        ax = fig.subplots()
+      else:
+        fig, ax = plt.subplots(dpi=144)
   ax.set_facecolor('w')
-  plt.xlim(-1, rows)
-  plt.ylim(cols, -1)
+  set_ticks(ax, cols, rows)
 
   for tup, n_conn in l.items():
     new_tup = (tup[1], tup[0])
@@ -162,15 +220,16 @@ def plot_trip(l):
       continue
     l_[new_tup] = 0
     p1 = nodes[tup[0]]
+    new_p1 = (p1[0], cols-p1[1] - 1)
     p2 = nodes[tup[1]]
-    df = pd.DataFrame([p1, p2], index=['p1', 'p2'])
+    new_p2 = (p2[0], cols-p2[1] - 1)
+    df = pd.DataFrame([new_p1, new_p2], index=['p1', 'p2'])
     line, = ax.plot(df[1], df[0], lw=1, color='black')#, lw= 2 * (lw * 2 - 1))
-
-    ax.text(p1[1], p1[0], hashi.iloc[p1[0], p1[1]],
+    if draw:
+        ax.text(new_p1[1], new_p1[0], hashi.iloc[p1[0], p1[1]],
          ha="center", va="center",
          bbox=dict(boxstyle="circle", facecolor='white', alpha=1, edgecolor='black')
          )
-
     if n_conn == 1:
       continue
     # shift the lines over 2 points
@@ -190,11 +249,17 @@ def plot_trip(l):
       # use the zorder to make sure we are below the line
     ax.plot(df[1], df[0], lw=1, color='black', transform=shadow_transform,  zorder=0.5*line.get_zorder())
 
+  if WEB:    # Save it to a temporary buffer.
+        buf = BytesIO()
+        fig.savefig(buf, format="png")
+        # Embed the result in the html output.
+        data = base64.b64encode(buf.getbuffer()).decode("ascii")
+        #p('in plot trip', len(data))
+        return data
   png_path = f'{root}png/Hashi{f_id}_plot.png'
   plt.savefig(png_path)
   files.append(png_path)
   p(png_path)
-
 
 # # DO the trip
 
@@ -347,7 +412,7 @@ def trip():
     city = get_next_city(start, l, h, round)
     if not city is None:
       if city == start:
-          # no solution so remove the first link  and try another solution
+          # no solution so remove the first link and try another solution
         start = list(links.keys())[0]
         links[start].pop(0)
         if DEBUG: p("start again: ", start, links[start])
@@ -449,7 +514,7 @@ def update_link(i, j, node, n_c, lk, reason):
 
 #    h_fix.iloc[tup_lk] -= n_c  MOVED ON 12.04.2021 to the place below
 
-  new = pd.Series([nodes[node], hashi.iloc[i,j], h_fix.iloc[i,j], n_c, 'remove', h_fix.iloc[i,j], reason], index = df_sol.columns)
+  new = pd.Series([nodes[node], hashi.iloc[i,j], h_fix.iloc[i,j], n_c, 'remove', h_fix.iloc[i,j], reason, (node, lk)], index = df_sol.columns)
   if not n_c is None:
     new.dir = make_l(l_fix, node, lk, n_c)
       #added 12.04.2021 - check if there is no block created before we processed the table_block
@@ -585,7 +650,7 @@ def process_3_or_4(found, i, j, round, subtitle=''):
   global DEBUG, ABORT
   #DBG = True if node == 114 else False
   #p(node, links)
-  link = links_org[node] if round == 0 else links[node]
+  link = links_org[node] if round == 0 else (links[node] if node in links else '') # modified 010.05.2021 - user wrong data
   if len(link) > 2:
     return found
   if len(link) != 2:  # added 02.04.2021 - if single link or none, no need to process here
@@ -650,7 +715,7 @@ def process_5_or_6(found, i, j, round, subtitle=''):
   global ABORT
   node = nodes[(i,j)]
   #DBG = True if node == 54 else False
-  link = links_org[node] if round == 0 else links[node]
+  link = links_org[node] if round == 0 else (links[node] if node in links else '') # modified 10.05.2021
   if len(link) > 3 or len(link) < 2:
     return found
   do_update = True
@@ -1814,14 +1879,27 @@ def sum_table(df):
   return int(df[df.apply(lambda x: x.apply(lambda x: val(x) > 0))].sum().sum())
 #sum_table(hashi)
 
+def clean_table(hashi):
+    hashi.replace(' ', 0, inplace=True)
+    hashi.fillna(0, inplace=True)
+    try:
+        hashi = hashi.apply(pd.to_numeric, downcast='integer')
+    except: # all data must be numeric
+        return
 
+    # remove last cols and rows if they are all 0
+    while hashi.tail(1).to_numpy().sum() == 0:
+        hashi.drop(hashi.tail(1).index,inplace=True)
+    while hashi[hashi.columns[-1]].sum() == 0:
+        hashi = hashi[hashi.columns[:-1]]
+    return hashi
 # In[102]:
 
 
 DEBUG = False
-columns=['node', 'org_val', 'cur_val', '#lines', 'dir', 'new_val', 'reason']
+columns=['node', 'org_val', 'cur_val', '#lines', 'dir', 'new_val', 'reason', 'pair']
 
-def solve_hashi(plot=False, show=False):
+def solve_hashi(plot=False, show=False, WEB=False):
   global DEBUG, l_fix, h_fix, links, links_org, links, roads, nodes, df_sol, ABORT
   l_fix = {}
   h_fix = hashi.copy()
@@ -1931,6 +2009,8 @@ def solve_hashi(plot=False, show=False):
       h_fix = deepcopy(sav_h)
       l_fix = deepcopy(sav_l)
       links = deepcopy(sav_links)
+      if node not in links:
+        break  # no solution
       link = links[node]
       lk = link[test_j]
       if show or DEBUG: p('\ntrying a solution for a node of 1:', tup, node, test_i, test_j, lk, link, len(test_list))
@@ -1954,9 +2034,10 @@ def solve_hashi(plot=False, show=False):
       #disp_to_file(df_sol, f_name + '_solution.png')
       #plot_trip(trip())
       p('Done - ALL CONNECTED')
+      data = None
       if plot:
-          plot_trip(trip())
-      return('Done - ALL CONNECTED')
+          data = plot_trip(trip(), WEB)
+      return 'Done - ALL CONNECTED', data
     else:
       p()
       p('NOT ALL CONNECTED')
@@ -2000,23 +2081,25 @@ def main(test=True, WEB=False, fileid='31'):
         hashi = fileid.copy()
         fname = None
     p(f'main fname {fname}')
-    hashi.replace(' ', 0, inplace=True)
-    hashi.fillna(0, inplace=True)
-    try:
-        hashi = hashi.apply(pd.to_numeric, downcast='integer')
-    except: # all data must be numeric
+
+    hashi = clean_table(hashi)
+    if hashi is None:
         return
+
     rows = len(hashi)
     cols = len(hashi.columns)
 
-    if not test: plot_table(hashi)
+    data = None
+    if not test:
+        data = plot_table(hashi, WEB)
     for i in range(2,9):
       lists[i] = getPos(hashi, [i])
 
-    result = solve_hashi(plot=not test)
+    result, data_sol = solve_hashi(plot=not test, WEB=WEB)
     if result != None:
         if fname != None:
             disp_to_file(df_sol, fname, '_solution')
-        result = files #'<link href="https://www.pythonanywhere.com/user/drbarak/files/home/drbarak/mysie/Hashi32_solution.png">'
+        #p('in main', len(data), len(data_sol))
+        result = [data, data_sol, df_sol, files]
 
     return result
