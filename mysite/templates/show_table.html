@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% include "please_wait.html" %}
+<div id="content">
+
     <div style="text-align:center">
         <form action="/table_result" method="post" novalidate>
             <h1>
@@ -48,12 +52,13 @@
             <p></p>
             <p>
                 {% if title == 'Show' %}
-                    <input id="save" type = "submit" value = "Save and Solve" name="save"/>
+                    <input id="save" type = "submit" value = "Save and Solve" name="save" onclick="myFunction();"/>
                 {% else %}
-                    <input id="save" type = "submit" value = "Solve" name="solve"/>
+                    <input id="save" type = "submit" value = "Solve" name="solve" onclick="myFunction();"/>
                 {% endif %}
                 <input id="home" type = "submit" value = "Home" name="home"/>
             </p>
         </form>
     </div>
+</div>
 {% endblock %}

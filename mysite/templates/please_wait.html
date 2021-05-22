@@ -1,0 +1,47 @@
+<script type="text/javascript">// <![CDATA[
+        function preloader(){
+            document.getElementById("loading").style.display = "none";
+            document.getElementById("content").style.display = "block";
+        }//preloader
+        window.onload = preloader;
+// ]]></script>
+
+
+<style>
+#loading0 {
+  display: none;
+  width: 100%;
+  padding: 50px 0;
+  text-align: center;
+  background-color: lightblue;
+  margin-top: 20px;
+}
+#loading {
+  display: none;
+    position:   fixed;
+    z-index:    1000;
+    top:        0;
+    left:       0;
+    height:     100%;
+    width:      100%;
+    background: rgba( 255, 255, 255, .8 )
+                url('http://i.stack.imgur.com/FhHRx.gif')
+                50% 50%
+                no-repeat;
+    background-size: Auto 150px;
+}
+</style>
+
+<script>
+function myFunction() {
+  var x = document.getElementById("loading");
+  if (x.style.display === "none") {
+    x.style.display = "block";
+    document.getElementById("content").style.display = "none"
+  } else {
+    x.style.display = "none";
+  }
+}
+</script>
+
+<div id="loading"></div>

@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 
 {% block content %}
+
+{% include "please_wait.html" %}
+
+<div id="content">
     <div style="text-align:center">
         <form action="/table_result" method="post" novalidate>
             <h1>
@@ -11,6 +15,7 @@
             </h1>
             <p>{{error}}</p>
             <p><p>
+        {% if False %}
             <table class="center">
                 <style>
                     th, td {padding: 4px;}
@@ -67,10 +72,15 @@
                    {% endfor %}
                   </tr>
             </table>
+        {% endif %}
             <p></p>
+                <img src='data:image/png;base64,{{data}}'/>
             <p>
-                <input id="save" type = "submit" value = "Solve" name="solve"/>
+                <input id="save" type = "submit" value = "Solve" name="solve" onclick="myFunction();"/>
+                <input id="home" type = "submit" value = "Home" name="home"/>
+                <input type=button value="Print" onClick="javascript:window.print()">
             </p>
         </form>
     </div>
+</div>
 {% endblock %}
