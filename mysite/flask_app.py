@@ -1,4 +1,5 @@
 from flask import Flask, session
+from flask_sqlalchemy import SQLAlchemy
 from globals import Config
 
 app = Flask(__name__)
@@ -6,7 +7,29 @@ app.config.from_object(Config)
 
 #echo > /var/log/drbarak.pythonanywhere.com.error.log
 
-import prog.routes
+SQLALCHEMY_DATABASE_URI = "mysql+mysqlconnector://{username}:{password}@{hostname}/{databasename}".format(
+    username="drbarak",
+    password="shushu1952",
+    hostname="drbarak.mysql.pythonanywhere-services.com",
+    databasename="drbarak$hashi",
+)
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+db = SQLAlchemy(app)
+
+class HashiDB(db.Model):
+
+    __tablename__ = "hashi"
+
+    id = db.Column(db.Integer, primary_key=True)
+    cols = db.Column(db.Integer)
+    rows = db.Column(db.Integer)
+    sum = db.Column(db.Integer)
+    data = db.Column(db.Text)
+
+import prog.routes  # leave here to prevent circular imports
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/main_menu', methods=['GET', 'POST'])
@@ -14,7 +37,7 @@ def main_menu():
     if 'init_' not in session:
         session['init_'] = 'init_'
         session['username_'] = 'admin_'
-    return prog.routes.main_menu()
+    return prog.routes.main_menu(db)
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():

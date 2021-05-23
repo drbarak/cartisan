@@ -223,6 +223,8 @@ def plot_trip(l, WEB=False, ax=None, fig=None):
     new_p1 = (p1[0], cols-p1[1] - 1)
     p2 = nodes[tup[1]]
     new_p2 = (p2[0], cols-p2[1] - 1)
+    #p('p1:', p1, new_p1)
+    #p('p2:', p2, new_p2)
     df = pd.DataFrame([new_p1, new_p2], index=['p1', 'p2'])
     line, = ax.plot(df[1], df[0], lw=1, color='black')#, lw= 2 * (lw * 2 - 1))
     if draw:
@@ -2097,9 +2099,9 @@ def main(test=True, WEB=False, fileid='31'):
 
     result, data_sol = solve_hashi(plot=not test, WEB=WEB)
     if result != None:
-        if fname != None:
+        if fname != None and not WEB:
             disp_to_file(df_sol, fname, '_solution')
-        #p('in main', len(data), len(data_sol))
+        p('in main', len(files))
         result = [data, data_sol, df_sol, files]
 
     return result

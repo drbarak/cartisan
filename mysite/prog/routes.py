@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, request
 from flask_app import app, session
 import os
 import pandas as pd
+import time
 
 from prog.forms import LoadForm, MainMenuForm, SolveForm, CreateForm
 from hashi import main, sum_table, plot_table, clean_table, plot_trip
@@ -22,7 +23,8 @@ def p(msg=None, *args):
 def valid_user():
     return 'username_' in session and session['username_'] == 'admin_'
 
-def main_menu():
+def main_menu(db):
+    globals.db = db
     form = MainMenuForm()
     if request.method == 'POST':
         if form.load.data:
@@ -47,6 +49,7 @@ def run_hashi(n):
     if result == None:
         result = ['ERROR: invalid files - must be such that all nodes are connected']
     elif len(result) > 1:
+        globals.f_id = n
         globals.table = result[0]
         globals.plot = result[1]
         globals.df_solution = result[2]
@@ -88,8 +91,8 @@ def solve():  # load_internal
             n = form.hashi_num.data
             p('number', n)
             if not(n == None or n in [0,1] or abs(n) > max):
-                globals.f_id = f'{n:02}'
-                fname = f'{fname_}{globals.f_id}'
+                globals.f_id = n
+                fname = f'{fname_}{n:02}'
                 f_name = f'{fname}.xlsx'
                 hashi = None
                 try:
@@ -333,13 +336,17 @@ def table_result():
                             result = None
                         if result == None:  # invalid
                             error = 'ERROR: invalid data - must be such that all islands are connected'
-                            tmp_file = f'Hashi.csv'
+                            milliseconds = int(round(time.time() * 1000))
+                            tmp_file = f'Hashi{milliseconds}.csv'  # unique file name
                             file_to_save = os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], tmp_file)
                             hashi.to_csv(file_to_save, header=False, index=False)
+                            p(error)
+                            p(tmp_file)
                         else:
                             new_file, file_id, file_to_save = get_new_name()
                             try:
                                 hashi.to_csv(file_to_save, header=False, index=False)
+                                globals.df = hashi
                                 return run_hashi(file_id)
                             except:
                                 flash(f'file {new_file} write ERROR')

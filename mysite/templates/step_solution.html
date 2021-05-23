@@ -33,7 +33,7 @@
         .result {
           overflow-y: scroll;
           float:right;
-          height: 700px;
+          height: 80%;
           width: 50%;
         }
     </style>
@@ -47,10 +47,10 @@
                     <p>{{error}}</p>
                     <img src='data:image/png;base64,{{table}}'/>
                     <p>
-                    <input id="home" type = "submit" value = "Home" name="home"/>
                     <input id="show" type = "submit" value = "Next Step" name="next"/>
                     <input id="show" type = "submit" value = "Previous Step" name="prev"/>
                     <input type=button value="Print Solution Steps" onClick="printDiv2()">
+                    <input id="home" type = "submit" value = "Home" name="home"/>
                     </p>
                 </div>
                 <div  class="result" id="2"> {{df_solution|safe}}
