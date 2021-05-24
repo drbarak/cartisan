@@ -17,4 +17,4 @@ class Globals:
     df_solution = None
     step = -1
     steps = None
-    db = None
+    first = True

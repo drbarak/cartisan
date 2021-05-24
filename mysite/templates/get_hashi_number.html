@@ -1,18 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <style>
+        .fixed {
+          float:left;
+          width: 50%;
+        }
+
+        .result {
+          overflow-y: scroll;
+          float:right;
+          height: 80%;
+          width: 50%;
+        }
+    </style>
+
     <div style="text-align:center">
         <h1>Enter the Hashi puzzle number to run</h1>
-        {{error}}
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
             <p><p>
-            {{ form.hashi_num.label }} (2-{{max}})<br>
-            {{ form.hashi_num(size=2) }}
-           <p><p>
-            {{ form.solve() }}
-            {{ form.home() }}
-            </p>
+
+            <div class="fixed" id="1">
+                {{error}}<br><br>
+                {{ form.hashi_num.label }})<br>
+                {{ form.hashi_num(size=5) }}
+               <p><p>
+                {{ form.solve() }}
+                {{ form.home() }}
+                </p>
+            </div>
+            <div class="result" id="2"> {{df|safe}}
+            </div>
         </form>
     </div>
 {% endblock %}

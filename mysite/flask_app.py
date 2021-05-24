@@ -18,6 +18,7 @@ app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+conn = db.engine.connect()
 
 class HashiDB(db.Model):
 
@@ -28,6 +29,9 @@ class HashiDB(db.Model):
     rows = db.Column(db.Integer)
     sum = db.Column(db.Integer)
     data = db.Column(db.Text)
+    future1 = db.Column(db.Integer)
+    future2 = db.Column(db.Integer)
+    future3 = db.Column(db.Text)
 
 import prog.routes  # leave here to prevent circular imports
 
@@ -37,7 +41,7 @@ def main_menu():
     if 'init_' not in session:
         session['init_'] = 'init_'
         session['username_'] = 'admin_'
-    return prog.routes.main_menu(db)
+    return prog.routes.main_menu()
 
 @app.route('/create', methods=['GET', 'POST'])
 def create():

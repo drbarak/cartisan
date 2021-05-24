@@ -2060,7 +2060,7 @@ def main(test=True, WEB=False, fileid='31'):
     global hashi, fname, rows, cols, lists, f_id
 
     files.clear()
-
+    #p('in hashi main0:', WEB)
     if type(fileid) == str:
       j = int(fileid)
       if j < 0:
@@ -2082,7 +2082,7 @@ def main(test=True, WEB=False, fileid='31'):
     else:
         hashi = fileid.copy()
         fname = None
-    p(f'main fname {fname}')
+    #p(f'main fname {fname}')
 
     hashi = clean_table(hashi)
     if hashi is None:
@@ -2101,7 +2101,7 @@ def main(test=True, WEB=False, fileid='31'):
     if result != None:
         if fname != None and not WEB:
             disp_to_file(df_sol, fname, '_solution')
-        p('in main', len(files))
+        #p('in hashi main1:', len(files))
         result = [data, data_sol, df_sol, files]
 
     return result
