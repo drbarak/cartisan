@@ -6,7 +6,7 @@ from flask_wtf.file import FileField, FileAllowed, FileRequired
 class MainMenuForm(FlaskForm):
     load = SubmitField('Upload External')
     solve = SubmitField('Run Internal')
-    create = SubmitField('Create a New Puzzle')
+    create = SubmitField('Create a Puzzle')
 
 class SolveForm(FlaskForm):
     hashi_num = IntegerField('Hashi Number', validators=[DataRequired(),

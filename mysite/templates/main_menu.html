@@ -1,28 +1,113 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div style="text-align:center">
+<style>
+    th, td {padding: 10px;}
+    table.center {
+            margin-left: auto;
+            margin-right: auto;
+            border-collapse: separate;
+            border-spacing: 50px 0;
+            }
+    span {
+      border-bottom: 2px solid gray;
+      border-right: 2px solid gray;
+      padding: 2px;
+      display: inline-block;
+      width: 100%;
+    }
+    .button{
+        width: 100%;
+        padding: 10px;
+        font: bold;
+        font-size: 20px;
+        border: none;
+    }
+    .button_blue{
+        background-color: LightSkyBlue;
+    }
+    .button_red{
+        background-color: OrangeRed;
+    }
+    .button_yellow{
+        background-color: yellow;
+    }
+    .boxed {
+          width: 600px;
+          border: 3px solid green;
+          padding: 5px;
+          margin: 5px;
+          margin-left: auto;
+          margin-right: auto;
+    }
+    .circle {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 50%;
+      border: none;
+      font-size: 30px;
+      font: bold;
+      text-align: center;
+      display: inline-block;;
+    }
+</style>
 
-        <h1>Hashi - {{ title }}</h1>
+    <div style="text-align:center">
+        <u style="color:Red;">
+            <h1 style="color:DodgerBlue;font-size:3em;">
+                Hashi
+            </h1>
+        </u>
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
-            <p><p>
-            <p>{{ form.load() }}<p>
-            <p><p>
-            <p>{{ form.solve() }}<p>
-            <p><p>
-            <p>{{ form.create() }}<p>
-            <div class="boxed" style= "text-align:left">
-                <style>
-                    .boxed {
-                          width: 600px;
-                          border: 3px solid green;
-                          padding: 5px;
-                          margin: 5px;
-                          margin-left: auto;
-                          margin-right: auto;
-                            }
-                </style>
+            <p></p>
+        <div style="text-align:center">
+            <p></p>
+            <table class="center">
+                <tr>
+                    <td></td>
+                    <td style="border-bottom:4px solid black"></td>
+                </tr>
+                <tr>
+                    <td style="text-align:center"><text style="color:DodgerBlue;font-size: 2em;"> Build bridges </text></td>
+                    <td>
+                        <span> {{ form.create(class_="button button_blue") }} </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-decoration: line-through; text-decoration-thickness:5px;">
+                        <div class="circle" style="background-color:yellow;">
+                            3
+                        </div>
+                         &nbsp; &nbsp; &nbsp; &nbsp;
+                        <div class="circle" style="background-color:OrangeRed;">
+                            2
+                        </div>
+                         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                        <div class="circle" style="background-color:lightgreen;">
+                            5
+                        </div>
+                    </td>
+                    <td>
+                        <span>{{ form.load(class_="button button_red") }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="circle" style="background-color:blue;color:yellow;">
+                            4
+                        </div>
+                    </td>
+                    <td>
+                        <span>{{ form.solve(class_="button button_yellow") }}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br><br>
+        <p></p>
+        <div class="boxed" style= "text-align:left">
 Hashi is a fun mind-tizzing playing puzzle which consists of
 a rectangular arrangement of circles, called "islands", containing numbers.
 <br><br>
@@ -42,9 +127,9 @@ Also, a bridge can not cross other bridges, and
 all islands must be interconnected, enabling passage
 from any island to another, when the puzzle is
 completed.
-            </div>
+        </div>
              <br>
-           <div class="boxed" style= "text-align:left">
+        <div class="boxed" style= "text-align:left">
 Here we allow you to UPLOAD a csv (Comma Delimited) file that contains a complete Hashi
 puzzle - if the puzzle is for 5X5 sqaure, the file should consists of 5 rows of spaces and digits,
 where each row conains 5 columns of spaces and digits (a digit of zero denotes an empty space).
@@ -55,9 +140,8 @@ of the steps to solve the puzzle, so you can see and learn how to solve the puzz
 <br><br>
 The last option allows one to CREATE a puzzle, usually found in a newspaper, into a reqtangular table,
 and to solve it, again displaying/printing the table, the solution and the list of steps.
-            </div>
-
-<p><a href="https://www.conceptispuzzles.com/index.aspx?uri=puzzle/hashi/techniques" target="_blank">Techniques on how to solve Hashi puzzles</a></p>
+        </div>
+            <p><a href="https://www.conceptispuzzles.com/index.aspx?uri=puzzle/hashi/techniques" target="_blank">Techniques on how to solve Hashi puzzles</a></p>
         </form>
     </div>
 {% endblock %}
