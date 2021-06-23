@@ -2,19 +2,12 @@
 
 {% block content %}
 <style>
-    th, td {padding: 10px;}
-    table.center {
-            margin-left: auto;
-            margin-right: auto;
-            border-collapse: separate;
-            border-spacing: 50px 0;
-            }
-    span {
+    span1 {
       border-bottom: 2px solid gray;
       border-right: 2px solid gray;
       padding: 2px;
       display: inline-block;
-      width: 100%;
+      width: 15%;
     }
     .button{
         width: 100%;
@@ -40,17 +33,26 @@
           margin-left: auto;
           margin-right: auto;
     }
-    .circle {
-      width: 40px;
-      height: 40px;
-      line-height: 40px;
-      border-radius: 50%;
-      border: none;
-      font-size: 30px;
-      font: bold;
-      text-align: center;
-      display: inline-block;;
-    }
+.container {
+#  width: 100px;
+  #height: 100px;
+  position: relative;
+}
+
+.infoi {
+    position: absolute;
+    left: 58%;
+    top: 36%;
+    width: 31%;
+}
+.infoi > span {
+    border-bottom: 2px solid gray;
+    border-right: 2px solid gray;
+    padding: 2px;
+    display: inline-block;
+    width: 80%;
+    margin-bottom: 8px;
+}
 </style>
 
     <div style="text-align:center">
@@ -61,87 +63,52 @@
         </u>
         <form action="" method="post" novalidate>
             {{ form.hidden_tag() }}
-            <p></p>
-        <div style="text-align:center">
-            <p></p>
-            <table class="center">
-                <tr>
-                    <td></td>
-                    <td style="border-bottom:4px solid black"></td>
-                </tr>
-                <tr>
-                    <td style="text-align:center"><text style="color:DodgerBlue;font-size: 2em;"> Build bridges </text></td>
-                    <td>
-                        <span> {{ form.create(class_="button button_blue") }} </span>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="text-decoration: line-through; text-decoration-thickness:5px;">
-                        <div class="circle" style="background-color:yellow;">
-                            3
-                        </div>
-                         &nbsp; &nbsp; &nbsp; &nbsp;
-                        <div class="circle" style="background-color:OrangeRed;">
-                            2
-                        </div>
-                         &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
-                        <div class="circle" style="background-color:lightgreen;">
-                            5
-                        </div>
-                    </td>
-                    <td>
-                        <span>{{ form.load(class_="button button_red") }}</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <div class="circle" style="background-color:blue;color:yellow;">
-                            4
-                        </div>
-                    </td>
-                    <td>
-                        <span>{{ form.solve(class_="button button_yellow") }}</span>
-                    </td>
-                </tr>
-            </table>
-        </div>
+            <div class="container" style="text-align:center">
+                <div class="navi">
+                    <img src='http://drbarak.pythonanywhere.com/static/path/to/main_menu.jpg' width="800" height="500" />
+                </div>
+                <div class="infoi">
+                    <span> {{ form.create(class_="button button_blue") }} </span>
+                    <span>{{ form.load(class_="button button_red") }}</span>
+                    <span>{{ form.solve(class_="button button_yellow") }}</span>
+                </div>
+            </div>
         <br><br>
-        <p></p>
         <div class="boxed" style= "text-align:left">
-Hashi is a fun mind-tizzing playing puzzle which consists of
-a rectangular arrangement of circles, called "islands", containing numbers.
-<br><br>
-The number inside each island determines how many lines, called "bridges",
-are connected to this island. The numbers are beween 1 to 8, since the
-largest number of bridges connected to an internal (not at a corner or a side) island is 8
-<br><br>
-The object of the game is to build horizontal and vertical
-bridges between islands such that the number of bridges
-to each island is the same as the number specified inside
-that island.
-<br><br>
-In addition, there can only at least one bridge, but no more than two bridges,
-connecting two islands.
-<br><br>
-Also, a bridge can not cross other bridges, and
-all islands must be interconnected, enabling passage
-from any island to another, when the puzzle is
-completed.
+            Hashi is a fun mind-tizzing playing puzzle which consists of
+            a rectangular arrangement of circles, called "islands", containing numbers.
+            <br><br>
+            The number inside each island determines how many lines, called "bridges",
+            are connected to this island. The numbers are beween 1 to 8, since the
+            largest number of bridges connected to an internal (not at a corner or a side) island is 8
+            <br><br>
+            The object of the game is to build horizontal and vertical
+            bridges between islands such that the number of bridges
+            to each island is the same as the number specified inside
+            that island.
+            <br><br>
+            In addition, there can only at least one bridge, but no more than two bridges,
+            connecting two islands.
+            <br><br>
+            Also, a bridge can not cross other bridges, and
+            all islands must be interconnected, enabling passage
+            from any island to another, when the puzzle is
+            completed.
         </div>
-             <br>
+        <br>
         <div class="boxed" style= "text-align:left">
-Here we allow you to UPLOAD a csv (Comma Delimited) file that contains a complete Hashi
-puzzle - if the puzzle is for 5X5 sqaure, the file should consists of 5 rows of spaces and digits,
-where each row conains 5 columns of spaces and digits (a digit of zero denotes an empty space).
-<br><br>
-One can also RUN one of the ready puzzles, each one is identified by a number,
-currently from 1 to 36. The puzzle is then solved allowing you to display/print the puzzle, the solution, and a list
-of the steps to solve the puzzle, so you can see and learn how to solve the puzzle.
-<br><br>
-The last option allows one to CREATE a puzzle, usually found in a newspaper, into a reqtangular table,
-and to solve it, again displaying/printing the table, the solution and the list of steps.
+            Here we allow you to UPLOAD a csv (Comma Delimited) file that contains a complete Hashi
+            puzzle - if the puzzle is for 5X5 sqaure, the file should consists of 5 rows of spaces and digits,
+            where each row conains 5 columns of spaces and digits (a digit of zero denotes an empty space).
+            <br><br>
+            One can also RUN one of the ready puzzles, each one is identified by a number,
+            currently from 1 to 36. The puzzle is then solved allowing you to display/print the puzzle, the solution, and a list
+            of the steps to solve the puzzle, so you can see and learn how to solve the puzzle.
+            <br><br>
+            The last option allows one to CREATE a puzzle, usually found in a newspaper, into a reqtangular table,
+            and to solve it, again displaying/printing the table, the solution and the list of steps.
         </div>
-            <p><a href="https://www.conceptispuzzles.com/index.aspx?uri=puzzle/hashi/techniques" target="_blank">Techniques on how to solve Hashi puzzles</a></p>
+        <p><a href="https://www.conceptispuzzles.com/index.aspx?uri=puzzle/hashi/techniques" target="_blank">Techniques on how to solve Hashi puzzles</a></p>
         </form>
     </div>
 {% endblock %}

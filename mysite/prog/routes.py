@@ -1,9 +1,9 @@
-from flask import render_template, flash, redirect, request
+from flask import render_template, redirect, request
 from flask_app import app, session
 from sqlalchemy import func
 import os
 import pandas as pd
-import time
+#import time
 import numpy as np
 
 from prog.forms import LoadForm, MainMenuForm, SolveForm, CreateForm
@@ -147,6 +147,7 @@ def update():
 def solve():  # load_internal
     form = SolveForm()
     error = ''
+    df = pd.DataFrame()
     if 'max' not in locals():
 #        max = len(files_list())
 #        max = db.session.query(HashiDB).count()  slower than the next query but faster then query.all

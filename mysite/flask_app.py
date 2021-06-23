@@ -33,7 +33,12 @@ class HashiDB(db.Model):
     future2 = db.Column(db.Integer)
     future3 = db.Column(db.Text)
 
-import prog.routes  # leave here to prevent circular imports
+import prog.routes, prog.chatbot, prog.chatbot_init  # leave here to prevent circular imports
+prog.chatbot_init.init_chatbot()
+
+@app.route('/chatbot', methods=['GET', 'POST'])
+def chatbot():
+    return prog.chatbot.chatbot()
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/main_menu', methods=['GET', 'POST'])
@@ -73,7 +78,6 @@ def steps():
 @app.route('/do_steps', methods=['GET', 'POST'])
 def do_steps():
    return prog.routes.do_steps()
-
 
 # not used in the prog - to be able to enter in manually in the url - it is called internally after show_table()
 @app.route('/display')

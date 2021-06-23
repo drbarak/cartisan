@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, IntegerField#, StringField
+from wtforms import SubmitField, IntegerField, StringField
 from wtforms.validators import DataRequired, Length#, FileRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -25,3 +25,7 @@ class LoadForm(FlaskForm):
             validators=[FileRequired(), FileAllowed(['csv'])])
     load = SubmitField('Load File', render_kw={"onclick": "myFunction()"})
     home = SubmitField('Home')
+
+class ChatForm(FlaskForm):
+    user_msg =StringField('User Input', validators=[DataRequired()])
+    home = SubmitField('Ask Bot')
