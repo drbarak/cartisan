@@ -1,0 +1,42 @@
+{% extends "base_chat.html" %}
+
+{% block content %}
+
+<style>
+    .Center {
+        overflow-y: scroll;
+        width:600px;
+        height:60%;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        margin-top: -250px;
+        margin-left: -290px;
+    }
+    table td {
+        text-align: left;
+    }
+
+</style>
+
+<div style="text-align:center">
+    <form action="" method="post" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="wrapper">
+            <h1>Weather Chatbot</h1>
+            <p><p>
+            {{error}}
+            <p><p>
+            {{ form.user_msg.label }}
+            {{ form.user_msg }}
+            {{ form.home() }}
+            </p>
+        </div>
+
+        <div class="Center">
+            {{df_chat|safe}}
+        </div>
+
+    </form>
+</div>
+{% endblock %}
