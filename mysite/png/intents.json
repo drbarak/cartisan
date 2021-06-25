@@ -4,7 +4,7 @@
          "responses": ["Hi. My name is WeatherBot and I'm a chatbot. If you want to exit, type 'Bye' If you want help type 'Help'"]
         },
         {"tag": "goodbye",
-         "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown","exit", "quit"],
+         "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown","exit", "quit", "end", "abort", "finish"],
          "responses": ["See you!", "Have a nice day", "Bye! Come back again soon."]
         },
         {"tag": "thanks",

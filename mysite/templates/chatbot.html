@@ -12,7 +12,13 @@
         left: 50%;
         margin-top: -250px;
         margin-left: -290px;
+        background: lightgray;
+
+        border-radius: 40px;
+        border: 2px;
+        padding: 20px;
     }
+
     table td {
         text-align: left;
     }
@@ -25,18 +31,22 @@
         <div class="wrapper">
             <h1>Weather Chatbot</h1>
             <p><p>
+            <br>
             {{error}}
             <p><p>
             {{ form.user_msg.label }}
             {{ form.user_msg }}
-            {{ form.home() }}
+            {{ form.run_bot() }}
+            {{ form.google() }}
+            {{ form.debug() }}
             </p>
         </div>
 
         <div class="Center">
-            {{df_chat|safe}}
+            {% if length > 0 %}
+                {{df_chat|safe}}
+            {% endif %}
         </div>
-
     </form>
 </div>
 {% endblock %}

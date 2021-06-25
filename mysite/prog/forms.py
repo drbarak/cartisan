@@ -27,5 +27,7 @@ class LoadForm(FlaskForm):
     home = SubmitField('Home')
 
 class ChatForm(FlaskForm):
-    user_msg =StringField('User Input', validators=[DataRequired()])
-    home = SubmitField('Ask Bot')
+    user_msg =StringField('User Input')
+    run_bot = SubmitField('Ask Bot')
+    google = SubmitField('G')
+    debug = SubmitField('Debug')

@@ -1,12 +1,14 @@
-from flask import render_template, redirect, redirect, request, session
+#echo > /var/log/drbarak.pythonanywhere.com.error.log
+
+from flask import render_template, redirect, request, session
 from flask_app import app
 
 from prog.forms import ChatForm
 
-import spacy, random, requests, bs4
+import spacy, random, requests, bs4, time
 import pandas as pd
 
-from prog.chatbot_init import nlp, stopwords, remove_punct_dict, api_key, URL
+from prog.chatbot_init import nlp, stopwords, remove_punct_dict, api_key, URL, translator
 from prog.chatbot_init import df_CITIES_API, CITIES_API_country_code
 from prog.chatbot_init import countries_df
 from prog.chatbot_init import cities_il_df, CITIES_IL
@@ -30,29 +32,75 @@ def p(msg=None, *args):
         msg = msg + f' {k}'
     app.logger.warning(msg)
 
+IDLE_TIME = 60 * 30 # max half an hour between questions to the bot
+
 def chatbot():
     if 'chat_' not in session:
-        p('in chatbot')
+        p('in chatbot', spacy.__version__)
         session['chat_'] = 'chat_'
         session['username_'] = 'admin_'
         session['df_chat'] = []
-    df_chat = pd.DataFrame(session['df_chat'], columns=['ID', 'Conversation'])
+        session['time'] = time.time()
+        session['google'] = False
+        session['index'] = 1
+        session['clear'] = False
+        session['debug'] = 0
+    else:
+        if 'google' not in session:
+            session['google'] = False
+        if 'clear' not in session:
+            session['clear'] = False
+        if not 'debug' in session:
+            session['debug'] = 0
+        if 'time' in session:
+            session_time = session['time']
+            delta = time.time() - session_time
+            if delta > IDLE_TIME or session['index'] == 0:
+                session['df_chat'] = []
+                session['time'] = time.time()
+                session['index'] = 1
+                session['google'] = False
+                session['clear'] = False
+            else:  # reset the session time as long as no delay of more than idle_time
+                session['time'] = time.time()
+        else:
+            session['df_chat'] = []
+            session['time'] = time.time()
+            session['google'] = False
+            session['index'] = 1
+            session['clear'] = False
+    df_chat = pd.DataFrame(session['df_chat'], columns=['index', 'ID', 'Conversation'])
     form = ChatForm()
     error = ''
-    p(spacy.__version__)
-    get_parts('haifa, israel', True)
     if request.method == 'POST':
-        if form.home.data:
-            user_msg, answer = run_bot(form.user_msg.data)
+        if form.run_bot.data:
+            user_msg, answer, goodbye = run_bot(form.user_msg.data)
             #error = answer
-            #df_chat = pd.DataFrame(session['df_chat'], columns=['ID', 'Conversation'])
-            #df_chat = df_chat.append({'ID': 'You: ', 'Conversation': user_msg}, ignore_index=True)
-            #df_chat = df_chat.append({'ID': 'Bot: ', 'Conversation': answer}, ignore_index=True)
-            #session['df_chat'] = df_chat.values.tolist()
-            session['df_chat'].insert(0, ['You: ', 'user_msg'], ['Bot: ', 'answer'])
-            df_chat = pd.DataFrame(session['df_chat'], columns=['ID', 'Conversation'])
+            if session['clear']:
+                session['index'] = 1
+                session['df_chat'] = []
+                session['clear'] = False
+            index = session['index']
+            session['df_chat'] = [[index + 1, 'You: ', user_msg], [index, 'Bot: ', answer]] + session['df_chat']
+            df_chat = pd.DataFrame(session['df_chat'], columns=['index', 'ID', 'Conversation'])
+            session['index'] = index + 2
+            if goodbye == True:
+                session['clear'] = True # clear the log after displaying this message
             return redirect('/chatbot')  # to clear the form fields
-    return render_template('chatbot.html', title='CHAT BOT', form=form, error=error, df_chat=df_chat.to_html(justify='left'))
+        if form.google.data:
+            session['google'] = False if session['google'] else True
+        if form.debug.data:
+            session['debug'] = 0 if session['debug'] else 2
+    #df_chat_html = df_chat.style.applymap(lambda attr: 'font-weight: bold;', subset=['index'])
+    df_chat_html = (df_chat.style
+                        .set_properties(subset=['index'], **{'font-weight': 'bold'})
+                        .set_properties(subset=['Conversation'], **{'width': '500px'})
+                        .set_properties(subset=['index'], **{'width': '20px'})
+                        .hide_index()
+                        .render()
+                        .replace('index','')
+                        )
+    return render_template('chatbot.html', title='CHAT BOT', form=form, error=error, df_chat=df_chat_html, length=len(df_chat))
 
 WEATHER_ONLY = 1
 
@@ -91,7 +139,17 @@ def get_weather(dt, location, action = None):
 
   #p(city_w)
   country = location[0][1]
-  country_code = countries_df[countries_df.Name == country].index[0]
+  p(country)
+  p('0:')
+  p(countries_df.Name)
+  p('1:')
+  p(list(countries_df.Name))
+  p('2:')
+  p(countries_df[countries_df.Name == country])
+  if country in list(countries_df.Name):
+    country_code = countries_df[countries_df.Name == country].index[0]
+  else:
+    country_code = ''
 
   city_weather = call_web(city_w, country_code)
   if city_weather is not None:
@@ -106,7 +164,7 @@ def get_weather(dt, location, action = None):
 """# Get Parts (POS)"""
 
 
-DEBUG = True
+DEBUG = False
 def get_parts(text, disp=False, verbose=True):
   doc = nlp(text.lower().translate(remove_punct_dict))
   date, gpe, ents = [], {}, []
@@ -147,11 +205,14 @@ def get_parts(text, disp=False, verbose=True):
         if DEBUG: p('0:', ent_text, entity._.is_city, entity._.is_country)
         if entity._.is_city and not entity._.is_country: # 'canada' is a country and also a city in Portugal
           ent_type = 'city'
-          if ent_text in df_CITIES_API.index.values:
+          if ent_text in df_CITIES_API.index:
             code_country = df_CITIES_API.loc[ent_text].country
             if type(code_country) != str:
               multiple_cities = True
-              ent_country = countries_df.loc[code_country[0]].Name
+              # see note why not to use code_country[0] which sometimes give 'Key Error'
+              # https://stackoverflow.com/questions/46153647/keyerror-0-when-accessing-value-in-pandas-series
+              #ent_country = countries_df.loc[code_country[0]].Name
+              ent_country = countries_df.loc[code_country.iloc[0]].Name
             else:
               ent_country = countries_df.loc[code_country].Name
           elif ent_text in CITIES_IL:
@@ -244,23 +305,23 @@ def get_google(text):
   return new_text
 #get_google("wether in tel aviv")
 
-def run_bot(user_msg):
+def run_bot(user_msg, VERBOSE = 0):
     do = True
-    GREETING, NOANSWER = 0, 3
+    NOANSWER = 3
     #p(intents['intents'][GREETING]['responses'][0])
     min_similarity = 0.84
-    VERBOSE = 2
 
     while do:
       #user_msg = input().lower().strip()
       if user_msg == '':
         answers = intents['intents'][NOANSWER]['responses']
-        return random.choice(answers)
+        return '', random.choice(answers), False
 
       round = 0
       answer = ''
       org_msg = user_msg
-      while round < 3 and do:
+      tag = ''
+      while round < 5 and do:
         if VERBOSE:   p(f'round {round}: {user_msg}')
         doc1 = nlp(user_msg)
         answers, tag = None, None
@@ -271,6 +332,8 @@ def run_bot(user_msg):
             #p(ints)
             for text in ints['patterns']:
               doc2 = nlp(text)
+              if doc1.vector_norm == 0 or doc2.vector_norm == 0:
+                continue
               # Get the similarity of doc1 and doc2
               similarity = doc1.similarity(doc2)
               if VERBOSE > 2: p(f"{similarity}, {doc2}, {[ints['tag']]}")
@@ -286,6 +349,7 @@ def run_bot(user_msg):
             if tag in ["goodbye", "greeting", "thanks", "options"]:
               answer = random.choice(answers)
               break
+        if round == 2 and session['google']: round = 3 # to know we got the answer from get_parts()
         parts = get_parts(user_msg, VERBOSE > 1, False)
         if VERBOSE:  p(parts)
         if 'date' in parts and 'city' in parts and 'ERROR' not in parts['city'][0][1]:
@@ -313,6 +377,16 @@ def run_bot(user_msg):
           user_msg = get_google(org_msg)
           if user_msg != '':
             continue
+        if round == 2 or round == 3:
+          round = 4
+          user_msg = translator.translate(org_msg) # deafaul translation is to english - can set source/dest langauge: src="de"/ dest="he"
+          if VERBOSE:  p(f"{user_msg.origin} ({user_msg.src}) --> {user_msg.text} ({user_msg.dest})")
+          user_msg = user_msg.text
+          if user_msg != '':
+            continue
+        p('round: ', round)
+        if round >= 3 and not answer == '' and not 'ERROR' in answer:
+          answer += ' (from Google)'
         break
-      if answer == '': answer = "You need to tell me a city to check (maybe spell in differently)"
-      return org_msg, answer
+      if answer == '': answer = "You need to tell me a city to check (maybe spell it differently)"
+      return org_msg, answer, tag == "goodbye"
