@@ -27,7 +27,7 @@ class LoadForm(FlaskForm):
     home = SubmitField('Home')
 
 class ChatForm(FlaskForm):
-    user_msg =StringField('User Input')
+    user_msg = StringField('User Input', render_kw={'autofocus': True})
     run_bot = SubmitField('Ask Bot')
     google = SubmitField('G')
     debug = SubmitField('Debug')

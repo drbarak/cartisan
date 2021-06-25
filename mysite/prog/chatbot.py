@@ -81,7 +81,7 @@ def chatbot():
                 session['df_chat'] = []
                 session['clear'] = False
             index = session['index']
-            session['df_chat'] = [[index + 1, 'You: ', user_msg], [index, 'Bot: ', answer]] + session['df_chat']
+            session['df_chat'] = [[index + 1, 'Bot: ', answer], [index, 'You: ', user_msg]] + session['df_chat']
             df_chat = pd.DataFrame(session['df_chat'], columns=['index', 'ID', 'Conversation'])
             session['index'] = index + 2
             if goodbye == True:
