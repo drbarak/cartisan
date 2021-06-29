@@ -1,0 +1,35 @@
+{"actions": [
+		{
+			"tag": "weather",
+			"patterns": ["weather", "climate", "conditions", "forecast", "outlook", "thunderstorm","rain", "drizzle", "snow", "dry"]
+		},
+		{
+			"tag": "temp",
+			"patterns": ["temperature", "hot", "warn", "cold", "freeze", "temp", "degree", "thermal", "heat"]
+		},
+		{
+			"tag": "pressure",
+			"patterns": ["pressure", "isobar", "atmospheric", "mist", "smoke", "haze", "fog", "dust", "sand"]
+		},
+		{
+			"tag": "humidity",
+			"patterns": ["humidity", "damp", "moist"]
+		},
+		{
+			"tag": "visibility",
+			"patterns": ["visibility"]
+		},
+		{
+			"tag": "wind",
+			"patterns": ["wind", "breeze", "gail", "tornedo", "hurricane", "draft", "blow"]
+		},
+		{
+			"tag": "sunrise",
+			"patterns": ["sunrise", "sunset", "dawn", "daybreak", "night", "dark", "first light", "morning", "nightfall", "twilight", "dusk", "evening", "sundown"]
+		},
+		{
+			"tag": "clouds",
+			"patterns": ["cloud"]
+		}
+	]
+}

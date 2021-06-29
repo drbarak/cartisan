@@ -42,12 +42,13 @@
     <form class="header" action="" method="post" novalidate>
         {{ form.hidden_tag() }}
         <div class="wrapper">
-            <h1>{{ prompts[0] }}</h1>
+            <h1>Weather Chatbot</h1>
             <p><p>
             <br>
             {{error}}
+            {{ prompts[0] }}
             <p><p>
-            {{ prompts[3] }}
+            {{ form.user_msg.label }}
             {{ form.user_msg }}
             {{ form.run_bot() }}
             {% if google > 0 %}

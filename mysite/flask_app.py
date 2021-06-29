@@ -36,11 +36,12 @@ class HashiDB(db.Model):
 import prog.routes, prog.chatbot, prog.chatbot_init  # leave here to prevent circular imports
 prog.chatbot_init.init_chatbot()
 
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
     return prog.chatbot.chatbot()
 
-@app.route('/', methods=['GET', 'POST'])
+#@app.route('/', methods=['GET', 'POST'])
 @app.route('/main_menu', methods=['GET', 'POST'])
 def main_menu():
     if 'init_' not in session:

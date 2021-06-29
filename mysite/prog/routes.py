@@ -1,7 +1,7 @@
 from flask import render_template, redirect, request
-from flask_app import app, session
+from flask_app import session, app
 from sqlalchemy import func
-import os
+import os, sys
 import pandas as pd
 #import time
 import numpy as np
@@ -15,14 +15,16 @@ globals = Globals()
 def p(msg=None, *args):
     try:
         if msg is None:
-            app.logger.warning('')
+#            app.logger.warning('')
+            print(msg, file=sys.stderr)
             return
     except: # if there is an error (eg. msg is a DataFrame (on some version of pyhton) can not test for None)
         pass  # if the is an excpetion we know it is not None
     msg = f'{msg}'
     for k in args:
         msg = msg + f' {k}'
-    app.logger.warning(msg)
+#    app.logger.warning(msg)
+    print(msg, file=sys.stderr)
 
 def valid_user():
     return 'username_' in session and session['username_'] == 'admin_'
@@ -32,11 +34,13 @@ from flask_app import db, HashiDB, conn
 def main_menu():
 #    p('conn:', conn)
 #        update()
-    if globals.first:
-        p()
+    if 'hashi_' not in session and 'chat_' not in session:
+#    if globals.first:
         p('------------------------------')
+        p(session)
         p('Start Hashi Web')
-        globals.first = False
+        session['hashi_'] = 'hashi_'
+#        globals.first = False
 #        update()
     row = HashiDB.query.filter_by(id=45).first()
     if row is not None:
@@ -396,7 +400,6 @@ def do_steps():
     if error == '':
         error = f'Step: {globals.step}' if globals.step >= 0 else ''
     return render_template('step_solution.html', title='Steps', form=form, table=globals.table, df_solution=globals.df_solution.to_html(), n=globals.f_id, error=error)
-
 
 def table_result():
     if valid_user() and request.method == 'POST':

@@ -1,0 +1,322 @@
+       {
+       	"intents": {
+       		"language": {
+       			"en": {
+       				"messages": [{
+       						"tag": "greeting",
+       						"patterns": ["Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day", "hi", "greetings", "what's up", "hey"],
+       						"responses": ["Hi. My name is WeatherBot and I'm a chatbot. If you want to exit, type 'Bye' If you want help type 'Help'"]
+       					},
+       					{
+       						"tag": "goodbye",
+       						"patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown", "exit", "quit"],
+       						"responses": ["See you!", "Have a nice day", "Bye! Come back again soon."]
+       					},
+       					{
+       						"tag": "thanks",
+       						"patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+       						"responses": ["Happy to help!", "Any time!", "My pleasure"]
+       					},
+       					{
+       						"tag": "noanswer",
+       						"patterns": [],
+       						"responses": ["Sorry, can't understand you", "Please give me more info", "Not sure I understand"]
+       					},
+       					{
+       						"tag": "options",
+       						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
+       						"responses": ["I can give you information about the weather in cities around the world, in your language"]
+       					},
+       					{
+       						"tag": "web",
+       						"patterns": [],
+       						"responses": ["WeatherBot", "Ask Bot", "Debug", "User Input", "You", "Bot", "ID", "Conversation"]
+       					}
+       				]
+       			},
+       			"he": {
+       				"messages": [{
+       						"tag": "greeting",
+       						"patterns": ["Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day", "hi", "greetings", "what's up", "hey"],
+       						"responses": ["'שלום. שמי 'בוט-מזג-האוויר' ואני צ'ט בוט. אם אתה רוצה לצאת, הקלד 'ביי' אם אתה רוצה עזרה הקלד 'עזרה"]
+       					},
+       					{
+       						"tag": "goodbye",
+       						"patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown", "exit", "quit"],
+       						"responses": ["להתראות", "שיהיה לך יום נעים", "ביי! נא חזרו אלי בקרוב."]
+       					},
+       					{
+       						"tag": "thanks",
+       						"patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+       						"responses": ["שמחתי לעזור", "בכל עת", "בבקשה"]
+       					},
+       					{
+       						"tag": "noanswer",
+       						"patterns": [],
+       						"responses": ["מצטער, איני מבין אותך", "נא לספק מידע נוסף", "איני בטוח שהבנתי"]
+       					},
+       					{
+       						"tag": "options",
+       						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
+       						"responses": ["אני יכול לתת לך מידע על מזג האוויר בערים ברחבי העולם, בשפתך"]
+       					},
+       					{
+       						"tag": "web",
+       						"patterns": [],
+       						"responses": ["בוט-מזג-האוויר", "תשובת הבוט", "ניפוי", "נא להקליד פניה", "את/ה", "בוט", "מס'", "שיחה"]
+       					}
+       				]
+       			},
+       			"fr": {
+       				"messages": [{
+       						"tag": "greeting",
+       						"patterns": ["Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day", "hi", "greetings", "what's up", "hey"],
+       						"responses": ["Bonjour. Je m'appelle WeatherBot et je suis un chatbot. Si vous voulez quitter, tapez 'Bye' Si vous voulez de l'aide, tapez 'Help'"]
+       					},
+       					{
+       						"tag": "goodbye",
+       						"patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown", "exit", "quit"],
+       						"responses": ["A bientôt !", "Bonne journée", "Au revoir! Reviens bientôt."]
+       					},
+       					{
+       						"tag": "thanks",
+       						"patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+       						"responses": ["Heureux de vous aider !", "À tout moment !", "Mon plaisir"]
+       					},
+       					{
+       						"tag": "noanswer",
+       						"patterns": [],
+       						"responses": ["Désolé, je ne peux pas vous comprendre", "Donnez-moi plus d'informations", "Je ne suis pas sûr de comprendre"]
+       					},
+       					{
+       						"tag": "options",
+       						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
+       						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue"]
+       					},
+       					{
+       						"tag": "web",
+       						"patterns": [],
+       						"responses": ["WeatherBot", "demander au bot", "Debug", "entrée de l'utilisateur", "Toi", "Bot", "ID", "Conversation"]
+       					}
+       				]
+       			},
+       			"es": {
+       				"messages": [{
+       						"tag": "greeting",
+       						"patterns": ["Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day", "hi", "greetings", "what's up", "hey"],
+       						"responses": ["Hola. Mi nombre es WeatherBot y soy un chatbot. Si quieres salir, escribe 'Adiós'. Si quieres ayuda, escribe 'Ayuda'"]
+       					},
+       					{
+       						"tag": "goodbye",
+       						"patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown", "exit", "quit"],
+       						"responses": ["¡Nos vemos!", "Que tengas un buen día", "¡Adiós! Vuelve pronto"]
+       					},
+       					{
+       						"tag": "thanks",
+       						"patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+       						"responses": ["Encantada de ayudar!", "En cualquier momento!", "Mi placer"]
+       					},
+       					{
+       						"tag": "noanswer",
+       						"patterns": [],
+       						"responses": ["Lo siento, no puedo entenderte", "Por favor, dame más información", "No estoy seguro de entenderlo"]
+       					},
+       					{
+       						"tag": "options",
+       						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
+       						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma"]
+       					},
+       					{
+       						"tag": "web",
+       						"patterns": [],
+       						"responses": ["WeatherBot", "Preguntar al bot", "Debug", "Entrada del usuario", "Tú", "Bot", "ID", "Conversación"]
+       					}
+       				]
+       			},
+       			"ar": {
+       				"messages": [{
+       						"tag": "greeting",
+       						"patterns": ["Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day", "hi", "greetings", "what's up", "hey"],
+       						"responses": ["أهلا. اسمي WeatherBot وأنا روبوت محادثة. إذا كنت تريد الخروج ، فاكتب \"Bye\"إذا كنت تريد المساعدة اكتب \"Help\""]
+       					},
+       					{
+       						"tag": "goodbye",
+       						"patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown", "exit", "quit"],
+       						"responses": ["أرك لاحقا!", "طاب يومك", "وداعا! عد مرة أخرى قريبا."]
+       					},
+       					{
+       						"tag": "thanks",
+       						"patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+       						"responses": ["سررت بالمساعدة!", "في أي وقت!", "من دواعي سروري"]
+       					},
+       					{
+       						"tag": "noanswer",
+       						"patterns": [],
+       						"responses": ["آسف ، لا أستطيع أن أفهمك", "من فضلك أعطني المزيد من المعلومات", "لست متأكدا بأني أفهم"]
+       					},
+       					{
+       						"tag": "options",
+       						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
+       						"responses": ["يمكنني أن أقدم لك معلومات عن الطقس في مدن حول العالم بلغتك"]
+       					},
+       					{
+       						"tag": "web",
+       						"patterns": [],
+       						"responses": ["WeatherBot", "اسأل بوت", "تصحيح", "إدخال المستخدم", "أنت", "بوت", "إذ", "محادثة"]
+       					}
+       				]
+       			},
+       			"ru": {
+       				"messages": [{
+       						"tag": "greeting",
+       						"patterns": ["Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day", "hi", "greetings", "what's up", "hey"],
+       						"responses": ["Привет. Меня зовут WeatherBot, я чат-бот. Если вы хотите выйти, введите «Пока». Если вам нужна помощь, введите «Справка»."]
+       					},
+       					{
+       						"tag": "goodbye",
+       						"patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time", "shutdown", "exit", "quit"],
+       						"responses": ["Увидимся!", "Хорошего дня", "До свидания! Вернись снова скоро."]
+       					},
+       					{
+       						"tag": "thanks",
+       						"patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+       						"responses": ["Рад помочь!", "Любое время!", "Не за что"]
+       					},
+       					{
+       						"tag": "noanswer",
+       						"patterns": [],
+       						"responses": ["Извини, не могу тебя понять", "Пожалуйста, дайте мне больше информации", "Не уверен, что понимаю"]
+       					},
+       					{
+       						"tag": "options",
+       						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
+       						"responses": ["Я могу предоставить вам информацию о погоде в городах по всему миру на вашем языке"]
+       					},
+       					{
+       						"tag": "web",
+       						"patterns": [],
+       						"responses": ["WeatherBot", "Спросите бота", "Отлаживать", "Пользовательский ввод", "Ты", "Бот", "Я БЫ", "Беседа"]
+       					}
+       				]
+       			}
+       		}
+       	},
+       	"messages": {
+       		"language": {
+       			"en": {
+       				"messages": {
+       					"web_error": "[!] HTTP code={0} calling [{1}]",
+       					"api_error": "Something went wrong (API)",
+       					"web_msg": "In {0}, {1} the current weather is: {2}",
+       					"city_error": "city [{0}] not found in country [{1}] - try a different spelling of the city or in another language",
+       					"city_unknown": "You need to tell me a city to check (maybe spell it differently or try again in another language)",
+       					"from_google": "from Google",
+       					"clear sky": "clear sky",
+       					"pressure": "pressure",
+       					"humidity": "humidity",
+       					"temp": ["temp", "feels like", "temp min", "temp max"],
+       					"wind": ["wind speed", "wind direction", "wind gust"],
+       					"visibility": "visibility",
+       					"sunrise": ["sunrise", "sunset"],
+       					"no": "no",
+                        "new_lang": "Detected new langauge '{0}'. Do you want to switch (1=Y, 2=N)?"
+       				}
+       			},
+       			"he": {
+       				"messages": {
+       					"web_error": "קוד שגיאה {0} מאתר אינטרנט {1}",
+       					"api_error": "משהו השתבש בשימוש בספריית האתר",
+       					"web_msg": "ב- {0}, {1} מזג האוויר הנוכחי הוא: {2}",
+       					"city_error": "עיר [{0}] לא נמצאה בארץ [{1}] - נסה איות אחר של העיר או בשפה אחרת",
+       					"city_unknown": "צריך לספק שם עיר לבדיקה (אולי יש לאיית את שם העיר אחרת או לנסות שוב בשפה אחרת)",
+       					"from_google": "מגוגל",
+       					"clear sky": "שמיים בהירים",
+       					"pressure": "לחץ אוויר",
+       					"humidity": "לחות",
+       					"temp": ["טמפרטורה", "מרגיש כמו", "טמפרטורה מינימאלית", "טמפרטורה מקסימאלית"],
+       					"wind": ["מהירות הרוח", "כיוון הרוח", "משבי רוח"],
+       					"visibility": "נראות",
+       					"sunrise": ["זריחה", "שקיעה"],
+       					"no": "אין",
+                         "new_lang": "זוהתה שפה חדשה '{0}'. האם אתה רוצה להחליף (1 = Y, 2 = N)?"
+       				}
+       			},
+       			"fr": {
+       				"messages": {
+       					"web_error": "[!] Code HTTP={0} appelant [{1}]",
+       					"api_error": "Une erreur s'est produite (API)",
+       					"web_msg": "Dans {0}, {1} la météo actuelle est: {2}",
+       					"city_error": "ville [{0}] introuvable dans le pays [{1}] - essayez une orthographe différente de la ville ou dans une autre langue",
+       					"city_unknown": "Vous devez m'indiquer une ville à vérifier (peut-être l'épeler différemment ou réessayer dans une autre langue)",
+       					"from_google": "de Google",
+       					"clear sky": "ciel clair",
+       					"pressure": "pression",
+       					"humidity": "humidité",
+       					"temp": ["temp", "se sent comme", "temp min", "temp max"],
+       					"wind": ["vitesse du vent", "direction du vent", "rafale de vent"],
+       					"visibility": "visibilité",
+       					"sunrise": ["lever du soleil", "coucher du soleil"],
+       					"no": "non",
+                        "new_lang": "Nouvelle langue détectée '{0}'. Voulez-vous changer (1=O, 2=N) ?"
+       				}
+       			},
+       			"es": {
+       				"messages": {
+       					"web_error": "[!] Código HTTP = {0} llamando a [{1}]",
+       					"api_error": "Algo salió mal (API)",
+       					"web_msg": "En {0}, {1} el tiempo actual es: {2}",
+       					"city_error": "ciudad [{0}] no encontrada en el país [{1}]; prueba con una ortografía diferente de la ciudad o en otro idioma",
+       					"city_unknown": "Necesitas decirme una ciudad para verificar (tal vez escribirla de manera diferente o intentar nuevamente en otro idioma)",
+       					"from_google": "de Google",
+       					"clear sky": "cielo limpio",
+       					"pressure": "presión",
+       					"humidity": "humedad",
+       					"temp": ["temp", "se siente como", "temp min", "temp max"],
+       					"wind": ["velocidad del viento", "dirección del viento", "ráfaga de viento"],
+       					"visibility": "visibilidad",
+       					"sunrise": ["amanecer", "atardecer"],
+       					"no": "no",
+                        "new_lang": "Se detectó un nuevo idioma '{0}'. ¿Quiere cambiar (1 = Y, 2 = N)?"
+       				}
+       			},
+       			"ar": {
+       				"messages": {
+       					"web_error": "[!] كود HTTP = {0} يتصل بـ [{1}]",
+       					"api_error": "حدث خطأ (API)",
+       					"web_msg": "في {0} ، {1} الطقس الحالي هو: {2}",
+       					"city_error": "المدينة [{0}] غير موجودة في البلد [{1}] - جرّب تهجئة مختلفة للمدينة أو بلغة أخرى",
+       					"city_unknown": "يجب أن تخبرني مدينة ما للتحقق (ربما تهجئها بشكل مختلف أو المحاولة مرة أخرى بلغة أخرى)",
+       					"from_google": "من جوجل",
+       					"clear sky": "سماء صافية",
+       					"pressure": "الضغط",
+       					"humidity": "رطوبة",
+       					"temp": ["temp", "feels like", "temp min", "temp max"],
+       					"wind": ["سرعة الرياح" , "اتجاه الرياح" , "عاصفة الرياح"],
+       					"visibility": "الرؤية",
+       					"sunrise": ["شروق الشمس", "غروب الشمس"],
+       					"no": "لا",
+                        "new_lang": "تم اكتشاف لغة جديدة '{0}'. هل تريد التبديل (1 = Y ، 2 = N)؟"
+       				}
+       			},
+       			"ru": {
+       				"messages": {
+       					"web_error": "[!] Код HTTP = {0} вызов [{1}]",
+       					"api_error": "Что-то пошло не так (API)",
+       					"web_msg": "В {0}, {1} текущая погода: {2}",
+       					"city_error": "город [{0}] не найден в стране [{1}] - попробуйте написание города по-другому или на другом языке",
+       					"city_unknown": "Вам нужно указать мне город, который нужно проверить (возможно, напишите его по-другому или попробуйте еще раз на другом языке)",
+       					"from_google": "из Google",
+       					"clear sky": "чистое небо",
+       					"pressure": "давление",
+       					"humidity": "влажность",
+       					"temp": ["темп", "ощущение как", "мин. темп", "макс. темп."],
+       					"wind": ["скорость ветра", "направление ветра", "порывы ветра"],
+       					"visibility": "видимость",
+       					"sunrise": ["Восход", "закат"],
+       					"no": "нет",
+                        "new_lang": "Обнаружен новый язык '{0}'. Вы хотите переключить (1 = Y, 2 = N)?"
+       				}
+       			}
+       		}
+       	}
+       }
