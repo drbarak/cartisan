@@ -2,8 +2,13 @@
 .local/
 .bashrc
 .vimrc
+.profile
 __pycache__/
 .cache/
 .viminfo
 .bash_history
 nltk_data/
+.pyforest/
+.ipython/
+.virtualenvs/
+.pythonstartup.py
