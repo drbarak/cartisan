@@ -6,9 +6,12 @@ from flask_app import session
 from prog.forms import ChatForm
 
 import spacy, random, requests, bs4, time, sys, json
+from dateutil.parser import parse
+from datetime import date
+
 import pandas as pd
 
-from prog.chatbot_init import nlp, stopwords, remove_punct_dict, api_key, URL, translator, path
+from prog.chatbot_init import nlp, stopwords, remove_punct_dict, space_punct_dict, api_key, URL, translator, path
 from prog.chatbot_init import df_CITIES_API, CITIES_API_country_code
 from prog.chatbot_init import largest_df, countries_df
 from prog.chatbot_init import cities_il_df, CITIES_IL
@@ -489,6 +492,21 @@ def add_language(lang):
 #add_language('iw') # hebrew
 #add_language('ar') # arabic
 #add_language('ru') # russian
+
+def is_valid_date_p(dt):
+    if dt:
+        try:
+            dt = dt.translate(space_punct_dict)
+            new_date = str(parse(dt, fuzzy=True))[:10]
+            year = int(new_date[:4])
+            month = int(new_date[5:7])
+            day = int(new_date[8:])
+            ndays = (date(year, month, day) - date.today()).days
+            return True, year, month, day, ndays
+        except:
+            p('invalid:', dt)
+            return False, None, None, None, None
+    return False
 
 def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
     do = True
