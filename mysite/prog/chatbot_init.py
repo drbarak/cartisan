@@ -1,4 +1,5 @@
-from flask_app import app
+# echo > /var/log/drbarak.pythonanywhere.com.error.log
+
 import pandas as pd
 
 import nltk
@@ -42,6 +43,7 @@ def p(msg=None, *args):
     for k in args:
         msg = msg + f' {k}'
     print(msg, file=sys.stderr)
+    # from flask_app import app
     #app.logger.warning(msg)
 
 def init_chatbot():
@@ -236,4 +238,27 @@ def update_nlp():
   #p(nlp.pipe_names)
 
 update_nlp()
+
+import smtplib
+from email.message import EmailMessage
+
+def send_email(text='Mmessage from WeatherBot', subject='New Session'):
+  msg = EmailMessage()
+  msg.set_content(text)
+
+  msg['Subject'] = subject
+  msg['From'] = "Weatherbot <dr.zvibarak@gmail.com>"
+  msg['To'] = "drbarak@talkie.co.il"
+
+  try:
+    smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
+    smtpObj.starttls()
+    smtpObj.login('dr.zvibarak@gmail.com', 'shushu1952')
+    smtpObj.send_message(msg)
+    smtpObj.quit()
+    print("Successfully sent email")
+  except Exception as e:# SMTPException:
+    print("Error: unable to send email")
+    p(e)
+
 

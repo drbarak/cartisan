@@ -25,7 +25,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["I can give you information about the weather in cities around the world, in your language"]
+       						"responses": ["I can give you information about the weather in cities around the world, in your language. You can ask about clouds, rain, temp, pressure, humidity, wind, visibility, sunrise and upto 16 days from today"]
        					},
        					{
        						"tag": "web",
@@ -58,7 +58,8 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["אני יכול לתת לך מידע על מזג האוויר בערים ברחבי העולם, בשפתך"]
+       						"responses": ["אני יכול לתת לך מידע על מזג האוויר בערים ברחבי העולם, בשפתך. אתה יכול לשאול על עננים, גשם, טמפרטורה, לחץ, לחות, רוח, ראות, זריחה ולתקופה עד 16 יום מהיום"]
+
        					},
        					{
        						"tag": "web",
@@ -91,7 +92,8 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue"]
+       						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue. Vous pouvez poser des questions sur les nuages, la pluie, la température, la pression, l'humidité, le vent, la visibilité, le lever du soleil et jusqu'à 16 jours à partir d'aujourd'hui"]
+
        					},
        					{
        						"tag": "web",
@@ -124,7 +126,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma"]
+       						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma. Puede preguntar sobre las nubes, la lluvia, la temperatura, la presión, la humedad, el viento, la visibilidad, el amanecer y hasta 16 días a partir de hoy."]
        					},
        					{
        						"tag": "web",
@@ -157,7 +159,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["يمكنني أن أقدم لك معلومات عن الطقس في مدن حول العالم بلغتك"]
+       						"responses": ["يمكنني أن أقدم لك معلومات عن الطقس في مدن حول العالم بلغتك. يمكنك أن تسأل عن السحب والمطر ودرجة الحرارة والضغط والرطوبة والرياح والرؤية وشروق الشمس وحتى 16 يومًا من اليوم"]
        					},
        					{
        						"tag": "web",
@@ -190,7 +192,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Я могу предоставить вам информацию о погоде в городах по всему миру на вашем языке"]
+       						"responses": ["Я могу предоставить вам информацию о погоде в городах по всему миру на вашем языке. Вы можете спросить об облаках, дожде, температуре, давлении, влажности, ветре, видимости, восходе солнца и сроках до 16 дней с сегодняшнего дня."]
        					},
        					{
        						"tag": "web",
@@ -219,7 +221,7 @@
        					"visibility": "visibility",
        					"sunrise": ["sunrise", "sunset"],
        					"no": "no",
-                        "new_lang": "Detected new langauge '{0}'. Do you want to switch (1=Y, 2=N)?"
+       					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?"
        				}
        			},
        			"he": {
@@ -238,7 +240,7 @@
        					"visibility": "נראות",
        					"sunrise": ["זריחה", "שקיעה"],
        					"no": "אין",
-                         "new_lang": "זוהתה שפה חדשה '{0}'. האם אתה רוצה להחליף (1 = Y, 2 = N)?"
+       					"new_lang": "גיליתי קוד שפה חדש {0}. האם אתה רוצה לעבור (1 = כן, 2 = לא)?"
        				}
        			},
        			"fr": {
@@ -257,7 +259,7 @@
        					"visibility": "visibilité",
        					"sunrise": ["lever du soleil", "coucher du soleil"],
        					"no": "non",
-                        "new_lang": "Nouvelle langue détectée '{0}'. Voulez-vous changer (1=O, 2=N) ?"
+       					"new_lang": "J'ai détecté un nouveau code de langue {0}. Voulez-vous changer (1=Oui, 2=Non) ?"
        				}
        			},
        			"es": {
@@ -276,7 +278,7 @@
        					"visibility": "visibilidad",
        					"sunrise": ["amanecer", "atardecer"],
        					"no": "no",
-                        "new_lang": "Se detectó un nuevo idioma '{0}'. ¿Quiere cambiar (1 = Y, 2 = N)?"
+       					"new_lang": "Detecté un nuevo código de idioma {0}. ¿Quiere cambiar (1 = Sí, 2 = No)?"
        				}
        			},
        			"ar": {
@@ -291,11 +293,11 @@
        					"pressure": "الضغط",
        					"humidity": "رطوبة",
        					"temp": ["temp", "feels like", "temp min", "temp max"],
-       					"wind": ["سرعة الرياح" , "اتجاه الرياح" , "عاصفة الرياح"],
+       					"wind": ["سرعة الرياح", "اتجاه الرياح", "عاصفة الرياح"],
        					"visibility": "الرؤية",
        					"sunrise": ["شروق الشمس", "غروب الشمس"],
        					"no": "لا",
-                        "new_lang": "تم اكتشاف لغة جديدة '{0}'. هل تريد التبديل (1 = Y ، 2 = N)؟"
+       					"new_lang": "اكتشفت رمز لغة جديدًا {0}. هل تريد التبديل (1 = نعم ، 2 = لا)؟"
        				}
        			},
        			"ru": {
@@ -314,7 +316,7 @@
        					"visibility": "видимость",
        					"sunrise": ["Восход", "закат"],
        					"no": "нет",
-                        "new_lang": "Обнаружен новый язык '{0}'. Вы хотите переключить (1 = Y, 2 = N)?"
+       					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?"
        				}
        			}
        		}

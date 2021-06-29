@@ -1,19 +1,39 @@
 {"actions": [
 		{
+			"tag": "all",
+			"patterns": ["weather"]
+		},
+		{
+			"tag": "weatherWind",
+			"patterns": ["tornedo", "hurricane", "gale", "gust", "whirlwind", "cyclone"]
+		},
+		{
+			"tag": "weatherPressure",
+			"patterns": ["fog", "mist", "isobar", "barometric"]
+		},
+		{
+			"tag": "weatherTemp",
+			"patterns": ["heat wave", "freeze"]
+		},
+		{
 			"tag": "weather",
-			"patterns": ["weather", "climate", "conditions", "forecast", "outlook", "thunderstorm","rain", "drizzle", "snow", "dry"]
+			"patterns": ["climate", "conditions", "forecast", "outlook", "thunder", "thunderstorm", "storm", "rain", "drizzle", "snow", "dry", 
+      "rainbow", "overcast", "shower", "lightning", "blustery", "downpour", "tropical", "water cycle", "drought", "hail",
+       "icicle", "flood", "muggy", "flash flood", "atmospheric", "atmospheric", "cold front", "cold snap",
+       "condensation", "ice storm", "snowfall", "air", "balmy", "avalanche", "frost", "blizzard", "spring", "smog", 
+       "ozone", "autumn", "winter", "outlook", "summer","sleet", "sky", "easterlies", "westerlies","dew","surge","monsoon","permafrost"]
 		},
 		{
 			"tag": "temp",
-			"patterns": ["temperature", "hot", "warn", "cold", "freeze", "temp", "degree", "thermal", "heat"]
+			"patterns": ["temperature", "hot", "warn", "cold", "temp", "degree", "thermal", "heat", "heat index", "warm"]
 		},
 		{
 			"tag": "pressure",
-			"patterns": ["pressure", "isobar", "atmospheric", "mist", "smoke", "haze", "fog", "dust", "sand"]
+			"patterns": ["pressure", "atmospheric", "smoke", "haze", "dust", "sand"]
 		},
 		{
 			"tag": "humidity",
-			"patterns": ["humidity", "damp", "moist"]
+			"patterns": ["humidity", "damp", "moist", "moisture"]
 		},
 		{
 			"tag": "visibility",
@@ -21,7 +41,7 @@
 		},
 		{
 			"tag": "wind",
-			"patterns": ["wind", "breeze", "gail", "tornedo", "hurricane", "draft", "blow"]
+			"patterns": ["wind", "breeze", "draft", "blow"]
 		},
 		{
 			"tag": "sunrise",

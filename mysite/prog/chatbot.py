@@ -5,7 +5,7 @@ from flask_app import session
 
 from prog.forms import ChatForm
 
-import spacy, random, requests, bs4, time, sys, json
+import spacy, random, requests, bs4, time, json
 from dateutil.parser import parse
 from datetime import date
 
@@ -18,11 +18,12 @@ from prog.chatbot_init import cities_il_df, CITIES_IL
 from prog.chatbot_init import capitals_df, CAPITALS
 from prog.chatbot_init import ACTIONS#, ACTIONS_patterns, ACTIONS_tags
 from prog.chatbot_init import MESSAGES_lang, MESSAGES, MESSAGES_en, intents, intents_en
+from prog.chatbot_init import p, send_email
 
 from globals import Globals
 
 globals = Globals()
-
+'''
 def p(msg=None, *args):
     try:
         if msg is None:
@@ -35,7 +36,7 @@ def p(msg=None, *args):
         msg = msg + f' {k}'
 #    app.logger.warning(msg)
     print(msg, file=sys.stderr)
-
+'''
 IDLE_TIME = 60 * 30 # max half an hour between questions to the bot
 
 def chatbot():
@@ -53,7 +54,10 @@ def chatbot():
         session['debug'] = 0
         session['lang'] = 'en'
         session['new_lang'] = ''
-        session['org_msg'] = ''
+        session['user_msg'] = ''
+        session['error'] = ''
+
+        send_email()
     else:
         if 'google' not in session:
             session['google'] = False
@@ -65,7 +69,10 @@ def chatbot():
             session['debug'] = 0
         if not 'new_lang' in session:
             session['new_lang'] = ''
-            session['org_msg'] = ''
+        if not 'user_msg' in session:
+            session['user_msg'] = ''
+        if not 'error' in session:
+            session['error'] = ''
 
         if 'time' in session:
             session_time = session['time']
@@ -87,7 +94,7 @@ def chatbot():
 
     LANG = session['lang']
     new_lang = session['new_lang']
-    org_msg = session['org_msg']
+    user_msg = session['user_msg']
 
     id = intents[LANG]["messages"][5]["responses"][6]
     conv = intents[LANG]["messages"][5]["responses"][7]
@@ -97,11 +104,11 @@ def chatbot():
     if request.method == 'POST':
         #p('debug', session['debug'], form.google.data, form.debug.data)
         if form.run_bot.data:
-            user_msg, answer, goodbye, LANG, new_lang, org_msg = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, org_msg)
+            user_msg, answer, goodbye, LANG, new_lang, error = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, user_msg)
+            session['error'] = error
             session['lang'] = LANG
             session['new_lang'] = new_lang
-            session['org_msg'] = org_msg
-            #error = answer
+            session['user_msg'] = user_msg
             if session['clear']:
                 session['index'] = 1
                 session['df_chat'] = []
@@ -119,6 +126,7 @@ def chatbot():
             return redirect('/chatbot')  # to clear the form fields
         elif form.google.data:
             session['google'] = False if session['google'] else True
+            #send_email('Google was clicked')
         elif form.debug.data:
             session['debug'] = 0 if session['debug'] > 0 else 2
             p('debug', session['debug'])
@@ -134,7 +142,8 @@ def chatbot():
                         .replace('index','')
                         )
     form.run_bot.label.text = intents[LANG]["messages"][5]["responses"][1]
-    html = render_template('chatbot.html', title='CHAT BOT', form=form, error=error, df_chat=df_chat_html, length=len(df_chat), debug=session['debug'], google=session['google'], prompts=intents[LANG]["messages"][5]["responses"])
+    html = render_template('chatbot.html', title='CHAT BOT', form=form, error=session['error'], df_chat=df_chat_html, length=len(df_chat), debug=session['debug'], google=session['google'],
+                                prompts=intents[LANG]["messages"][5]["responses"])
     return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
 
 def call_web(city_name, country, LANG, count=1):
@@ -155,8 +164,9 @@ def call_web(city_name, country, LANG, count=1):
         print(MESSAGES[LANG]["messages"]["web_error"].format(response.status_code, api_url))
         return None
 
-def get_weather(dt, location, actions, LANG):
-  city_w = city = location[0][0]  # assume one city (not handling ifthere are 2 cities)
+def get_weather(dt, location, actions, LANG=LANG, DISP=False):
+  #p(dt, location)
+  city_w = city = location[0][0]  # assume one city (not handling if there are 2 cities)
   #p(city, city_w)
   result = ''
   # check if city in api_city list
@@ -168,14 +178,16 @@ def get_weather(dt, location, actions, LANG):
   elif len(result) > 0: # more than one city -> need country
     pass
 
-  #p(city_w)
+  #p(city_w, location)
   country = location[0][1]
+  #p(country, len(countries_df.Name))
   if country in list(countries_df.Name):
     country_code = countries_df[countries_df.Name == country].index[0]
   else:
     country_code = ''
-
-  city_weather = call_web(city_w, country_code, LANG, 1)
+  #p(city_w, country_code)#
+  city_weather = call_web(city_w, country_code)
+  if DISP: p(city_weather)
   if city_weather is not None:
     # check what informtion the user asked for
     #get_w clouds broken clouds True [('clouds', 'cloud'), ('temp', 'temp'), ('pressure', 'pressure'), ('humidity', 'humidity')]
@@ -183,57 +195,73 @@ def get_weather(dt, location, actions, LANG):
     #act = actions[0][0]
     #p(city_weather)
     #p(city_weather["visibility"])
-    p('get_w', default, actions)
+    #p('get_w', default, actions)
     result = ''
+    all_action = actions[0][0] == 'all'  # always first
+    p(all_action)
     for action in actions:
       tag = action[0]
       user_act = action[1]
-      data = city_weather['main'] if tag in ['temp', "pressure", "humidity"] else \
-                city_weather['sys'] if tag == "sunrise" else city_weather[tag]
-      p('in loop', user_act, tag, data)
+      data = city_weather if tag == "all" else city_weather['main'] \
+          if tag in ["weatherTemp", "weatherPressure", 'temp', "pressure", "humidity"] else \
+                city_weather['sys'] if tag == "sunrise" else city_weather['wind'] \
+                if tag in ["weatherWind", "wind"] else city_weather[tag]
+      #p('in loop', user_act, tag, data)
       if tag in ['clouds']:
         if data['all'] < 10: # no clouds
           if 'clear sky' not in default.lower():
             result += f'{MESSAGES[LANG]["messages"]["clear sky"]}, '
-          else:
+          elif not all_action:
+            result += f' {default},'
+        elif default not in result:
+          result += f' {default},'
+        if all_action: continue
+      if user_act == "rain":
+        if user_act in default.lower():
+          if default not in result:
             result += f' {default},'
         else:
+          result += f' {MESSAGES[LANG]["messages"]["no"]} {user_act},'
+        if all_action: continue
+      if all_action and tag != 'all': continue
+      if tag in ["weather", "weatherPressure","weatherWind","weatherTemp","all"]:
+        if default not in result:
           result += f' {default},'
-      if tag in ['temp', "pressure", "humidity"]:
-        if tag == "temp":
-          for i, temp in enumerate(MESSAGES[LANG]["messages"][tag]):
-            if i == 0: info = data["temp"]
-            elif i == 1: info = data["feels_like"]
-            elif i == 2: info = data["temp_min"]
-            elif i == 3: info = data["temp_max"]
+      if tag in ["weatherTemp", "weatherPressure", 'temp', "pressure", "humidity", "all"]:
+        data_tag = data['main'] if tag == 'all' else data
+        if tag in [ "weatherTemp", "temp", "all"]:
+          for i, temp in enumerate(MESSAGES[LANG]["messages"]["temp"]):
+            if i == 0: info = data_tag["temp"]
+            elif i == 1: info = data_tag["feels_like"]
+            elif i == 2: info = data_tag["temp_min"]
+            elif i == 3: info = data_tag["temp_max"]
             result += f' {temp} = {info},'
-        else:
-          result += f' {MESSAGES[LANG]["messages"][tag]} = {data[tag]},'
-      if tag == "wind":
-        for i, wind in enumerate(MESSAGES[LANG]["messages"][tag]):
-          if i == 0: info = data["speed"]
-          elif i == 1: info = data["deg"]
+        if tag in ["weatherPressure", "pressure", "all"]:
+          result += f' {MESSAGES[LANG]["messages"]["pressure"]} = {data_tag["pressure"]},'
+        if tag in ["humidity", "all"]:
+          result += f' {MESSAGES[LANG]["messages"]["humidity"]} = {data_tag["humidity"]},'
+      if tag in ["wind", "weatherWind", "all"]:
+        data_tag = data['wind'] if tag == 'all' else data
+        for i, wind in enumerate(MESSAGES[LANG]["messages"]["wind"]):
+          if i == 0: info = data_tag["speed"]
+          elif i == 1: info = data_tag["deg"]
           elif i == 2:
-            if "gust" in data:
-              info = data["gust"]
+            if "gust" in data_tag:
+              info = data_tag["gust"]
             else:
               continue
           result += f' {wind} = {info},'
-      if tag == "visibility":
-        result += f' {MESSAGES[LANG]["messages"][tag]} = {data},'
-      if tag == "sunrise":
-        for i, wind in enumerate(MESSAGES[LANG]["messages"][tag]):
-          if i == 0: info = data["sunrise"]
-          elif i == 1: info = data["sunset"]
-
+      if tag in ["visibility","all"]:
+        data_tag = data['visibility'] if tag == 'all' else data
+        result += f' {MESSAGES[LANG]["messages"]["visibility"]} = {data_tag},'
+      if tag in ["sunrise","all"]:
+        data_tag = data['sys'] if tag == 'all' else data
+        for i, wind in enumerate(MESSAGES[LANG]["messages"]["sunrise"]):
+          if i == 0: info = data_tag["sunrise"]
+          elif i == 1: info = data_tag["sunset"]
           result += f' {wind} = {time.strftime("%H:%M:%S", time.gmtime(info + 3 * 60 * 60))},'
-      if user_act == "rain":
-        if user_act in default.lower():
-          result += f' {default},'
-        else:
-          result += f' {MESSAGES[LANG]["messages"]["no"]} {user_act},'
     if result == '': result = default
-
+    if result[-1] == ',': result = result[:-1]
     country = location[0][1]
     if LANG != 'en': # in case there are parts of the answer which are not in the proper langauge
       response = translator.translate(city, dest=LANG) # need to separet ity from country in case one of them has multi words and google doe not keep the qoutation mark as needed
@@ -243,18 +271,11 @@ def get_weather(dt, location, actions, LANG):
       city = response.text
       response = translator.translate(country, dest=LANG)
       country = response.text
-
     response =  MESSAGES[LANG]["messages"]["web_msg"].format(city.capitalize(), country.capitalize(), result)
-
     return response
-
-    return MESSAGES[LANG]["messages"]["web_msg"].format(city.capitalize(), location[0][1].capitalize(), result)
-
   else:
     return MESSAGES[LANG]["messages"]["api_error"]
 
-#answer = get_weather('current', [('toronto', 'united states')])
-#answer
 """# Get Parts (POS)"""
 
 def check_gpe(entity, ents, ent_text, gpe, multiple_cities, DEBUG):
@@ -410,7 +431,14 @@ def get_parts(text, DEBUG, LANG, disp=False, verbose=True):
   if len(date) == 0:
     date = 'current'
   if len(gpe['action']) == 0:
-    gpe['action'] = [('weather', 'weather')]
+    gpe['action'] = [('all', 'weather')]
+  else:
+    for i, tup in enumerate(gpe['action']):
+      if tup[0] == 'all':
+        if i == 0: break
+        gpe['action'].remove(tup)
+        gpe['action'].insert(0, tup)
+        break
 
   result = {'date':date}
   result.update(gpe)
@@ -485,6 +513,7 @@ def add_language(lang):
   #p(list_d)
   with open(path + 'new_messages.json', "w") as f:
     json.dump(list_d, f, indent=1, ensure_ascii = False)
+  send_email(f"New language added: {lang}", 'New language')
 
 #p(translator.detect('الشغل'))
 # 'xab' is in Hmong langauge (hmn)
@@ -513,12 +542,13 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
     NOANSWER = 3
     min_similarity = 0.84
     DEBUG = VERBOSE
+    error = ''
 
     while do:
       #user_msg = input().lower().strip()
       if user_msg == '':
         answers = intents[LANG]["messages"][NOANSWER]['responses']
-        return '', random.choice(answers), False, LANG
+        return '', random.choice(answers), False, LANG, '', ''
 
       if new_lang != '':
         if user_msg == '1':
@@ -537,15 +567,20 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
               else:
                 verify = True
                 if response.lang not in MESSAGES_lang:
-                    # add langauge only when sure - of at least 2 words of length 5 letters each - to prevent erroneous detection
+                    # add langauge only when sure - of at least 3 words of length 5 letters each - to prevent erroneous detection
                   sentence = ' '.join(filter(None, user_msg.split(' ')))
-                  if not (len(sentence) > 11 and len(user_msg.split()) > 1):
+                  if not (len(sentence) > 11 and len(user_msg.split()) > 2):
                     verify = False  # False "new langauge" - google think that 'haifa israel' is in arabic, and 'Paris, frnace' is in french
                 if verify:
                   new_lang = response.lang
-                  org_msg = user_msg
                   answer = MESSAGES[LANG]["messages"]["new_lang"].format(new_lang)
-                  return org_msg, answers, False, LANG, new_lang
+                  return user_msg, answer, False, LANG, new_lang, ''
+          elif LANG == 'en': # check if the google translate stopped working
+              test = translator.detect('שלום')
+              if test.lang == LANG:
+                error = 'Note: Google translate stopped working temporarily -> multi-lingual option is not functional'
+                p(error)
+
 
       round = 0
       answer = ''
@@ -585,8 +620,10 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
         if 'date' in parts and 'city' in parts and 'ERROR' not in parts['city'][0][1]:
           #p(parts['city'][0][0])
           answer = get_weather(parts['date'], parts['city'], parts['action'], LANG)
+          break
         elif 'city' in parts and 'ERROR' in parts['city'][0][1]:
           answer = parts['city'][0][1]
+          break
         elif round == 0:
           round = 1
           user_msg = ''
@@ -621,4 +658,6 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
         if round >= 2 and not 'ERROR' in answer and session['google']:
           answer += f' ({MESSAGES[LANG]["messages"]["from_google"]})'
 
-      return org_msg, answer, tag=="goodbye", LANG, ''
+      return org_msg, answer, tag=="goodbye", LANG, '', error
+
+

@@ -18,16 +18,16 @@
     table td {
         text-align: left;
     }
-	
+
 	.center-div{
 		width: 100%;
 		text-align: center;
 	}
-	
+
 	.wrapper{
 		margin-bottom: 40px;
 	}
-	
+
 	.header{
 		width: 100%;
 		height: 100%;
@@ -60,7 +60,7 @@
             <h1>{{ prompts[0] }}</h1>
             <p><p>
             <br>
-            {{error}}
+            <div style="color: red;">{{error}}</div>
             <p><p>
             {{ prompts[3] }}
             {{ form.user_msg }}
