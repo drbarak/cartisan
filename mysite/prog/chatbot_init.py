@@ -16,6 +16,8 @@ to install spacy:
 spacy.load('en_core_web_md')
 import en_core_web_md
 
+FAST_START = True
+
 nlp = en_core_web_md.load()
 nltk.download(['punkt', 'stopwords'])
 
@@ -28,7 +30,8 @@ remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
 space_punct_dict = dict((ord(punct), ' ') for punct in string.punctuation)
 
 api_key = 'c2adfa29edfd95ad16efab9218619ff3'
-URL = "http://api.openweathermap.org/data/2.5/weather?"
+URL = "http://api.openweathermap.org/data/2.5/{0}?"
+icon_url = " http://openweathermap.org/img/wn/{0}@2x.png"  # 10d
 
 path = '/home/drbarak/mysite/png/'
 
@@ -60,7 +63,7 @@ def load_CITIES_API():
   CITIES_API = get_json('city.list.json')
 
   df = pd.DataFrame(CITIES_API)
-  df = df.drop(['id', 'coord'], axis='columns')
+  df = df.drop(['id'], axis='columns')
   df.name = df.name.str.lower()
   df.name = df.name.str.translate(remove_punct_dict)
 
@@ -122,6 +125,7 @@ def load_largest():
   df.city = df.city.str.lower()
   df.city = df.city.str.translate(remove_punct_dict)
   LARGEST = df.city.tolist()
+  df.country = df.country.str.lower()
   df = df.set_index('city')
   return df, LARGEST
 largest_df, LARGEST = load_largest()
@@ -164,8 +168,6 @@ def load_actions():
   ACTIONS_tags_ = {tag['tag']:'' for tag in actions["actions"]}
   return ACTIONS_patterns_, ACTIONS_, ACTIONS_tags_
 ACTIONS_patterns, ACTIONS, ACTIONS_tags = load_actions()
-
-FAST_START = False
 
 def update_nlp():
   matcher = PhraseMatcher(nlp.vocab)

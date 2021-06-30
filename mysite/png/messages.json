@@ -25,7 +25,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["I can give you information about the weather in cities around the world, in your language. You can ask about clouds, rain, temp, pressure, humidity, wind, visibility, sunrise and upto 16 days from today"]
+       						"responses": ["I can give you information about the weather in cities around the world, in your language. You can ask about clouds, rain, temp, pressure, humidity, wind, visibility, sunrise and upto 7 days from today"]
        					},
        					{
        						"tag": "web",
@@ -58,7 +58,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["אני יכול לתת לך מידע על מזג האוויר בערים ברחבי העולם, בשפתך. אתה יכול לשאול על עננים, גשם, טמפרטורה, לחץ, לחות, רוח, ראות, זריחה ולתקופה עד 16 יום מהיום"]
+       						"responses": ["אני יכול לתת לך מידע על מזג האוויר בערים ברחבי העולם, בשפתך. אתה יכול לשאול על עננים, גשם, טמפרטורה, לחץ, לחות, רוח, ראות, זריחה ולתקופה עד 7 יום מהיום"]
 
        					},
        					{
@@ -92,7 +92,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue. Vous pouvez poser des questions sur les nuages, la pluie, la température, la pression, l'humidité, le vent, la visibilité, le lever du soleil et jusqu'à 16 jours à partir d'aujourd'hui"]
+       						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue. Vous pouvez poser des questions sur les nuages, la pluie, la température, la pression, l'humidité, le vent, la visibilité, le lever du soleil et jusqu'à 7 jours à partir d'aujourd'hui"]
 
        					},
        					{
@@ -126,7 +126,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma. Puede preguntar sobre las nubes, la lluvia, la temperatura, la presión, la humedad, el viento, la visibilidad, el amanecer y hasta 16 días a partir de hoy."]
+       						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma. Puede preguntar sobre las nubes, la lluvia, la temperatura, la presión, la humedad, el viento, la visibilidad, el amanecer y hasta 7 días a partir de hoy."]
        					},
        					{
        						"tag": "web",
@@ -159,7 +159,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["يمكنني أن أقدم لك معلومات عن الطقس في مدن حول العالم بلغتك. يمكنك أن تسأل عن السحب والمطر ودرجة الحرارة والضغط والرطوبة والرياح والرؤية وشروق الشمس وحتى 16 يومًا من اليوم"]
+       						"responses": ["يمكنني أن أقدم لك معلومات عن الطقس في مدن حول العالم بلغتك. يمكنك أن تسأل عن السحب والمطر ودرجة الحرارة 7لضغط والرطوبة والرياح والرؤية وشروق الشمس وحتى 7 يومًا من اليوم"]
        					},
        					{
        						"tag": "web",
@@ -192,7 +192,7 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Я могу предоставить вам информацию о погоде в городах по всему миру на вашем языке. Вы можете спросить об облаках, дожде, температуре, давлении, влажности, ветре, видимости, восходе солнца и сроках до 16 дней с сегодняшнего дня."]
+       						"responses": ["Я могу предоставить вам информацию о погоде в городах по всему миру на вашем языке. Вы можете спросить об облаках, дожде, температуре, давлении, влажности, ветре, видимости, восходе солнца и сроках до 7 дней с сегодняшнего дня."]
        					},
        					{
        						"tag": "web",
@@ -221,7 +221,10 @@
        					"visibility": "visibility",
        					"sunrise": ["sunrise", "sunset"],
        					"no": "no",
-       					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?"
+       					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?",
+       					"no_info": "no info",
+       					"web_day_msg": "The weather tomorrow: ",
+       					"web_days_msg": "The weather in {0} days: "
        				}
        			},
        			"he": {
@@ -240,7 +243,10 @@
        					"visibility": "נראות",
        					"sunrise": ["זריחה", "שקיעה"],
        					"no": "אין",
-       					"new_lang": "גיליתי קוד שפה חדש {0}. האם אתה רוצה לעבור (1 = כן, 2 = לא)?"
+       					"new_lang": "?גיליתי קוד שפה חדש {0}. האם אתה רוצה להחליף (1 = כן, 2 = לא)?",
+       					"no_info": "אין מידע",
+       					"web_day_msg": "מזג האוויר מחר: ",
+       					"web_days_msg": "מזג האוויר בעוד {0} ימים: "
        				}
        			},
        			"fr": {
@@ -259,7 +265,10 @@
        					"visibility": "visibilité",
        					"sunrise": ["lever du soleil", "coucher du soleil"],
        					"no": "non",
-       					"new_lang": "J'ai détecté un nouveau code de langue {0}. Voulez-vous changer (1=Oui, 2=Non) ?"
+       					"new_lang": "J'ai détecté un nouveau code de langue {0}. Voulez-vous changer (1=Oui, 2=Non) ?",
+       					"no_info": "pas d'information",
+       					"web_day_msg": "La météo demain: ",
+       					"web_days_msg": "La météo en {0} jours :"
        				}
        			},
        			"es": {
@@ -278,7 +287,10 @@
        					"visibility": "visibilidad",
        					"sunrise": ["amanecer", "atardecer"],
        					"no": "no",
-       					"new_lang": "Detecté un nuevo código de idioma {0}. ¿Quiere cambiar (1 = Sí, 2 = No)?"
+       					"new_lang": "Detecté un nuevo código de idioma {0}. ¿Quiere cambiar (1 = Sí, 2 = No)?",
+       					"no_info": "sin información",
+       					"web_day_msg": "El clima mañana: ",
+       					"web_days_msg": "El tiempo en {0} días: "
        				}
        			},
        			"ar": {
@@ -297,7 +309,10 @@
        					"visibility": "الرؤية",
        					"sunrise": ["شروق الشمس", "غروب الشمس"],
        					"no": "لا",
-       					"new_lang": "اكتشفت رمز لغة جديدًا {0}. هل تريد التبديل (1 = نعم ، 2 = لا)؟"
+       					"new_lang": "اكتشفت رمز لغة جديدًا {0}. هل تريد التبديل (1 = نعم ، 2 = لا)؟",
+       					"no_info": "لا توجد معلومات",
+       					"web_day_msg": "الطقس غدا: ",
+       					"web_days_msg": "الطقس في {0} يوم: "
        				}
        			},
        			"ru": {
@@ -316,7 +331,10 @@
        					"visibility": "видимость",
        					"sunrise": ["Восход", "закат"],
        					"no": "нет",
-       					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?"
+       					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?",
+       					"no_info": "нет информации",
+       					"web_day_msg": "Погода завтра: ",
+       					"web_days_msg": "Погода в {0} дн .: "
        				}
        			}
        		}

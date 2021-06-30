@@ -11,7 +11,7 @@ from datetime import date
 
 import pandas as pd
 
-from prog.chatbot_init import nlp, stopwords, remove_punct_dict, space_punct_dict, api_key, URL, translator, path
+from prog.chatbot_init import nlp, stopwords, remove_punct_dict, space_punct_dict, api_key, URL, translator, path, icon_url
 from prog.chatbot_init import df_CITIES_API, CITIES_API_country_code
 from prog.chatbot_init import largest_df, countries_df
 from prog.chatbot_init import cities_il_df, CITIES_IL
@@ -20,23 +20,6 @@ from prog.chatbot_init import ACTIONS#, ACTIONS_patterns, ACTIONS_tags
 from prog.chatbot_init import MESSAGES_lang, MESSAGES, MESSAGES_en, intents, intents_en
 from prog.chatbot_init import p, send_email
 
-from globals import Globals
-
-globals = Globals()
-'''
-def p(msg=None, *args):
-    try:
-        if msg is None:
-            print('', file=sys.stderr)
-            return
-    except: # if there is an error (eg. msg is a DataFrame (on some version of pyhton) can not test for None)
-        pass  # if the is an excpetion we know it is not None
-    msg = f'{msg}'
-    for k in args:
-        msg = msg + f' {k}'
-#    app.logger.warning(msg)
-    print(msg, file=sys.stderr)
-'''
 IDLE_TIME = 60 * 30 # max half an hour between questions to the bot
 
 def chatbot():
@@ -104,7 +87,7 @@ def chatbot():
     if request.method == 'POST':
         #p('debug', session['debug'], form.google.data, form.debug.data)
         if form.run_bot.data:
-            user_msg, answer, goodbye, LANG, new_lang, error = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, user_msg)
+            user_msg, answer, goodbye, LANG, new_lang, error, url_icon = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, user_msg)
             session['error'] = error
             session['lang'] = LANG
             session['new_lang'] = new_lang
@@ -131,8 +114,6 @@ def chatbot():
             session['debug'] = 0 if session['debug'] > 0 else 2
             p('debug', session['debug'])
     #df_chat_html = df_chat.style.applymap(lambda attr: 'font-weight: bold;', subset=['index'])
-    rtl = 'rtl' if LANG in ['he', 'iw', 'ar'] else ''
-    #.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
     df_chat_html = (df_chat.style
                         .set_properties(subset=['index'], **{'font-weight': 'bold'})
                         .set_properties(subset=[conv], **{'width': '500px'})
@@ -144,17 +125,28 @@ def chatbot():
     form.run_bot.label.text = intents[LANG]["messages"][5]["responses"][1]
     html = render_template('chatbot.html', title='CHAT BOT', form=form, error=session['error'], df_chat=df_chat_html, length=len(df_chat), debug=session['debug'], google=session['google'],
                                 prompts=intents[LANG]["messages"][5]["responses"])
+    rtl = 'rtl' if LANG in ['he', 'iw', 'ar'] else ''
     return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
 
-def call_web(city_name, country, LANG, count=1):
+def call_web(city_name, country_code, fahrenheit, count, LANG):
     state = ''
-    api_url = f"{URL}q={city_name},{state},{country}&cnt={count}&units=metric&lang={LANG}&appid={api_key}"
+    p('in call_web')
+    api_url = f"{URL}q={city_name},{state},{country_code}&units={'metric' if not fahrenheit else 'imperial'}&lang={LANG}&appid={api_key}".format('weather')
+    if count > 1:
+      cor = df_CITIES_API.loc[city_name].coord
+      if type(cor) is not  dict: #more than one record for that city
+        for index, row in df_CITIES_API.loc[city_name].iterrows():
+          if country_code == row['country'] or country_code == '': # if no country code then use the first entry
+            cor = row['coord']
+            break
+      api_url = f"{URL}lat={cor['lat']}&lon={cor['lon']}&exclude=minutely,hourly&units={'metric' if not fahrenheit else 'imperial'}&lang={LANG}&appid={api_key}".format('onecall')
+
     #p(api_url)
 
     response = requests.get(api_url)
     response_dict = response.json()
 
-    weather = response_dict #["weather"]#[0]#["description"]
+    weather = response_dict
 
     if response.status_code == 200:
         return weather
@@ -162,9 +154,98 @@ def call_web(city_name, country, LANG, count=1):
         return None
     else:
         print(MESSAGES[LANG]["messages"]["web_error"].format(response.status_code, api_url))
+        p(response_dict['message'])
         return None
 
-def get_weather(dt, location, actions, LANG=LANG, DISP=False):
+def get_weather_info(actions, count, cnt, city_weather, default, LANG):
+  all_action = actions[0][0] == 'all'  # always first
+  #p(all_action)
+  result = ''
+  for action in actions:
+    tag = action[0]
+    if tag == "fahrenheit": continue
+    user_act = action[1]
+    if count < 2:
+      data = city_weather if tag == "all" else city_weather['main'] \
+        if tag in ["weatherTemp", "weatherPressure", 'temp', "pressure", "humidity"] else \
+              city_weather['sys'] if tag == "sunrise" else city_weather['wind'] \
+              if tag in ["weatherWind", "wind"] else city_weather[tag]
+    else:
+      data = city_weather
+    #p('in loop', user_act, tag, data)
+    if tag in ['clouds']:
+      clouds_percentage = data['all'] if count < 2 else data['clouds']
+      if clouds_percentage < 10: # no clouds
+        if 'clear sky' not in default.lower():
+          result += f'{MESSAGES[LANG]["messages"]["clear sky"]}, '
+        elif not all_action:
+          result += f' {default},'
+      elif default not in result:
+        result += f' {default},'
+      if all_action: continue
+    if user_act == "rain":
+      if user_act in default.lower():
+        if default not in result:
+          result += f' {default},'
+      else:
+        result += f' {MESSAGES[LANG]["messages"]["no"]} {user_act},'
+      if all_action: continue
+    if all_action and tag != 'all': continue
+    if tag in ["weather", "weatherPressure","weatherWind","weatherTemp","all"]:
+      if default not in result:
+        result += f' {default},'
+    if tag in ["weatherTemp", "weatherPressure", 'temp', "pressure", "humidity", "all"]:
+      data_tag = data['main'] if tag == 'all' and count < 2 else data
+      #p(count, tag, data_tag, data)
+      if tag in [ "weatherTemp", "temp", "all"]:
+        for i, temp in enumerate(MESSAGES[LANG]["messages"]["temp"]):
+          if i == 0:
+            if cnt == 0:
+              info = data_tag["temp"]
+            else:
+              info = data_tag["temp"]['day']
+          elif i == 1:
+            if cnt == 0:
+              info = data_tag["feels_like"]
+            else:
+              info = data_tag["feels_like"]['day']
+            if count > 1  and cnt == 0:
+              break
+          elif i == 2: info = data_tag["temp_min"] if cnt == 0 else data_tag["temp"]["min"]
+          elif i == 3: info = data_tag["temp_max"] if cnt == 0 else data_tag["temp"]["max"]
+          result += f' {temp} = {info},'
+      if tag in ["weatherPressure", "pressure", "all"]:
+        result += f' {MESSAGES[LANG]["messages"]["pressure"]} = {data_tag["pressure"]},'
+      if tag in ["humidity", "all"]:
+        result += f' {MESSAGES[LANG]["messages"]["humidity"]} = {data_tag["humidity"]},'
+    if tag in ["wind", "weatherWind", "all"]:
+      data_tag = data['wind'] if tag == 'all' and count < 2 else data
+      for i, wind in enumerate(MESSAGES[LANG]["messages"]["wind"]):
+        if i == 0: info = data_tag["speed"] if count < 2 else data_tag["wind_speed"]
+        elif i == 1: info = data_tag["deg"] if count < 2 else data_tag["wind_deg"]
+        elif i == 2:
+          if "gust" in data_tag:
+            info = data_tag["gust"]
+        elif "wind_gust" in data_tag:
+            info = data_tag["wind_gust"]
+        else:
+            continue
+        result += f' {wind} = {info},'
+    if tag in ["visibility","all"]:
+      if cnt > 0 and 'visibility' not in data:
+        data_tag = MESSAGES[LANG]["messages"]["no_info"]
+      else:
+        data_tag = data['visibility'] if tag == 'all' or count > 1 else data
+      result += f' {MESSAGES[LANG]["messages"]["visibility"]} = {data_tag},'
+    if tag in ["sunrise","all"]:
+      data_tag = data['sys'] if tag == 'all' and count < 2 else data
+      for i, wind in enumerate(MESSAGES[LANG]["messages"]["sunrise"]):
+        if i == 0: info = data_tag["sunrise"]
+        elif i == 1: info = data_tag["sunset"]
+        result += f' {wind} = {time.strftime("%H:%M:%S", time.gmtime(info + 3 * 60 * 60))},'
+  return result
+
+def get_weather(dt, location, actions, LANG, count=2):
   #p(dt, location)
   city_w = city = location[0][0]  # assume one city (not handling if there are 2 cities)
   #p(city, city_w)
@@ -179,102 +260,53 @@ def get_weather(dt, location, actions, LANG=LANG, DISP=False):
     pass
 
   #p(city_w, location)
-  country = location[0][1]
-  #p(country, len(countries_df.Name))
+  country = location[0][1].lower()
+  #p(country, len(countries_df.Name), country in list(countries_df.Name))
   if country in list(countries_df.Name):
     country_code = countries_df[countries_df.Name == country].index[0]
   else:
     country_code = ''
   #p(city_w, country_code)#
-  city_weather = call_web(city_w, country_code)
-  if DISP: p(city_weather)
-  if city_weather is not None:
+
+  fahrenheit = True if len([action for action in actions if action[0] == "fahrenheit"]) > 0 else False
+  #p('in get_weather:', fahrenheit)
+  city_weather_resp = call_web(city_w, country_code, fahrenheit, count, LANG)
+
+  if city_weather_resp is None:
+    return MESSAGES[LANG]["messages"]["api_error"], ''
     # check what informtion the user asked for
-    #get_w clouds broken clouds True [('clouds', 'cloud'), ('temp', 'temp'), ('pressure', 'pressure'), ('humidity', 'humidity')]
-    default = city_weather["weather"][0]["description"]
-    #act = actions[0][0]
-    #p(city_weather)
-    #p(city_weather["visibility"])
-    #p('get_w', default, actions)
-    result = ''
-    all_action = actions[0][0] == 'all'  # always first
-    p(all_action)
-    for action in actions:
-      tag = action[0]
-      user_act = action[1]
-      data = city_weather if tag == "all" else city_weather['main'] \
-          if tag in ["weatherTemp", "weatherPressure", 'temp', "pressure", "humidity"] else \
-                city_weather['sys'] if tag == "sunrise" else city_weather['wind'] \
-                if tag in ["weatherWind", "wind"] else city_weather[tag]
-      #p('in loop', user_act, tag, data)
-      if tag in ['clouds']:
-        if data['all'] < 10: # no clouds
-          if 'clear sky' not in default.lower():
-            result += f'{MESSAGES[LANG]["messages"]["clear sky"]}, '
-          elif not all_action:
-            result += f' {default},'
-        elif default not in result:
-          result += f' {default},'
-        if all_action: continue
-      if user_act == "rain":
-        if user_act in default.lower():
-          if default not in result:
-            result += f' {default},'
-        else:
-          result += f' {MESSAGES[LANG]["messages"]["no"]} {user_act},'
-        if all_action: continue
-      if all_action and tag != 'all': continue
-      if tag in ["weather", "weatherPressure","weatherWind","weatherTemp","all"]:
-        if default not in result:
-          result += f' {default},'
-      if tag in ["weatherTemp", "weatherPressure", 'temp', "pressure", "humidity", "all"]:
-        data_tag = data['main'] if tag == 'all' else data
-        if tag in [ "weatherTemp", "temp", "all"]:
-          for i, temp in enumerate(MESSAGES[LANG]["messages"]["temp"]):
-            if i == 0: info = data_tag["temp"]
-            elif i == 1: info = data_tag["feels_like"]
-            elif i == 2: info = data_tag["temp_min"]
-            elif i == 3: info = data_tag["temp_max"]
-            result += f' {temp} = {info},'
-        if tag in ["weatherPressure", "pressure", "all"]:
-          result += f' {MESSAGES[LANG]["messages"]["pressure"]} = {data_tag["pressure"]},'
-        if tag in ["humidity", "all"]:
-          result += f' {MESSAGES[LANG]["messages"]["humidity"]} = {data_tag["humidity"]},'
-      if tag in ["wind", "weatherWind", "all"]:
-        data_tag = data['wind'] if tag == 'all' else data
-        for i, wind in enumerate(MESSAGES[LANG]["messages"]["wind"]):
-          if i == 0: info = data_tag["speed"]
-          elif i == 1: info = data_tag["deg"]
-          elif i == 2:
-            if "gust" in data_tag:
-              info = data_tag["gust"]
-            else:
-              continue
-          result += f' {wind} = {info},'
-      if tag in ["visibility","all"]:
-        data_tag = data['visibility'] if tag == 'all' else data
-        result += f' {MESSAGES[LANG]["messages"]["visibility"]} = {data_tag},'
-      if tag in ["sunrise","all"]:
-        data_tag = data['sys'] if tag == 'all' else data
-        for i, wind in enumerate(MESSAGES[LANG]["messages"]["sunrise"]):
-          if i == 0: info = data_tag["sunrise"]
-          elif i == 1: info = data_tag["sunset"]
-          result += f' {wind} = {time.strftime("%H:%M:%S", time.gmtime(info + 3 * 60 * 60))},'
-    if result == '': result = default
-    if result[-1] == ',': result = result[:-1]
-    country = location[0][1]
-    if LANG != 'en': # in case there are parts of the answer which are not in the proper langauge
-      response = translator.translate(city, dest=LANG) # need to separet ity from country in case one of them has multi words and google doe not keep the qoutation mark as needed
-      #response = translator.translate(f"({city}, {country})", dest=LANG)
-      #city, country = response.text
-      p(f"{response.origin} ({response.src}) --> {response.text} ({response.dest})")
-      city = response.text
-      response = translator.translate(country, dest=LANG)
-      country = response.text
-    response =  MESSAGES[LANG]["messages"]["web_msg"].format(city.capitalize(), country.capitalize(), result)
-    return response
-  else:
-    return MESSAGES[LANG]["messages"]["api_error"]
+
+  #p(city_weather_resp)
+  city_weather = city_weather_resp if count < 2 else city_weather_resp["current"]
+  #p(city_weather)
+
+  default = city_weather["weather"][0]["description"]
+  icon = city_weather["weather"][0]["icon"]
+  url_icon = f"{icon_url}".format(icon)
+  result = ''
+
+  for cnt in range(count):
+    if cnt > 0:
+      # bug in python - cannot have r += z + x if cond else y
+      M = MESSAGES[LANG]["messages"]["web_days_msg"].format(cnt) if cnt > 1 else MESSAGES[LANG]["messages"]["web_day_msg"]
+      result += '<br>' + M
+      city_weather = city_weather_resp["daily"][0]
+    new_result = get_weather_info(actions, count, cnt, city_weather, default, LANG)
+    result += new_result
+
+  if result == '': result = default
+  if result[-1] == ',': result = result[:-1]
+  country = location[0][1]
+  if LANG != 'en': # in case there are parts of the answer which are not in the proper langauge
+    response = translator.translate(city, dest=LANG) # need to separet ity from country in case one of them has multi words and google doe not keep the qoutation mark as needed
+    #response = translator.translate(f"({city}, {country})", dest=LANG)
+    #city, country = response.text
+    p(f"{response.origin} ({response.src}) --> {response.text} ({response.dest})")
+    city = response.text
+    response = translator.translate(country, dest=LANG)
+    country = response.text
+  response =  MESSAGES[LANG]["messages"]["web_msg"].format(city.capitalize(), country.capitalize(), result)
+  return response, url_icon
 
 """# Get Parts (POS)"""
 
@@ -548,7 +580,7 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
       #user_msg = input().lower().strip()
       if user_msg == '':
         answers = intents[LANG]["messages"][NOANSWER]['responses']
-        return '', random.choice(answers), False, LANG, '', ''
+        return '', random.choice(answers), False, LANG, '', '', ''
 
       if new_lang != '':
         if user_msg == '1':
@@ -574,18 +606,17 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
                 if verify:
                   new_lang = response.lang
                   answer = MESSAGES[LANG]["messages"]["new_lang"].format(new_lang)
-                  return user_msg, answer, False, LANG, new_lang, ''
+                  return user_msg, answer, False, LANG, new_lang, '', ''
           elif LANG == 'en': # check if the google translate stopped working
-              test = translator.detect('שלום')
+              test = translator.detect('שלום וברכה')
               if test.lang == LANG:
                 error = 'Note: Google translate stopped working temporarily -> multi-lingual option is not functional'
                 p(error)
 
-
       round = 0
       answer = ''
       org_msg = user_msg
-      tag = ''
+      tag, url_icon = '', ''
       while round < 4 and do:
         if VERBOSE:   p(f'round {round}: {user_msg}')
         doc1 = nlp(user_msg)
@@ -618,8 +649,8 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
         parts = get_parts(user_msg, DEBUG, LANG, VERBOSE > 1, False)
         if VERBOSE:  p(parts)
         if 'date' in parts and 'city' in parts and 'ERROR' not in parts['city'][0][1]:
-          #p(parts['city'][0][0])
-          answer = get_weather(parts['date'], parts['city'], parts['action'], LANG)
+          #p(parts['city'])
+          answer, url_icon = get_weather(parts['date'], parts['city'], parts['action'], LANG)
           break
         elif 'city' in parts and 'ERROR' in parts['city'][0][1]:
           answer = parts['city'][0][1]
@@ -654,10 +685,10 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
         break
       if answer == '':  answer = MESSAGES[LANG]["messages"]["city_unknown"]
       else:
-        p('round: ', round, (round >= 2 and not 'ERROR' in answer))
+        #p('round: ', round, (round >= 2 and not 'ERROR' in answer))
         if round >= 2 and not 'ERROR' in answer and session['google']:
           answer += f' ({MESSAGES[LANG]["messages"]["from_google"]})'
 
-      return org_msg, answer, tag=="goodbye", LANG, '', error
+      return org_msg, answer, tag=="goodbye", LANG, '', error, url_icon
 
 
