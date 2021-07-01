@@ -64,7 +64,7 @@
        					{
        						"tag": "web",
        						"patterns": [],
-       						"responses": ["בוט-מזג-האוויר", "תשובת הבוט", "ניפוי", "נא להקליד פניה", "את/ה", "בוט", "מס'", "שיחה"]
+       						"responses": ["בוט-מזג-האוויר", "תשובת הבוט", "ניפוי", "נא להקליד פניה", "את/ה", "בוט", "מי", "שיחה"]
        					}
        				]
        			},
@@ -224,7 +224,8 @@
        					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?",
        					"no_info": "no info",
        					"web_day_msg": "The weather tomorrow: ",
-       					"web_days_msg": "The weather in {0} days: "
+       					"web_days_msg": "The weather in {0} days: ",
+       					"action_unknown": "You need to tell me what weather information you are looking for (such as 'weather', 'temp', 'wind')"
        				}
        			},
        			"he": {
@@ -246,7 +247,8 @@
        					"new_lang": "?גיליתי קוד שפה חדש {0}. האם אתה רוצה להחליף (1 = כן, 2 = לא)?",
        					"no_info": "אין מידע",
        					"web_day_msg": "מזג האוויר מחר: ",
-       					"web_days_msg": "מזג האוויר בעוד {0} ימים: "
+       					"web_days_msg": "מזג האוויר בעוד {0} ימים: ",
+       					"action_unknown": "אתה צריך לומר לי איזה מידע על מזג האוויר אתה מחפש (כגון 'מזג אוויר', 'טמפרטורה', 'רוח')"
        				}
        			},
        			"fr": {
@@ -268,7 +270,8 @@
        					"new_lang": "J'ai détecté un nouveau code de langue {0}. Voulez-vous changer (1=Oui, 2=Non) ?",
        					"no_info": "pas d'information",
        					"web_day_msg": "La météo demain: ",
-       					"web_days_msg": "La météo en {0} jours :"
+       					"web_days_msg": "La météo en {0} jours :",
+       					"action_unknown": "Vous devez me dire quelles informations météorologiques vous recherchez (telles que 'météo', 'temp', 'vent')"
        				}
        			},
        			"es": {
@@ -290,7 +293,8 @@
        					"new_lang": "Detecté un nuevo código de idioma {0}. ¿Quiere cambiar (1 = Sí, 2 = No)?",
        					"no_info": "sin información",
        					"web_day_msg": "El clima mañana: ",
-       					"web_days_msg": "El tiempo en {0} días: "
+       					"web_days_msg": "El tiempo en {0} días: ",
+       					"action_unknown": "Necesitas decirme qué información meteorológica estás buscando (como 'clima', 'temperatura', 'viento')"
        				}
        			},
        			"ar": {
@@ -312,7 +316,8 @@
        					"new_lang": "اكتشفت رمز لغة جديدًا {0}. هل تريد التبديل (1 = نعم ، 2 = لا)؟",
        					"no_info": "لا توجد معلومات",
        					"web_day_msg": "الطقس غدا: ",
-       					"web_days_msg": "الطقس في {0} يوم: "
+       					"web_days_msg": "الطقس في {0} يوم: ",
+       					"action_unknown": "يجب أن تخبرني ما هي معلومات الطقس التي تبحث عنها (مثل الطقس ودرجة الحرارة والرياح)"
        				}
        			},
        			"ru": {
@@ -331,10 +336,11 @@
        					"visibility": "видимость",
        					"sunrise": ["Восход", "закат"],
        					"no": "нет",
-       					"new_lang": "I detected a new language code {0}. Do you want to switch (1=Yes, 2=No)?",
+       					"new_lang": "Я обнаружил новый языковой код {0}. Вы хотите переключиться (1 = Да, 2 = Нет)?",
        					"no_info": "нет информации",
        					"web_day_msg": "Погода завтра: ",
-       					"web_days_msg": "Погода в {0} дн .: "
+       					"web_days_msg": "Погода в {0} дн .: ",
+       					"action_unknown": "Вы должны сказать мне, какую информацию о погоде вы ищете (например погода, температура, ветер)"
        				}
        			}
        		}

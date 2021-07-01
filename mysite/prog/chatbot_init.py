@@ -16,7 +16,7 @@ to install spacy:
 spacy.load('en_core_web_md')
 import en_core_web_md
 
-FAST_START = True
+FAST_START = False
 
 nlp = en_core_web_md.load()
 nltk.download(['punkt', 'stopwords'])
@@ -59,8 +59,28 @@ def get_json(fname):
   with open(path + fname, encoding="utf8") as f:
     return json.loads(f.read())
 
+def load_cities_il():
+  fname = 'cities_IL.csv'
+  df = pd.read_csv(path + fname, names=['city', 'district'])
+  df.city = df.city.str.translate(remove_punct_dict)
+  CITIES = df.city.tolist()
+  df = df.set_index('city')
+  return df, CITIES
+cities_il_df, CITIES_IL = load_cities_il()
+#p(cities_il_df.head())
+
 def load_CITIES_API():
   CITIES_API = get_json('city.list.json')
+
+  # add all israeli cities so when looking for 'north' gets multiple cities because there is one in France
+  # and not to get an error is specify 'north, israel' becuse the country does not match
+  df = pd.DataFrame(CITIES_API)
+  df.name = df.name.str.lower()
+  df.name = df.name.str.translate(remove_punct_dict)
+  CITIES_API_city = sorted(set(df.name.to_list()))
+
+  for city in CITIES_IL:
+    CITIES_API.append({'name': city, 'country': 'IL', 'state': '', 'coord': ''})
 
   df = pd.DataFrame(CITIES_API)
   df = df.drop(['id'], axis='columns')
@@ -92,16 +112,6 @@ def load_countries():
   return df, COUNTRIES
 countries_df, COUNTRIES = load_countries()
 #p(countries_df.head())
-
-def load_cities_il():
-  fname = 'cities_IL.csv'
-  df = pd.read_csv(path + fname, names=['city', 'district'])
-  df.city = df.city.str.translate(remove_punct_dict)
-  CITIES = df.city.tolist()
-  df = df.set_index('city')
-  return df, CITIES
-cities_il_df, CITIES_IL = load_cities_il()
-#p(cities_il_df.head())
 
 def load_capitals():
   fname = 'capitals.json'
@@ -168,6 +178,15 @@ def load_actions():
   ACTIONS_tags_ = {tag['tag']:'' for tag in actions["actions"]}
   return ACTIONS_patterns_, ACTIONS_, ACTIONS_tags_
 ACTIONS_patterns, ACTIONS, ACTIONS_tags = load_actions()
+
+def load_test():
+  fname = 'test_questions.txt'
+  questions = get_json(fname)
+  return questions
+QUESTIONS = load_test()
+
+#p(QUESTIONS)
+#QUESTIONS[0]
 
 def update_nlp():
   matcher = PhraseMatcher(nlp.vocab)

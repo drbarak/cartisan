@@ -14,7 +14,7 @@ import pandas as pd
 from prog.chatbot_init import nlp, stopwords, remove_punct_dict, space_punct_dict, api_key, URL, translator, path, icon_url
 from prog.chatbot_init import df_CITIES_API, CITIES_API_country_code
 from prog.chatbot_init import largest_df, countries_df
-from prog.chatbot_init import cities_il_df, CITIES_IL
+from prog.chatbot_init import cities_il_df, QUESTIONS
 from prog.chatbot_init import capitals_df, CAPITALS
 from prog.chatbot_init import ACTIONS#, ACTIONS_patterns, ACTIONS_tags
 from prog.chatbot_init import MESSAGES_lang, MESSAGES, MESSAGES_en, intents, intents_en
@@ -39,6 +39,9 @@ def chatbot():
         session['new_lang'] = ''
         session['user_msg'] = ''
         session['error'] = ''
+        session['RUN_TEST'] = 0
+        session['switched_lang'] = False
+        session['url_icon'] = ''
 
         send_email()
     else:
@@ -56,6 +59,12 @@ def chatbot():
             session['user_msg'] = ''
         if not 'error' in session:
             session['error'] = ''
+        if not 'RUN_TEST' in session:
+            session['RUN_TEST'] = 0
+        if not 'switched_lang' in session:
+            session['switched_lang'] = False
+        if not 'url_icon' in session:
+            session['url_icon'] = ''
 
         if 'time' in session:
             session_time = session['time']
@@ -66,6 +75,8 @@ def chatbot():
                 session['index'] = 1
                 session['google'] = False
                 session['clear'] = False
+                session['RUN_TEST'] = 0
+                session['switched_lang'] = False
             else:  # reset the session time as long as no delay of more than idle_time
                 session['time'] = time.time()
         else:
@@ -74,6 +85,9 @@ def chatbot():
             session['google'] = False
             session['index'] = 1
             session['clear'] = False
+            session['RUN_TEST'] = 0
+            session['switched_lang'] = False
+            session['url_icon'] = ''
 
     LANG = session['lang']
     new_lang = session['new_lang']
@@ -83,15 +97,14 @@ def chatbot():
     conv = intents[LANG]["messages"][5]["responses"][7]
     df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
     form = ChatForm()
-    error = ''
     if request.method == 'POST':
         #p('debug', session['debug'], form.google.data, form.debug.data)
-        if form.run_bot.data:
-            user_msg, answer, goodbye, LANG, new_lang, error, url_icon = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, user_msg)
-            session['error'] = error
-            session['lang'] = LANG
-            session['new_lang'] = new_lang
-            session['user_msg'] = user_msg
+        if form.run_bot.data or form.run_test.data:
+            if form.run_test.data:
+                if session['RUN_TEST'] == 0: session['RUN_TEST'] = 1
+            else:
+                session['RUN_TEST'] = 0
+            answer, goodbye = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, user_msg, session['RUN_TEST'], session['switched_lang'])
             if session['clear']:
                 session['index'] = 1
                 session['df_chat'] = []
@@ -101,18 +114,18 @@ def chatbot():
             conv = intents[LANG]["messages"][5]["responses"][7]
             bot = intents[LANG]["messages"][5]["responses"][5]
             you = intents[LANG]["messages"][5]["responses"][4]
-            session['df_chat'] = [[index + 1, bot + ': ', answer], [index, you + ': ', user_msg]] + session['df_chat']
+            session['df_chat'] = [[index + 1, bot + ': ', answer], [index, you + ': ', session['user_msg']]] + session['df_chat']
             df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
             session['index'] = index + 2
             if goodbye == True:
                 session['clear'] = True # clear the log after displaying this message
             return redirect('/chatbot')  # to clear the form fields
+
         elif form.google.data:
             session['google'] = False if session['google'] else True
             #send_email('Google was clicked')
         elif form.debug.data:
             session['debug'] = 0 if session['debug'] > 0 else 2
-            p('debug', session['debug'])
     #df_chat_html = df_chat.style.applymap(lambda attr: 'font-weight: bold;', subset=['index'])
     df_chat_html = (df_chat.style
                         .set_properties(subset=['index'], **{'font-weight': 'bold'})
@@ -123,20 +136,21 @@ def chatbot():
                         .replace('index','')
                         )
     form.run_bot.label.text = intents[LANG]["messages"][5]["responses"][1]
-    html = render_template('chatbot.html', title='CHAT BOT', form=form, error=session['error'], df_chat=df_chat_html, length=len(df_chat), debug=session['debug'], google=session['google'],
-                                prompts=intents[LANG]["messages"][5]["responses"])
+    html = render_template('chatbot.html', title='CHAT BOT', form=form, error=session['error'],
+                        df_chat=df_chat_html, length=len(df_chat), debug=session['debug'],
+                        google=session['google'], prompts=intents[LANG]["messages"][5]["responses"],
+                        lang=LANG, run_test=session['RUN_TEST'], url_icon=session['url_icon'])
     rtl = 'rtl' if LANG in ['he', 'iw', 'ar'] else ''
     return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
 
 def call_web(city_name, country_code, fahrenheit, count, LANG):
     state = ''
-    p('in call_web')
     api_url = f"{URL}q={city_name},{state},{country_code}&units={'metric' if not fahrenheit else 'imperial'}&lang={LANG}&appid={api_key}".format('weather')
     if count > 1:
       cor = df_CITIES_API.loc[city_name].coord
       if type(cor) is not  dict: #more than one record for that city
         for index, row in df_CITIES_API.loc[city_name].iterrows():
-          if country_code == row['country'] or country_code == '': # if no country code then use the first entry
+          if row['coord'] != '' and (country_code == row['country'] or country_code == ''): # if no country code then use the first entry
             cor = row['coord']
             break
       api_url = f"{URL}lat={cor['lat']}&lon={cor['lon']}&exclude=minutely,hourly&units={'metric' if not fahrenheit else 'imperial'}&lang={LANG}&appid={api_key}".format('onecall')
@@ -248,19 +262,15 @@ def get_weather_info(actions, count, cnt, city_weather, default, LANG):
 def get_weather(dt, location, actions, LANG, count=2):
   #p(dt, location)
   city_w = city = location[0][0]  # assume one city (not handling if there are 2 cities)
+  country = location[0][1]
   #p(city, city_w)
   result = ''
-  # check if city in api_city list
-  if city in df_CITIES_API.index.values:
-    result = df_CITIES_API.loc[city]
-  if len(result) == 0: # not found, get district
-    if city in cities_il_df.index.values:
-      city_w = cities_il_df.loc[city].district
-  elif len(result) > 0: # more than one city -> need country
-    pass
+
+  #convert israeli cities to district that the API knows ('sharon' is in API because there is such city in Australia)
+  if country == 'israel' and city in cities_il_df.index.values:
+    city_w = cities_il_df.loc[city].district
 
   #p(city_w, location)
-  country = location[0][1].lower()
   #p(country, len(countries_df.Name), country in list(countries_df.Name))
   if country in list(countries_df.Name):
     country_code = countries_df[countries_df.Name == country].index[0]
@@ -269,7 +279,7 @@ def get_weather(dt, location, actions, LANG, count=2):
   #p(city_w, country_code)#
 
   fahrenheit = True if len([action for action in actions if action[0] == "fahrenheit"]) > 0 else False
-  #p('in get_weather:', fahrenheit)
+
   city_weather_resp = call_web(city_w, country_code, fahrenheit, count, LANG)
 
   if city_weather_resp is None:
@@ -346,8 +356,8 @@ def check_gpe(entity, ents, ent_text, gpe, multiple_cities, DEBUG):
               ent_country = countries_df.loc[code_country.iloc[0]].Name
             else:
               ent_country = countries_df.loc[code_country].Name
-          elif ent_text in CITIES_IL:
-            ent_country = 'israel'
+          #elif ent_text in CITIES_IL:
+          #  ent_country = 'israel'
           else:
             ent_country = ''
         elif entity._.is_country or ent_text in CITIES_API_country_code:
@@ -462,9 +472,9 @@ def get_parts(text, DEBUG, LANG, disp=False, verbose=True):
 
   if len(date) == 0:
     date = 'current'
-  if len(gpe['action']) == 0:
-    gpe['action'] = [('all', 'weather')]
-  else:
+  if len(gpe['action']) > 0:
+    #  gpe['action'] = [('all', 'weather')]
+    #else:
     for i, tup in enumerate(gpe['action']):
       if tup[0] == 'all':
         if i == 0: break
@@ -554,6 +564,15 @@ def add_language(lang):
 #add_language('ar') # arabic
 #add_language('ru') # russian
 
+def update_session(error, LANG, new_lang, org_msg, RUN_TEST, switched_lang, url_icon):
+      session['error'] = error
+      session['lang'] = LANG
+      session['new_lang'] = new_lang
+      session['user_msg'] = org_msg
+      session['RUN_TEST'] = RUN_TEST
+      session['switched_lang'] = switched_lang
+      session['url_icon'] = url_icon
+
 def is_valid_date_p(dt):
     if dt:
         try:
@@ -569,7 +588,7 @@ def is_valid_date_p(dt):
             return False, None, None, None, None
     return False
 
-def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
+def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg, RUN_TEST, switched_lang):
     do = True
     NOANSWER = 3
     min_similarity = 0.84
@@ -577,16 +596,32 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
     error = ''
 
     while do:
+
+      if RUN_TEST > 0:
+        user_msg = QUESTIONS[RUN_TEST- 1]
+        RUN_TEST += 1
+        VERBOSE = 0
+        if RUN_TEST > len(QUESTIONS): RUN_TEST = 0
+        p(user_msg)
+
       #user_msg = input().lower().strip()
+
       if user_msg == '':
         answers = intents[LANG]["messages"][NOANSWER]['responses']
-        return '', random.choice(answers), False, LANG, '', '', ''
+
+        update_session('', LANG, '', '', RUN_TEST, switched_lang, '')
+        return random.choice(answers), False
+
+      if user_msg == 'run test':
+        RUN_TEST = 1
+        continue
 
       if new_lang != '':
         if user_msg == '1':
           if new_lang not in MESSAGES_lang or new_lang=='fr':
             add_language(new_lang)
           LANG = new_lang
+          switched_lang = True
         user_msg = org_msg
         new_lang = ''
       else:
@@ -596,6 +631,7 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
               p(response.lang)
               if response.lang in ['en','he']:
                 LANG = response.lang
+                switched_lang = True
               else:
                 verify = True
                 if response.lang not in MESSAGES_lang:
@@ -606,7 +642,10 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
                 if verify:
                   new_lang = response.lang
                   answer = MESSAGES[LANG]["messages"]["new_lang"].format(new_lang)
-                  return user_msg, answer, False, LANG, new_lang, '', ''
+
+                  update_session('', LANG, new_lang, user_msg, RUN_TEST, switched_lang, '')
+                  return answer, False
+
           elif LANG == 'en': # check if the google translate stopped working
               test = translator.detect('שלום וברכה')
               if test.lang == LANG:
@@ -648,11 +687,11 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
 #        if round == 2 and session['google']: round = 3 # to know we got the answer from get_parts()
         parts = get_parts(user_msg, DEBUG, LANG, VERBOSE > 1, False)
         if VERBOSE:  p(parts)
-        if 'date' in parts and 'city' in parts and 'ERROR' not in parts['city'][0][1]:
+        if 'date' in parts and 'city' in parts and 'ERROR' not in parts['city'][0][1] and len(parts['action']) > 0:
           #p(parts['city'])
           answer, url_icon = get_weather(parts['date'], parts['city'], parts['action'], LANG)
           break
-        elif 'city' in parts and 'ERROR' in parts['city'][0][1]:
+        elif 'city' in parts and 'ERROR' in parts['city'][0][1] and not switched_lang:  #to try google for gibrish
           answer = parts['city'][0][1]
           break
         elif round == 0:
@@ -683,12 +722,19 @@ def run_bot(user_msg, VERBOSE=0, LANG='en', new_lang='', org_msg=''):
           if user_msg != '':
             continue
         break
-      if answer == '':  answer = MESSAGES[LANG]["messages"]["city_unknown"]
+      if answer == '':
+        if 'city' not in parts or len(parts['city']) == 0:
+          answer = MESSAGES[LANG]["messages"]["city_unknown"]
+        elif 'action' not in parts or len(parts['action']) == 0:
+          answer = MESSAGES[LANG]["messages"]["action_unknown"]
+        else:
+          answer = MESSAGES[LANG]["messages"]["city_unknown"]
       else:
         #p('round: ', round, (round >= 2 and not 'ERROR' in answer))
         if round >= 2 and not 'ERROR' in answer and session['google']:
           answer += f' ({MESSAGES[LANG]["messages"]["from_google"]})'
 
-      return org_msg, answer, tag=="goodbye", LANG, '', error, url_icon
+      update_session(error, LANG, '', org_msg, RUN_TEST, switched_lang, url_icon)
+      return answer, tag=="goodbye"
 
 

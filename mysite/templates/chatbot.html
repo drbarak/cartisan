@@ -14,6 +14,8 @@
         border: 2px;
         padding: 20px;
         #white-space: pre-wrap;
+        display: inline-block;
+        vertical-align:top
     }
 
     table td {
@@ -59,7 +61,6 @@
         {{ form.hidden_tag() }}
         <div class="wrapper">
             <h1>{{ prompts[0] }}</h1>
-            <p><p>
             <br>
             <div style="color: red;">{{error}}</div>
             <p><p>
@@ -76,6 +77,13 @@
             {% else %}
                 {{ form.debug() }}
             {% endif %}
+            {% if lang == 'en' or lang=='' %}
+                {% if run_test > 0 %}
+                    {{ form.run_test(class_ = "ourClasses") }}
+                {% else %}
+                    {{ form.run_test() }}
+                {% endif %}
+            {% endif %}
             </p>
         </div>
 		<div class="center-div">
@@ -83,6 +91,9 @@
 				{% if length > 0 %}
 					{{df_chat|safe}}
 				{% endif %}
+			</div>
+			<div style="display: inline-block; vertical-align:top;">
+			    <img src={{ url_icon }}>
 			</div>
 		</div>
     </form>
