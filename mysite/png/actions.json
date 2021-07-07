@@ -49,7 +49,7 @@
 		},
 		{
 			"tag": "clouds",
-			"patterns": ["cloud", "clouds"]
+			"patterns": ["cloud", "clouds", "sunny", "sun"]
 		},
 		{
 			"tag": "fahrenheit",

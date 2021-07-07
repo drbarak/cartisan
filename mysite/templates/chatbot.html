@@ -77,13 +77,14 @@
             {% else %}
                 {{ form.debug() }}
             {% endif %}
-            {% if lang == 'en' or lang=='' %}
+            {% if lang == 'en' or lang=='' or True %}
                 {% if run_test > 0 %}
                     {{ form.run_test(class_ = "ourClasses") }}
                 {% else %}
                     {{ form.run_test() }}
                 {% endif %}
             {% endif %}
+            {{ form.send_log() }}
             </p>
         </div>
 		<div class="center-div">

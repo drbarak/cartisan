@@ -1,9 +1,11 @@
 # echo > /var/log/drbarak.pythonanywhere.com.error.log
 
 import pandas as pd
+import pytz
+tz = pytz.timezone('Israel')
 
 import nltk
-import json, string, sys
+import json, string, sys, os
 import spacy
 from spacy.tokens import Span, Token #Doc,
 from spacy.matcher import PhraseMatcher
@@ -21,19 +23,33 @@ FAST_START = False
 nlp = en_core_web_md.load()
 nltk.download(['punkt', 'stopwords'])
 
-#my_import('googletrans', version='3.1.0a0')
-from googletrans import Translator
-translator = Translator()
+path = '/home/drbarak/mysite/png/'
+
+googletrans_api = False
+if googletrans_api:
+    from google.cloud import translate_v2 as translate
+    # use dotenv to read environment - see WSGI.py whichcan be opened from the WEB option in the PythonAnywhere screen
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    translator = translate.Client()
+    #key = path + "chatbot-318014-6e7046c83ea2.json"
+    #%env GOOGLE_APPLICATION_CREDENTIALS=$key
+else:
+    #my_import('googletrans', version='3.1.0a0')
+    from googletrans import Translator
+    translator = Translator()
 
 stopwords = nltk.corpus.stopwords.words('english')
 remove_punct_dict = dict((ord(punct), None) for punct in string.punctuation)
 space_punct_dict = dict((ord(punct), ' ') for punct in string.punctuation)
 
+dayInWeek={'sunday':1,'monday':2,'tuesday':3,'wednesday':4,'thursday':5,'friday':6,'saturday':7}
+dateToNum={"today":0,"tomorrow":1,'twoDays':2 }
+textToNumbers={'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7}
+NO_DAYS = -999
+
 api_key = 'c2adfa29edfd95ad16efab9218619ff3'
 URL = "http://api.openweathermap.org/data/2.5/{0}?"
 icon_url = " http://openweathermap.org/img/wn/{0}@2x.png"  # 10d
-
-path = '/home/drbarak/mysite/png/'
 
 def p(msg=None, *args):
     try:
@@ -184,13 +200,27 @@ def load_test():
   questions = get_json(fname)
   return questions
 QUESTIONS = load_test()
-
 #p(QUESTIONS)
 #QUESTIONS[0]
 
+def load_dates():
+  fname = 'datesWords.csv'
+  df = pd.read_csv(path + fname)
+  df.fillna('', inplace=True)
+  listNlp = {}
+  for column in df:
+    listNlp.update({column: [nlp.make_doc(t) for t in df[column].tolist() if t != '']})
+  return df, listNlp
+datesDf, listNlp= load_dates()
+#p(listNlp)
+#datesDf
+
 def update_nlp():
   matcher = PhraseMatcher(nlp.vocab)
-  CITIES = set(CITIES_IL + CITIES_API_city)# + ACTIONS_patterns)
+  date_time = ['now', 'current', 'currently']
+  date_time_str = ', '.join([s for s in date_time])
+  #date_time_str = "now, current, currently"
+  CITIES = set(CITIES_IL + CITIES_API_city + date_time)
 
   # disable other pipes while doing the traing to speed it up - went down from 1:40 to 0:40 minutes
   if not FAST_START:
@@ -226,7 +256,9 @@ def update_nlp():
         # Create an entity Span with the label "GPE" for all matches
         matches = matcher(doc)
         try:
-          doc.ents = [Span(doc, start, end, label="GPE") for match_id, start, end in matches]
+          #doc.ents = [Span(doc, start, end, label="GPE") for match_id, start, end in matches]
+          doc.ents = [Span(doc, start, end, label="GPE") for match_id, start, end in matches if doc[start:end].text not in date_time_str]
+          doc.ents += tuple([Span(doc, start, end, label="DATE") for match_id, start, end in matches if doc[start:end].text in date_time_str])
           #if len(doc.ents) > 0:
           #  p(doc.ents, 'rain' in CITIES)
           #doc.ents += tuple([Span(doc, start, end, label="WACT") for match_id, start, end in matches if nlp.vocab.strings[match_id] == 'ACTIONS'])
@@ -242,8 +274,13 @@ def update_nlp():
     def gpe_component(doc):
         # Create an entity Span with the label "GPE" for all matches
         matches = matcher(doc)
+        #for match_id, start, end in matches: p('match: ', doc[start:end].text)
+
         try:
-          doc.ents = [Span(doc, start, end, label="GPE") for match_id, start, end in matches]
+          #doc.ents = [Span(doc, start, end, label="GPE") for match_id, start, end in matches]
+          doc.ents = [Span(doc, start, end, label="GPE") for match_id, start, end in matches if doc[start:end].text not in date_time_str]
+          doc.ents += tuple([Span(doc, start, end, label="DATE") for match_id, start, end in matches if doc[start:end].text in date_time_str])
+          #p(doc.ents)
           #if len(doc.ents) > 0:
           #  p(doc.ents, 'rain' in CITIES)
           #doc.ents += tuple([Span(doc, start, end, label="WACT") for match_id, start, end in matches if nlp.vocab.strings[match_id] == 'ACTIONS'])
@@ -263,13 +300,32 @@ update_nlp()
 import smtplib
 from email.message import EmailMessage
 
-def send_email(text='Mmessage from WeatherBot', subject='New Session'):
+def send_email(text='Message from WeatherBot', subject='New Session', to="drbarak@talkie.co.il", ip=''):
   msg = EmailMessage()
   msg.set_content(text)
 
-  msg['Subject'] = subject
+  msg.set_content('')
+  # Add the html version.  This converts the message into a multipart/alternative
+  # container, with the original text message as the first part and the new html
+  # message as the second part. (Note that the first part of the messge did not work for me and didnot displaed on the incomin email)
+  msg.add_alternative('''
+  <html>
+    <head>
+      <h1 style="text-align: center; color: red;">
+        {subject}
+      </h1>
+    </head>
+
+    <body>
+      {text}
+    </body>
+
+  </html>
+  '''.format(subject=subject, text=text), subtype='html')
+
+  msg['Subject'] = f'{subject} from_ip={ip}'
   msg['From'] = "Weatherbot <dr.zvibarak@gmail.com>"
-  msg['To'] = "drbarak@talkie.co.il"
+  msg['To'] = to
 
   try:
     smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
@@ -278,8 +334,10 @@ def send_email(text='Mmessage from WeatherBot', subject='New Session'):
     smtpObj.send_message(msg)
     smtpObj.quit()
     print("Successfully sent email")
+    return True
   except Exception as e:# SMTPException:
     print("Error: unable to send email")
     p(e)
+    return False
 
 

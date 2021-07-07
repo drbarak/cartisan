@@ -25,12 +25,17 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["I can give you information about the weather in cities around the world, in your language. You can ask about clouds, rain, temp, pressure, humidity, wind, visibility, sunrise and upto 7 days from today"]
+       						"responses": ["I can give you information about the weather in cities around the world, in your language. You can ask about clouds, rain, temp, pressure, humidity, wind, visibility, sunrise and upto 8 days from today"]
        					},
        					{
        						"tag": "web",
        						"patterns": [],
        						"responses": ["WeatherBot", "Ask Bot", "Debug", "User Input", "You", "Bot", "ID", "Conversation"]
+       					},
+       					{
+       						"tag": "mail",
+       						"patterns": ["Please send the log to drbarak@talkie.co.il"],
+       						"responses": ["Done", "sent"]
        					}
        				]
        			},
@@ -58,14 +63,20 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["אני יכול לתת לך מידע על מזג האוויר בערים ברחבי העולם, בשפתך. אתה יכול לשאול על עננים, גשם, טמפרטורה, לחץ, לחות, רוח, ראות, זריחה ולתקופה עד 7 יום מהיום"]
+       						"responses": ["אני יכול לספק לך מידע על מזג האוויר בערים ברחבי העולם, בשפתך. אתה יכול לשאול על עננים, גשם, טמפרטורה, לחץ, לחות, רוח, ראות, זריחה ולתקופה של עד 8 ימים מהיום"]
 
        					},
        					{
        						"tag": "web",
        						"patterns": [],
        						"responses": ["בוט-מזג-האוויר", "תשובת הבוט", "ניפוי", "נא להקליד פניה", "את/ה", "בוט", "מי", "שיחה"]
+       					},
+       					{
+       						"tag": "mail",
+       						"patterns": ["Please send the log to drbarak@talkie.co.il"],
+       						"responses": ["בוצע", "נשלח"]
        					}
+
        				]
        			},
        			"fr": {
@@ -92,13 +103,18 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue. Vous pouvez poser des questions sur les nuages, la pluie, la température, la pression, l'humidité, le vent, la visibilité, le lever du soleil et jusqu'à 7 jours à partir d'aujourd'hui"]
+       						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue. Vous pouvez poser des questions sur les nuages, la pluie, la température, la pression, l'humidité, le vent, la visibilité, le lever du soleil et jusqu'à 8 jours à partir d'aujourd'hui"]
 
        					},
        					{
        						"tag": "web",
        						"patterns": [],
        						"responses": ["WeatherBot", "demander au bot", "Debug", "entrée de l'utilisateur", "Toi", "Bot", "ID", "Conversation"]
+       					},
+       					{
+       						"tag": "mail",
+       						"patterns": ["Please send the log to drbarak@talkie.co.il"],
+       						"responses": ["Terminé", "envoyé"]
        					}
        				]
        			},
@@ -126,12 +142,17 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma. Puede preguntar sobre las nubes, la lluvia, la temperatura, la presión, la humedad, el viento, la visibilidad, el amanecer y hasta 7 días a partir de hoy."]
+       						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma. Puede preguntar sobre las nubes, la lluvia, la temperatura, la presión, la humedad, el viento, la visibilidad, el amanecer y hasta 8 días a partir de hoy."]
        					},
        					{
        						"tag": "web",
        						"patterns": [],
        						"responses": ["WeatherBot", "Preguntar al bot", "Debug", "Entrada del usuario", "Tú", "Bot", "ID", "Conversación"]
+       					},
+       					{
+       						"tag": "mail",
+       						"patterns": ["Please send the log to drbarak@talkie.co.il"],
+       						"responses": ["Hecho", "enviada"]
        					}
        				]
        			},
@@ -159,12 +180,18 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["يمكنني أن أقدم لك معلومات عن الطقس في مدن حول العالم بلغتك. يمكنك أن تسأل عن السحب والمطر ودرجة الحرارة 7لضغط والرطوبة والرياح والرؤية وشروق الشمس وحتى 7 يومًا من اليوم"]
+       						"responses": ["يمكنني أن أقدم لك معلومات عن الطقس في مدن حول العالم بلغتك. يمكنك أن تسأل عن السحب والمطر ودرجة الحرارة والضغط والرطوبة والرياح والرؤية وشروق الشمس وحتى 8 أيام من اليوم"]
+
        					},
        					{
        						"tag": "web",
        						"patterns": [],
        						"responses": ["WeatherBot", "اسأل بوت", "تصحيح", "إدخال المستخدم", "أنت", "بوت", "إذ", "محادثة"]
+       					},
+       					{
+       						"tag": "mail",
+       						"patterns": ["Please send the log to drbarak@talkie.co.il"],
+       						"responses": ["تم", "تم الإرسال"]
        					}
        				]
        			},
@@ -192,12 +219,17 @@
        					{
        						"tag": "options",
        						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-       						"responses": ["Я могу предоставить вам информацию о погоде в городах по всему миру на вашем языке. Вы можете спросить об облаках, дожде, температуре, давлении, влажности, ветре, видимости, восходе солнца и сроках до 7 дней с сегодняшнего дня."]
+       						"responses": ["Я могу предоставить вам информацию о погоде в городах по всему миру на вашем языке. Вы можете спросить об облаках, дожде, температуре, давлении, влажности, ветре, видимости, восходе солнца и сроках до 8 дней с сегодняшнего дня."]
        					},
        					{
        						"tag": "web",
        						"patterns": [],
        						"responses": ["WeatherBot", "Спросите бота", "Отлаживать", "Пользовательский ввод", "Ты", "Бот", "Я БЫ", "Беседа"]
+       					},
+       					{
+       						"tag": "mail",
+       						"patterns": ["Please send the log to drbarak@talkie.co.il"],
+       						"responses": ["Готово", "отправлено"]
        					}
        				]
        			}
@@ -209,7 +241,7 @@
        				"messages": {
        					"web_error": "[!] HTTP code={0} calling [{1}]",
        					"api_error": "Something went wrong (API)",
-       					"web_msg": "In {0}, {1} the current weather is: {2}",
+       					"web_msg": "In {0}, {1}, ",
        					"city_error": "city [{0}] not found in country [{1}] - try a different spelling of the city or in another language",
        					"city_unknown": "You need to tell me a city to check (maybe spell it differently or try again in another language)",
        					"from_google": "from Google",
@@ -225,14 +257,17 @@
        					"no_info": "no info",
        					"web_day_msg": "The weather tomorrow: ",
        					"web_days_msg": "The weather in {0} days: ",
-       					"action_unknown": "You need to tell me what weather information you are looking for (such as 'weather', 'temp', 'wind')"
+       					"action_unknown": "You need to tell me what weather information you are looking for (such as 'weather', 'temp', 'wind')",
+       					"date_unknown": "You need to tell me for when do you want the weather information you are looking for (such as 'today', 'tomorrow', 'monday'), up to 8 days from today",
+       					"web_msg_current": "The current weather: ",
+       					"date_outof_range": "Sorry, I have information for only up to 8 days from today"
        				}
        			},
        			"he": {
        				"messages": {
        					"web_error": "קוד שגיאה {0} מאתר אינטרנט {1}",
        					"api_error": "משהו השתבש בשימוש בספריית האתר",
-       					"web_msg": "ב- {0}, {1} מזג האוויר הנוכחי הוא: {2}",
+       					"web_msg": "ב- {0}, {1}, ",
        					"city_error": "עיר [{0}] לא נמצאה בארץ [{1}] - נסה איות אחר של העיר או בשפה אחרת",
        					"city_unknown": "צריך לספק שם עיר לבדיקה (אולי יש לאיית את שם העיר אחרת או לנסות שוב בשפה אחרת)",
        					"from_google": "מגוגל",
@@ -248,14 +283,17 @@
        					"no_info": "אין מידע",
        					"web_day_msg": "מזג האוויר מחר: ",
        					"web_days_msg": "מזג האוויר בעוד {0} ימים: ",
-       					"action_unknown": "אתה צריך לומר לי איזה מידע על מזג האוויר אתה מחפש (כגון 'מזג אוויר', 'טמפרטורה', 'רוח')"
+       					"action_unknown": ["אתה צריך לומר לי איזה מידע על מזג האוויר אתה מחפש (כגון 'מזג אוויר', 'טמפרטורה', 'רוח')"],
+       					"date_unknown": "אני צריך לדעת למתי נחוץ מידע מזג האוויר כגון 'היום', 'מחר', 'יום שני'), עד 8 ימים מהיום",
+       					"web_msg_current": "מזג האוויר הנוכחי הוא: ",
+       					"date_outof_range": "מצטער, יש לי מידע רק עבור עד 8 ימים מהיום"
        				}
        			},
        			"fr": {
        				"messages": {
        					"web_error": "[!] Code HTTP={0} appelant [{1}]",
        					"api_error": "Une erreur s'est produite (API)",
-       					"web_msg": "Dans {0}, {1} la météo actuelle est: {2}",
+       					"web_msg": "Dans {0}, {1}, ",
        					"city_error": "ville [{0}] introuvable dans le pays [{1}] - essayez une orthographe différente de la ville ou dans une autre langue",
        					"city_unknown": "Vous devez m'indiquer une ville à vérifier (peut-être l'épeler différemment ou réessayer dans une autre langue)",
        					"from_google": "de Google",
@@ -271,14 +309,17 @@
        					"no_info": "pas d'information",
        					"web_day_msg": "La météo demain: ",
        					"web_days_msg": "La météo en {0} jours :",
-       					"action_unknown": "Vous devez me dire quelles informations météorologiques vous recherchez (telles que 'météo', 'temp', 'vent')"
+       					"action_unknown": "Vous devez me dire quelles informations météorologiques vous recherchez (telles que 'météo', 'temp', 'vent')",
+       					"date_unknown": "Vous devez me dire pour quand voulez-vous les informations météorologiques que vous recherchez (telles que aujourd'hui, demain, lundi), jusqu'à 8 jours à partir d'aujourd'hui",
+       					"web_msg_current": "la météo actuelle est: ",
+       					"date_outof_range": "Désolé, j'ai des informations pour seulement 8 jours à partir d'aujourd'hui"
        				}
        			},
        			"es": {
        				"messages": {
        					"web_error": "[!] Código HTTP = {0} llamando a [{1}]",
        					"api_error": "Algo salió mal (API)",
-       					"web_msg": "En {0}, {1} el tiempo actual es: {2}",
+       					"web_msg": "En {0}, {1}, ",
        					"city_error": "ciudad [{0}] no encontrada en el país [{1}]; prueba con una ortografía diferente de la ciudad o en otro idioma",
        					"city_unknown": "Necesitas decirme una ciudad para verificar (tal vez escribirla de manera diferente o intentar nuevamente en otro idioma)",
        					"from_google": "de Google",
@@ -294,14 +335,17 @@
        					"no_info": "sin información",
        					"web_day_msg": "El clima mañana: ",
        					"web_days_msg": "El tiempo en {0} días: ",
-       					"action_unknown": "Necesitas decirme qué información meteorológica estás buscando (como 'clima', 'temperatura', 'viento')"
+       					"action_unknown": "Debes decirme para cuándo quieres la información meteorológica que estás buscando (como 'hoy', 'mañana', 'lunes'), hasta 8 días a partir de hoy",
+       					"date_unknown": "You need to tell me for when do you want the weather information you are looking for (such as 'today', 'tomorrow', 'monday'), up to 8 days from today",
+       					"web_msg_current": "El tiempo actual es: ",
+       					"date_outof_range": "Lo siento, tengo información solo hasta 8 días a partir de hoy"
        				}
        			},
        			"ar": {
        				"messages": {
        					"web_error": "[!] كود HTTP = {0} يتصل بـ [{1}]",
        					"api_error": "حدث خطأ (API)",
-       					"web_msg": "في {0} ، {1} الطقس الحالي هو: {2}",
+       					"web_msg": "في {0} ، {1}, ",
        					"city_error": "المدينة [{0}] غير موجودة في البلد [{1}] - جرّب تهجئة مختلفة للمدينة أو بلغة أخرى",
        					"city_unknown": "يجب أن تخبرني مدينة ما للتحقق (ربما تهجئها بشكل مختلف أو المحاولة مرة أخرى بلغة أخرى)",
        					"from_google": "من جوجل",
@@ -317,14 +361,16 @@
        					"no_info": "لا توجد معلومات",
        					"web_day_msg": "الطقس غدا: ",
        					"web_days_msg": "الطقس في {0} يوم: ",
-       					"action_unknown": "يجب أن تخبرني ما هي معلومات الطقس التي تبحث عنها (مثل الطقس ودرجة الحرارة والرياح)"
+       					"date_unknown": "يجب أن تخبرني ما هي معلومات الطقس التي تبحث عنها (مثل الطقس ودرجة الحرارة والرياح)",
+       					"web_msg_current": "الطقس الحالي هو: {2}",
+       					"date_outof_range": "عذرًا ، لدي معلومات لمدة تصل إلى 8 أيام فقط اعتبارًا من اليوم"
        				}
        			},
        			"ru": {
        				"messages": {
        					"web_error": "[!] Код HTTP = {0} вызов [{1}]",
        					"api_error": "Что-то пошло не так (API)",
-       					"web_msg": "В {0}, {1} текущая погода: {2}",
+       					"web_msg": "В {0}, {1}, ",
        					"city_error": "город [{0}] не найден в стране [{1}] - попробуйте написание города по-другому или на другом языке",
        					"city_unknown": "Вам нужно указать мне город, который нужно проверить (возможно, напишите его по-другому или попробуйте еще раз на другом языке)",
        					"from_google": "из Google",
@@ -340,7 +386,10 @@
        					"no_info": "нет информации",
        					"web_day_msg": "Погода завтра: ",
        					"web_days_msg": "Погода в {0} дн .: ",
-       					"action_unknown": "Вы должны сказать мне, какую информацию о погоде вы ищете (например погода, температура, ветер)"
+       					"action_unknown": "Вы должны сказать мне, какую информацию о погоде вы ищете (например погода, температура, ветер)",
+       					"date_unknown": "Вы должны сообщить мне, когда вам нужна информация о погоде, которую вы ищете (например, 'сегодня', 'завтра', 'понедельник'), до 8 дней с сегодняшнего дня.",
+       					"web_msg_current": "текущая погода: ",
+       					"date_outof_range": "Извините, у меня есть информация только за 8 дней с сегодняшнего дня"
        				}
        			}
        		}

@@ -1,0 +1,39 @@
+{% block content %}
+
+<style>
+    .Center {
+        overflow-y: scroll;
+        width:50%;
+		margin-left: auto;
+		margin-right: auto;
+        height:60%;
+        background: lightgray;
+        border-radius: 40px;
+        border: 2px;
+        padding: 20px;
+        #white-space: pre-wrap;
+        display: inline-block;
+        vertical-align:top
+    }
+    table td {
+        text-align: left;
+    }
+	.center-div{
+		width: 100%;
+		text-align: center;
+	}
+    .ourClasses{
+        background: lightgray;
+    }
+</style>
+
+<div style="text-align:center">
+		<div class="center-div">
+			<div class="Center">
+				{% if length > 0 %}
+					{{df_chat|safe}}
+				{% endif %}
+			</div>
+		</div>
+</div>
+{% endblock %}

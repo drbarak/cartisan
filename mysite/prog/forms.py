@@ -32,3 +32,4 @@ class ChatForm(FlaskForm):
     google = SubmitField('G')
     debug = SubmitField('Debug')
     run_test = SubmitField('Run Test')
+    send_log = SubmitField('Send Log')
