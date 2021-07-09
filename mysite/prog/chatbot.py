@@ -9,7 +9,8 @@ import spacy, random, requests, bs4, time, json
 from spacy.matcher import PhraseMatcher
 
 from dateutil.parser import parse
-from datetime import date, datetime
+from datetime import datetime
+from wordtodigits import convert
 
 import pandas as pd
 
@@ -20,19 +21,12 @@ from prog.chatbot_init import cities_il_df, QUESTIONS
 from prog.chatbot_init import capitals_df, CAPITALS
 from prog.chatbot_init import ACTIONS#, ACTIONS_patterns, ACTIONS_tags
 from prog.chatbot_init import MESSAGES_lang, MESSAGES, MESSAGES_en, intents, intents_en
-from prog.chatbot_init import p, send_email, googletrans_api, translator#, GOOGLE_APPLICATION_CREDENTIALS
-from prog.chatbot_init import dayInWeek, dateToNum, textToNumbers, listNlp, tz, NO_DAYS, datesDf
+from prog.chatbot_init import p, send_email, googletrans_api, translator
+from prog.chatbot_init import dayInWeek, dateToNum, listNlp, tz, NO_DAYS, datesDf
 
 IDLE_TIME = 60 * 30 # max half an hour between questions to the bot
 
 def chatbot():
-    #p('GOOGLE_APPLICATION_CREDENTIALS from chatbot_init', GOOGLE_APPLICATION_CREDENTIALS)
-    import os
-    p('GOOGLE_APPLICATION_CREDENTIALS from os', os.getenv("GOOGLE_APPLICATION_CREDENTIALS"))
-    from google.cloud import translate_v2 as translate
-    # use dotenv to read environment - see WSGI.py which can be opened from the WEB option in the PythonAnywhere screen
-    #GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-    translator = translate.Client()
     if 'chat_' not in session:
         p()
         p('------------------------------')
@@ -55,7 +49,8 @@ def chatbot():
         session['YES_NO'] = False
         session['yes_addition'] = ''
 
-        if request.headers['X-Real-IP'] != '82.81.245.207': # dr barak ip - no need to get a notice each time I log in
+        p(request.headers['X-Real-IP'], request.headers['X-Forwarded-For'])
+        if request.headers['X-Real-IP'] not in ['82.81.245.207', '50.17.220.95'] : # dr barak ip - no need to get a notice each time I log in
             #p(request.headers['X-Real-IP'] != '82.81.245.207', request.headers['X-Real-IP'], type(request.headers['X-Real-IP']))
             send_email(ip = request.headers['X-Real-IP'])
     else:
@@ -360,6 +355,27 @@ def get_weather(days, location, actions, range_days, LANG):
 
 TODAY = 0
 
+def is_valid_date(dt, disp=False):
+  if dt:
+    try:
+      dt_now = datetime.now(tz)
+      if len(dt) == 4 or len(dt) == 3: # add year
+        dt = f'{dt_now.year}{dt}'
+      dt = dt.translate(space_punct_dict)
+      new_date = str(parse(dt, fuzzy=True))[:10]
+      year = int(new_date[:4])
+      month = int(new_date[5:7])
+      day = int(new_date[8:])
+      dt1 = tz.localize(datetime(dt_now.year, dt_now.month, dt_now.day))
+      dt2 = tz.localize(datetime(year, month, day))
+      ndays = (dt2 - dt1).days
+      return True, year, month, day, ndays
+    except Exception as e:
+      p(e)
+      if disp: p('invalid:', dt)
+      return False, None, None, None, None
+  return False
+
 def get_todayDayWeek():
   #to day of the week such that sunday=1,.. saturday=7 from monday=0...sat=5, sunday=6
   todayDate = datetime.now(tz)
@@ -371,15 +387,15 @@ def get_delta_days_weekday(text, dayInText_org=-NO_DAYS, weekend = False, range_
   if disp: p('get_delta_days_weekday', dayInText_org)
   days, week, dayInText = NO_DAYS, -1, dayInText_org
   if TODAY == 0:
-    todayDate = datetime.now(tz)
+    #todayDate = datetime.now(tz)
     #todayDayWeek=(todayDate.weekday()+2-7) if (todayDate.weekday()+2>7) else  (todayDate.weekday()+2) # get day of week today
-    #todayDayWeek = (todayDate.weekday() + 1) % 7 + 1 # get day of the week such that sunday=1,.. saturday=7
+    #todayDayWeek = 1 if todayDate.weekday() == 6 else todayDate.weekday() + 2 # from day of the week such that sunday=1,.. saturday=7 from monday=0...sat=5, sunday=6
     todayDayWeek = get_todayDayWeek()
   else:
     todayDayWeek = TODAY
-  if disp: p('todayDayWeek', todayDayWeek, TODAY, todayDate.weekday())
+  if disp: p('todayDayWeek', todayDayWeek, TODAY, text, text in dayInWeek)#, todayDate.weekday())
 
-  if text in list(dayInWeek.keys()): # if there is only one word of day in week
+  if text in dayInWeek: # if there is only one word of day in week
     if dayInText_org == -NO_DAYS: # if we did not find a day already
       dayInText = dayInWeek[text]
       if disp: p(text, dayInText, dayInWeek)
@@ -387,11 +403,12 @@ def get_delta_days_weekday(text, dayInText_org=-NO_DAYS, weekend = False, range_
         days = dayInText - todayDayWeek
       else:
         days = dayInText - todayDayWeek + 7
+    if disp: p('days = ', days)
   else:# if there are additional word like 'next sunday'
     doc = nlp(text)
     for entity in doc:
-      if disp: p(f'entity = {entity.text}, lemma_ = {entity.lemma_}')
-      if entity.text in list(dayInWeek.keys()):
+      if disp: print(f'entity = {entity.text}, lemma_ = {entity.lemma_}')
+      if entity.text in dayInWeek:
         dayInText = dayInWeek[entity.text.lower()]
         if todayDayWeek <= dayInText:
           days = dayInText - todayDayWeek
@@ -399,9 +416,10 @@ def get_delta_days_weekday(text, dayInText_org=-NO_DAYS, weekend = False, range_
           days = dayInText - todayDayWeek + 7
           week = 0
       elif entity.lemma_ == 'next' and week == -1:
-        if disp: p('get next')
+        if disp: print('get next')
         week = 1
       elif entity.lemma_ == 'weekend' and not weekend and week == -1:
+        if disp: p("is Weekend2", entity.lemma_)
         week = 1
         range_days = 2
         weekend = True
@@ -414,29 +432,32 @@ def get_number_period(doc, disp=False):
   if disp: p('get_number_period')
   days, week = NO_DAYS, 0
   for entity in doc:
-    if disp: p(entity.pos_, entity.head, entity.lemma_)
+    if disp: print(entity.pos_, entity.head, entity.lemma_)
     if entity.pos_=='NUM':
-      if disp: p("found number "+entity.text)
+      if disp: print("found number "+entity.text)
       if entity.text.isdigit():
           num = int(entity.text)
       else:
-          num = textToNumbers.get(entity.text, NO_DAYS)
-      if disp: p ('number is '+str(num))
+          #num = textToNumbers.get(entity.text, NO_DAYS)
+          num_str = convert(entity.text)
+          num = int(num_str) if num_str.isdigit() else NO_DAYS
+      if disp: print ('number is '+str(num))
       if nlp(str(entity.head))[0].lemma_ == 'week': # if there is week add it to number to week and if not match it num of days
         if num != NO_DAYS:
           week = num
-      else:
+      elif nlp(str(entity.head))[0].lemma_ == 'day': # new 05.07.2021
         days = num
   #if week > 0 and days == NO_DAYS:  days = 0
   return days, week
 
-def check_date(dateText, disp=False):
+def check_date(dateText, disp=False, israel=False):
   days, week, found_days, cur_days = NO_DAYS, 0, NO_DAYS, NO_DAYS
+  rangeDays, days2, week2 = 1, NO_DAYS, NO_DAYS
   todayDayWeek = 0 # get day in week today
   dayInText = -NO_DAYS # get day in week by text
-  f_string = " days={0}, week={1}, found_days={2}, cur_days={3}"
+  f_string = " days={0}, week={1}, days2={4}, found_days={2}, cur_days={3}"
   range_days, weekend = 1, False # single day
-
+  first_day = True  # did not find a day of the week (to know when do we 2 days for a range)
   if len(dateText) == 0:
     return NO_DAYS, 0
   # spacy did seperate 'tuesday next week' into 2 parts 'tuesday' 'next week' and
@@ -451,9 +472,10 @@ def check_date(dateText, disp=False):
       date_matcher = PhraseMatcher(nlp.vocab)
       date_matcher.add(column, None, *listNlp[column])
       #p(listNlp[column])
-      doc = nlp(text.lower())
+      doc = nlp(text)
       matches = date_matcher(doc)
       if disp: p(column, matches)
+      numFinal = NO_DAYS
       if len(matches) > 0: # if we find match in the list of column
         match_words = ''
         for match_id, start, end in matches:
@@ -464,18 +486,27 @@ def check_date(dateText, disp=False):
         if column == "nextWeek": # check if there
           if disp: p("is next Week")
           week = 1
-          if days == NO_DAYS and found_days == NO_DAYS: days = 0
-          if 'weekend' in match_words:
-            if disp: print("is Weekend", len(dateText), f'[{dateText}]', len(text) == 1)
+          if days == NO_DAYS and found_days == NO_DAYS and not 'weekend' in match_words:
+            days = 0
+            numFinal = dateToNum.get(column, NO_DAYS)
+          if disp: p(f"numFinal is {numFinal}, {days}")
+          if 'weekend' in match_words:# and 'weekend' in text:  # match 'next week' to 'next week' because 'next' is in both
+            if disp: p("is Weekend0", text, 'weekend' in text)
             range_days = 2
             weekend = True
-        elif 'weekend' in match_words:
+        elif 'weekend' in match_words:# and 'weekend' in text:
+          if disp: p("is Weekend", len(dateText), f'[{dateText}]', len(text) == 1)
           range_days = 2
           weekend = True
-        if len(dateText) == 1 and not weekend:
+        if numFinal != NO_DAYS or days == NO_DAYS:
+          days = numFinal
+        #''' need this code for 'following day"
+        if len(dateText) == 1 and not weekend:# and len(text) == 1: #even if the text consists of 2 words 'following day' since we found a match we can use the column index
+          if disp: p(f"numFinal2 = {numFinal}")
           numFinal = dateToNum.get(column, NO_DAYS)
           if numFinal != NO_DAYS or days == NO_DAYS:
             return numFinal, range_days
+
         if disp: p(days, todayDayWeek, dayInText)
         # todayDayWeek is in the range 1=sunday to 7=saturday
         # dayInText is in the same range
@@ -492,34 +523,76 @@ def check_date(dateText, disp=False):
             pass
           elif column == 'thisweek' and (dayInText_new >= todayDayWeek_new):  # this week must be day after today up to sunday
             pass
+          elif column == 'nextWeek' and week == 1:  # next week cannot have a contradiction because can be any day
+            pass
           else:
             days = NO_DAYS
         cur_days = days  # days for this text independent of prev columns
-        break # found a natch no need to check others
-    if disp: p("1." + f_string.format(days, week, found_days, cur_days))
+        break # found a match no need to check other column for this text
+    if disp: print("1." + f_string.format(days, week, found_days, cur_days, days2))
     if found_days == NO_DAYS: found_days = days
-    if week == 0 and cur_days == NO_DAYS: # didn't find word in the DF dates
+    if week == 0 and days == NO_DAYS and cur_days == NO_DAYS: # didn't find word in the DF dates
 
-      days, week, todayDayWeek, dayInText, weekend, range_days = get_delta_days_weekday(text.lower(), dayInText, weekend, range_days, disp) # check day in week and return num of days and week
+      days, week, todayDayWeek, dayInText, weekend, range_days = get_delta_days_weekday(text, dayInText, weekend, range_days, disp) # check day in week and return num of days and week
 
-      if disp: p("2." + f_string.format(days, week, found_days, cur_days))
+      if disp: print("2." + f_string.format(days, week, found_days, cur_days, days2))
       if days != NO_DAYS and days != found_days and found_days != NO_DAYS:
         days = NO_DAYS
       elif found_days == NO_DAYS:
         found_days = days
       if week == 0 or days == NO_DAYS:
         sav_days = days
-
         days, week = get_number_period(doc, disp) # check number of days/weeks
         if days == NO_DAYS and sav_days != NO_DAYS:
           days = sav_days
-        if disp: p("3." + f_string.format(days, week, found_days, cur_days))
+        if disp: print("3." + f_string.format(days, week, found_days, cur_days, days2))
         # in english the week ends on Sunday, so if we r on:
         # sunday then next_week=0 weeks from now
         # monday then next_week=1 weeks from now
         # -> we calc days up to sunday, and add 1 week
+    if days2 == NO_DAYS:
+      days2, week2 = get_number_period(doc, disp) # check number of days/weeks because "3 days", can be for two options, num of dasy and range
+      if disp: print("3A. " + f_string.format(days, week, found_days, cur_days, days2))
+      if week == 0 and days == NO_DAYS and days2 == NO_DAYS: # check if get format
+        if disp: p("check date format", text)
+        is_date, year, month, day, ndays = is_valid_date(text, disp)
+        if disp:  p(f"4. get date by format {year}-{month}-{day} num of days = {ndays}")
+        if is_date:
+          days = ndays
+          week = 0
+        # if 2 named days (tuesday, sunday) means from tuesday to sunday)
+      if days2 == NO_DAYS and days != NO_DAYS and text in dayInWeek:
+        if first_day:
+          first_day = False
+        else:
+          dayInText = dayInWeek[text]
+          first_day = todayDayWeek + days
+          if first_day > 7: first_day -= 7
+          if disp: p('check range', text, dayInText, todayDayWeek, days, first_day)
+          if todayDayWeek + days <= dayInText:
+            days2 = abs(dayInText - todayDayWeek - days) + 1
+          elif dayInText > first_day: # range of days that the second day is later (eg. sunday to tuesday)
+            days2 = abs(dayInText - todayDayWeek + 7 - days) + 1
+          else:  # the 2nd day is a week later
+            days2 = (dayInText + 7 - todayDayWeek) + 7 - days + 1
+  if disp: p(f"range = {days2}, number of days = {days}, weekend={weekend}")
+  if days2 != NO_DAYS and days == NO_DAYS:
+    if disp: p("dates with just number of days/week")
+    days = days2
+    week = week2
+  if days2 != NO_DAYS and days != NO_DAYS:
+    if disp:  p("get range", week2, days2, days, len(dateText), weekend, dateText)
+    rangeDays = days2 + week2 * 7
+  if (len(dateText) == 1 and not weekend and
+         'next' not in dateText[0]): # in case 'next 2 days'
+    rangeDays = 1
+  elif weekend:
+    rangeDays = range_days
+  elif days == days2 and rangeDays == days and 'next' in ', '.join([s for s in dateText]):  # in case 'next 2 days'
+    days = 0
+  range_days = rangeDays
 
-  if disp: p("4." + f_string.format(days, week, found_days, cur_days))
+  if disp: p("5. " + f_string.format(days, week, found_days, cur_days, range_days))
   if disp: p('todayDayWeek', todayDayWeek, dayInText, days, weekend)
   org_days = days
   if todayDayWeek == 0 or (days == found_days == cur_days == -dayInText == NO_DAYS):  # no day information -> today
@@ -547,18 +620,22 @@ def check_date(dateText, disp=False):
     if todayDayWeek > dayInText and week > 0:
       week -= 1
     if range_days == 2 and weekend:
-      if disp: p('weekend', org_days, org_days)
+      if disp: p('weekend', days, org_days)
       if org_days == NO_DAYS or dayInText >= 6:
         if dayInText == 7: # if sunday there is one day left in the weekend
-          if week == 1: # next week
+          if israel: # sunday is not the weekend in israel, only saturday
+            days = NO_DAYS
+          elif week == 1: # next week
             days -= 1 # nextweekent starts on Saturday
           else:
             range_days = 1
         elif dayInText < 6: # not sunday and not staurday
-          days = 7 - dayInText # number of days to saturday
-      else:
+          days = 6 - dayInText # number of days to saturday
+          if israel: range_days = 1
+      elif len(dateText) > 1:  # must have more than one word (was gettuing here with 'next weekedn' only)
         days = NO_DAYS  # can not say 'monday, next weekend
-    return week * 7 + days, range_days
+    if days != NO_DAYS:
+      return week * 7 + days, range_days
   return NO_DAYS, 0
 
 def check_gpe(entity, ents, ent_text, gpe, multiple_cities, DEBUG):
@@ -672,71 +749,98 @@ def get_city_country(multiple_cities, gpe, DEBUG, LANG):
   return gpe, multiple_cities
 
 def get_parts(text, DEBUG, LANG, disp=False, verbose=True):
-  doc = nlp(text.lower())#.translate(remove_punct_dict))
   date, time, gpe, ents, ents_d = [], [], {'action':[]}, [], []
   multiple_cities = False
   if disp: p()
-  for token in doc:
-    if disp:
-      p(f"Tokens of [{token.text}]: dep_={token.dep_}, ent_type={token.ent_type_}, head={token.head}, lemma_={token.lemma_}, pos_={token.pos_}, tag_={token.tag_}, is_action={token._.is_action}")
-    if token._.is_action:  # checking for action first catch cities with the same name ('rain' is a city)
-      tag = ACTIONS[token.lemma_]
-      tag_exists = [t for t in gpe['action'] if t[0] == tag]
-      if len(tag_exists) == 0:
-        gpe['action'].append((tag, token.lemma_))
-    elif token.ent_type_ == 'GPE': ents.append((token.text.lower(), token))
-    elif token.ent_type_ in ['DATE', 'TIME']: ents_d.append((token.text.lower(), token))
-  for entity in doc.ents:
-      if disp:
-        p(f"Entities of [{entity.text}]: {entity.label_}='{spacy.explain(entity.label_)}', is_city={entity._.is_city}, is_country={entity._.is_country}")
-      ent_text = entity.text.lower().translate(remove_punct_dict)
-      if entity.label_ in ['DATE', 'TIME']:
-        if len(ent_text.split()) > 0: # take care of the case 'wednesady next week' without comma
-          token = None
-          for e in ents_d:
-            if e[0] in ent_text:
-              token = e[1]
-              if token.text in dayInWeek or token.text in dateToNum: # a seperate entity
-                date.append(token.text.lower())
-        if len(ent_text.split()) > 1 or len(date) == 0:
-          date.append(ent_text.lower())
-      '''
-      if entity._.is_action:  # 'rain' is both a city and weather action
-        tag = ACTIONS[ent_text]
-        gpe['action'].append((tag, ent_text))
-      '''
-      if entity.label_ == 'GPE':
-        act, gpe, multiple_cities = check_gpe(entity, ents, ent_text, gpe, multiple_cities, DEBUG)
-        if act == 'continue': continue
-        if act == 'break': break
+  round = 0
+  while round < 2:
+      doc = nlp(text)#.translate(remove_punct_dict))
+      for token in doc:
+        if disp:
+          p(f"Tokens of [{token.text}]: dep_={token.dep_}, ent_type={token.ent_type_}, head={token.head}, lemma_={token.lemma_}, pos_={token.pos_}, tag_={token.tag_}, is_action={token._.is_action}")
+        if token._.is_action:  # checking for action first catch cities with the same name ('rain' is a city)
+          tag = ACTIONS[token.lemma_]
+          tag_exists = [t for t in gpe['action'] if t[0] == tag]
+          if len(tag_exists) == 0:
+            gpe['action'].append((tag, token.lemma_))
+        elif token.ent_type_ == 'GPE': ents.append((token.text.lower(), token))
+        elif token.ent_type_ in ['DATE', 'TIME', 'CARDINAL']: ents_d.append((token.text.lower(), token))
+      for entity in doc.ents:
+          if disp:
+            p(f"Entities of [{entity.text}]: {entity.label_}='{spacy.explain(entity.label_)}', is_city={entity._.is_city}, is_country={entity._.is_country}")
+          ent_text = entity.text.lower().translate(remove_punct_dict)
+          if entity.label_ in ['DATE', 'TIME', 'CARDINAL']:
+            if len(ent_text.split()) > 0: # take care of the case 'wednesady next week' without comma
+              token = None
+              for e in ents_d:
+                if e[0] in ent_text:
+                  token = e[1]
+                  if token.text in dayInWeek or token.text in dateToNum: # a seperate entity
+                    if token.text not in date:
+                        date.append(token.text)
+              idx0 = 0
+              ent_t = ent_text
+              for word in ent_text.split(): # take care of "July 10 for 3 days" without comma
+                if word in stopwords:
+                  idx1 = ent_text.find(word)
+                  if idx1 < 0 :continue # not found
+                  if idx1 == 0: continue #  first word of the sentence, so no need to treat as if no comma
+                  if ent_text[idx0:idx1-1] not in date:
+                    date.append(ent_text[idx0:idx1-1])
+                  idx0 = idx1 + len(word) + 1
+                  ent_t = ent_text[idx0:]
+              ent_text = ent_t
 
-  gpe, multiple_cities = get_city_country(multiple_cities, gpe, DEBUG, LANG)
-    # remove city with same name as action ('rain') if there is another city
-  if 'city' in gpe:
-      org_gpe = gpe['city'].copy() # copy because the list is modified inside the loop
-      for tup in org_gpe:
-        city = tup[0]
-        city_exists = [t for t in gpe['action'] if t[0] == city or t[1] == city]
-        if len(city_exists) == 0: continue
-        if len(gpe['city']) == 1:  # must leave at least one city
-          # remove from action list if appears only once in the sentence
-          n = [t for t in doc if t.text == city]
-          if len(n) > 1: continue
-          gpe['action'].remove(city_exists[0])
-          continue
-        gpe['city'].remove(tup)
+            if len(ent_text.split()) > 1 or len(date) == 0:
+                if ent_text not in date:
+                    date.append(ent_text.lower())
+          '''
+          if entity._.is_action:  # 'rain' is both a city and weather action
+            tag = ACTIONS[ent_text]
+            gpe['action'].append((tag, ent_text))
+          '''
+          if entity.label_ == 'GPE':
+            act, gpe, multiple_cities = check_gpe(entity, ents, ent_text, gpe, multiple_cities, DEBUG)
+            if act == 'continue': continue
+            if act == 'break': break
 
-  if len(gpe['action']) > 0:
-    #  gpe['action'] = [('all', 'weather')]
-    #else:
-    for i, tup in enumerate(gpe['action']):
-      if tup[0] == 'all':
-        if i == 0: break
-        gpe['action'].remove(tup)
-        gpe['action'].insert(0, tup)
-        break
+      gpe, multiple_cities = get_city_country(multiple_cities, gpe, DEBUG, LANG)
+        # remove city with same name as action ('rain') if there is another city
+      if 'city' in gpe:
+          org_gpe = gpe['city'].copy() # copy because the list is modified inside the loop
+          for tup in org_gpe:
+            city = tup[0]
+            city_exists = [t for t in gpe['action'] if t[0] == city or t[1] == city]
+            if len(city_exists) == 0: continue
+            if len(gpe['city']) == 1:  # must leave at least one city
+              # remove from action list if appears only once in the sentence
+              n = [t for t in doc if t.text == city]
+              if len(n) > 1: continue
+              gpe['action'].remove(city_exists[0])
+              continue
+            gpe['city'].remove(tup)
 
-  result = {'date':date, 'time':time}
+      if len(gpe['action']) > 0:
+        #  gpe['action'] = [('all', 'weather')]
+        #else:
+        for i, tup in enumerate(gpe['action']):
+          if tup[0] == 'all':
+            if i == 0: break
+            gpe['action'].remove(tup)
+            gpe['action'].insert(0, tup)
+            break
+
+      # when the city has 2 words sometimes space did not recognize date
+      # in such case we remove the city and do another round
+      if 'city' in gpe and len(date) == 0 and len(time) == 0 and len(gpe['city'][0][0]) > 1:
+        org_text = text
+        text = text.replace(gpe['city'][0][0], '')
+        round += 1
+        if disp: p(f"doing round 2 in get_parts {gpe}, {org_text}, {text}")
+        continue
+      break
+
+  result = {'date':date, 'time':time} if len(date) > 0 and len(time) > 0 else {'time':time} if len(time) > 0 else {'date':date}
   result.update(gpe)
 
   if disp:
@@ -881,24 +985,9 @@ def update_session(LANG, RUN_TEST, switched_lang, error='', new_lang='', org_msg
       session['YES_NO'] = YES_NO
       session['yes_addition'] = yes_addition
 
-def is_valid_date_p(dt):
-    if dt:
-        try:
-            dt = dt.translate(space_punct_dict)
-            new_date = str(parse(dt, fuzzy=True))[:10]
-            year = int(new_date[:4])
-            month = int(new_date[5:7])
-            day = int(new_date[8:])
-            ndays = (date(year, month, day) - date.today()).days
-            return True, year, month, day, ndays
-        except:
-            p('invalid:', dt)
-            return False, None, None, None, None
-    return False
-
 def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
     do = True
-    NOANSWER = 3
+    NOANSWER, YES = 3, 7
     min_similarity = 0.84
     DEBUG = VERBOSE
     error = ''
@@ -906,8 +995,6 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
     switched_lang = session['switched_lang']
     YES_NO = session['YES_NO']
     yes_addition = session['yes_addition']
-
-    responses_yes = ['yes', 'y', 'sure', 'for sure', 'no problem']
 
     while do:
 
@@ -933,9 +1020,10 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
         RUN_TEST = 1
         continue
 
+      responses_yes = intents[LANG]["messages"][YES]['responses']
       if new_lang != '':
         if user_msg in responses_yes or google_translate(user_msg) in responses_yes:
-          if new_lang not in MESSAGES_lang or new_lang=='fr':
+          if new_lang not in MESSAGES_lang:
             add_language(new_lang)
           LANG = new_lang
           switched_lang = True
@@ -958,12 +1046,12 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
                     verify = False  # False "new langauge" - google think that 'haifa israel' is in arabic, and 'Paris, frnace' is in french
                 if verify:
                   new_lang = response
-                  answer = MESSAGES[LANG]["messages"]["new_lang"].format(new_lang)
+                  answer = MESSAGES[LANG]["messages"]["new_lang"].format(new_lang.upper())
                   update_session(LANG, RUN_TEST, switched_lang, new_lang=new_lang, org_msg=user_msg, YES_NO=True)
                   return answer, False
 
           elif LANG == 'en': # check if the google translate stopped working
-              test = translator.detect('שלום וברכה')
+              test = google_detect('שלום וברכה')
               if test == LANG:
                 error = 'Note: Google translate stopped working temporarily -> multi-lingual option is not functional'
                 p(error)
@@ -971,7 +1059,7 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
       round = 0
       answer = ''
       if YES_NO:
-        if user_msg in responses_yes or translator.translate(user_msg) in responses_yes:
+        if user_msg in responses_yes or google_translate(user_msg) in responses_yes:
             user_msg = org_msg + yes_addition
         yes_addition = ''
         YES_NO = False
@@ -1033,10 +1121,12 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
                     answer = random.choice(answers)
                   break
     #        if round == 2 and session['google']: round = 3 # to know we got the answer from get_parts()
-            parts = get_parts(user_msg, DEBUG, LANG, VERBOSE > 1, False)
+            parts = get_parts(user_msg.lower(), DEBUG, LANG, VERBOSE > 1, False) # need to use lower() because google might return in capitalization
             if VERBOSE:  p('x:', parts, round, LANG, switched_lang)
             if len(parts.get('date')) > 0:
-              days, range_days = check_date(parts['date'], VERBOSE)
+              if 'city' in parts and 'ERROR' not in parts['city'][0][1]:
+                israel = parts.get('city')[0][1] == 'israel'
+              days, range_days = check_date(parts['date'], VERBOSE, israel=israel)
               if VERBOSE:  p(days, range_days)
               if days > 8:
                 answer = MESSAGES[LANG]["messages"]["date_outof_range"]
@@ -1070,9 +1160,10 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
           continue
         elif round == 1:
           round = 2
-          user_msg = google_translate(org_msg, VERBOSE=VERBOSE) # default translation is to english - can set source/dest langauge: src="de"/ dest="he"
-          if user_msg != '':
-            continue
+          if LANG != 'en':  #No need to translate english (otherwise, remove special chars that might return non ascii code suach as apostophy that returns &#39)
+              user_msg = google_translate(org_msg.translate(remove_punct_dict), VERBOSE=VERBOSE) # default translation is to english - can set source/dest langauge: src="de"/ dest="he"
+              if user_msg != '':
+                continue
         if round == 2:
           round = 3
           user_msg = get_google(org_msg)
@@ -1097,14 +1188,22 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
         city = parts.get('city','') if parts.get('city','') != '' else ''
         action = parts.get('action', '') if len(parts.get('action', '')) > 0 else ''
         date = parts.get('date', '') if len(parts.get('date', '')) > 0 else ''
-        answer = f"{answer}Currently I identified: {city} {action} {date}."
+        answer = MESSAGES[LANG]["messages"]["error_current"].format(answer, city, action, date)
         if city != '':
-            date = 'Today' if date == '' else ''
-            action = 'Weather' if action == '' else ''
-            if date != '' and action != '':
-                date += ', '
-            answer = f'{answer}<br><div style="color:DodgerBlue;">Do you want me to use {date}{action}?</div>'
+          if date == '':
+            date = "'Today'"
+            if LANG != 'en': date = f"'{google_translate('Today', dest=LANG)}'"
+          else: ''
+          if action == '':
+            action = "'Weather'"
+            if LANG != 'en': action = f"'{google_translate('Weather', dest=LANG)}'"
+          else: action = ''
+          if date != '' and action != '':
+            date += ', '
+          answer = f'{answer}<br><div style="color:DodgerBlue;">{MESSAGES[LANG]["messages"]["error_option"].format(date, action)}</div>'
         YES_NO = True
+        if type(date) == str:  date = date.replace("'","")
+        if type(action) == str:  action = action.replace("'","")
         yes_addition = f',{date}{action}'
       update_session(LANG, RUN_TEST, switched_lang, org_msg=org_msg, error=error, url_icon=url_icon, YES_NO=YES_NO, yes_addition=yes_addition)
       return answer, tag=="goodbye"

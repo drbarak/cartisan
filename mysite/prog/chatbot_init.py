@@ -6,6 +6,7 @@ tz = pytz.timezone('Israel')
 
 import nltk
 import json, string, sys, os
+
 import spacy
 from spacy.tokens import Span, Token #Doc,
 from spacy.matcher import PhraseMatcher
@@ -25,14 +26,15 @@ nltk.download(['punkt', 'stopwords'])
 
 path = '/home/drbarak/mysite/png/'
 
-googletrans_api = False
+googletrans_api = True
 if googletrans_api:
-    from google.cloud import translate_v2 as translate
     # use dotenv to read environment - see WSGI.py whichcan be opened from the WEB option in the PythonAnywhere screen
-    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
-    translator = translate.Client()
+    # must be before imporing app in the wsgi file so the env data is loaded before my app
     #key = path + "chatbot-318014-6e7046c83ea2.json"
     #%env GOOGLE_APPLICATION_CREDENTIALS=$key
+    from google.cloud import translate_v2 as translate
+    GOOGLE_APPLICATION_CREDENTIALS = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+    translator = translate.Client()
 else:
     #my_import('googletrans', version='3.1.0a0')
     from googletrans import Translator
@@ -44,7 +46,7 @@ space_punct_dict = dict((ord(punct), ' ') for punct in string.punctuation)
 
 dayInWeek={'sunday':1,'monday':2,'tuesday':3,'wednesday':4,'thursday':5,'friday':6,'saturday':7}
 dateToNum={"today":0,"tomorrow":1,'twoDays':2 }
-textToNumbers={'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7}
+#textToNumbers={'one':1,'two':2,'three':3,'four':4,'five':5,'six':6,'seven':7}
 NO_DAYS = -999
 
 api_key = 'c2adfa29edfd95ad16efab9218619ff3'
