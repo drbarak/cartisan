@@ -239,7 +239,8 @@ ein qiniyye,northern district
 ein rafa,jerusalem
 el'azar,jerusalem
 el-rom,northern district
-elat,beersheba
+elat,eilat
+eilat,eilat
 eli,hadera
 eli al,northern district
 elifaz,beersheba
@@ -1218,12 +1219,13 @@ zviyya,acre
 yafo,tel aviv
 negev,beersheba
 south,beersheba
-desert,beersheba
-arava,beersheba
+southern,beersheba
+desert,eilat
+arava,eilat
 north,northern district
+northern,northern district
 golan,northern district
 galil,northern district
 sharon,netanya
-north,northern district
 central,netanya
 center,netanya

@@ -92,11 +92,12 @@ def load_CITIES_API():
 
   # add all israeli cities so when looking for 'north' gets multiple cities because there is one in France
   # and not to get an error is specify 'north, israel' becuse the country does not match
+  '''
   df = pd.DataFrame(CITIES_API)
   df.name = df.name.str.lower()
   df.name = df.name.str.translate(remove_punct_dict)
   CITIES_API_city = sorted(set(df.name.to_list()))
-
+  '''
   for city in CITIES_IL:
     CITIES_API.append({'name': city, 'country': 'IL', 'state': '', 'coord': ''})
 
@@ -104,6 +105,8 @@ def load_CITIES_API():
   df = df.drop(['id'], axis='columns')
   df.name = df.name.str.lower()
   df.name = df.name.str.translate(remove_punct_dict)
+
+  df = df[df['name'] != 'of']  # drop the city 'of' (in Turkey, because causes a problem when translating)
 
   CITIES_API_city = sorted(set(df.name.to_list()))
   CITIES_API_country = sorted(set(df.country.str.lower().to_list()))
@@ -342,4 +345,19 @@ def send_email(text='Message from WeatherBot', subject='New Session', to="drbara
     p(e)
     return False
 
+
+def google_detect(user_msg):
+  if googletrans_api:
+    return translator.detect_language(user_msg)["language"]
+  else:
+    return translator.detect(user_msg).lang
+
+def google_translate(user_msg_, dest='en', VERBOSE=False):
+  user_msg = translator.translate(user_msg_, dest)
+  if googletrans_api:
+    if VERBOSE:  p(f"{user_msg['input']} ({user_msg['detectedSourceLanguage']}) --> {user_msg['translatedText']} ({dest})")
+    return user_msg["translatedText"]
+  else:
+    if VERBOSE:  p(f"{user_msg.origin} ({user_msg.src}) --> {user_msg.text} ({user_msg.dest})")
+    return user_msg.text
 
