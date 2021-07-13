@@ -1,0 +1,330 @@
+[
+ {
+  "intents": {
+   "language": {
+    "co": {
+     "messages": [
+      {
+       "tag": "greeting",
+       "patterns": [
+        "Hi there",
+        "How are you",
+        "Is anyone there?",
+        "Hey",
+        "Hola",
+        "Hello",
+        "Good day",
+        "hi",
+        "greetings",
+        "what's up",
+        "hey"
+       ],
+       "responses": [
+        "Salute. U me nome hè WeatherBot è sò un chatbot. Se vulete sorte, scrivite &quot;Addiu&quot; Se vulete aiutu scrivite &quot;Aiutu&quot;"
+       ]
+      },
+      {
+       "tag": "goodbye",
+       "patterns": [
+        "Bye",
+        "See you later",
+        "Goodbye",
+        "Nice chatting to you, bye",
+        "Till next time",
+        "shutdown",
+        "exit",
+        "quit"
+       ],
+       "responses": [
+        "A prestu!",
+        "Bona ghjurnata",
+        "Avvedeci! Torna torna prestu."
+       ]
+      },
+      {
+       "tag": "thanks",
+       "patterns": [
+        "Thanks",
+        "Thank you",
+        "That's helpful",
+        "Awesome, thanks",
+        "Thanks for helping me"
+       ],
+       "responses": [
+        "Felice d&#39;aiutà!",
+        "Ogni mumentu!",
+        "Mi face piacè"
+       ]
+      },
+      {
+       "tag": "noanswer",
+       "patterns": [],
+       "responses": [
+        "Scusate, ùn vi possu capì",
+        "Per piacè date mi più infurmazioni",
+        "Micca sicuru di capì"
+       ]
+      },
+      {
+       "tag": "options",
+       "patterns": [
+        "How you could help me?",
+        "What you can do?",
+        "What help you provide?",
+        "How you can be helpful?",
+        "What support is offered"
+       ],
+       "responses": [
+        "Vi possu dà infurmazioni nantu à u tempu in e cità di u mondu, in a vostra lingua. Pudete dumandà nantu à i nuvuli, a pioggia, a temperatura, a pressione, l&#39;umidità, u ventu, a visibilità, l&#39;alba è finu à 8 ghjorni da oghje"
+       ]
+      },
+      {
+       "tag": "web",
+       "patterns": [],
+       "responses": [
+        "WeatherBot",
+        "Dumandate à Bot",
+        "Debug",
+        "Input d&#39;utilizatore",
+        "Tù",
+        "Bot",
+        "ID",
+        "Cunversazione"
+       ]
+      },
+      {
+       "tag": "mail",
+       "patterns": [
+        "Please send the log to drbarak@talkie.co.il"
+       ],
+       "responses": [
+        "Fattu",
+        "mandatu"
+       ]
+      },
+      {
+       "tag": "yes",
+       "patterns": [],
+       "responses": [
+        "Iè",
+        "Y",
+        "Iè",
+        "sicuru",
+        "di sicuru",
+        "va bè"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "messages": {
+   "language": {
+    "co": {
+     "messages": {
+      "web_error": "[!] Codice HTTP = {0} chjamendu [{1}]",
+      "api_error": "Qualcosa ùn hè andatu male (API)",
+      "web_msg": "In {0}, {1},",
+      "city_error": "cità [{0}] micca truvata in paese [{1}] - pruvate un&#39;ortografia sfarente di a cità o in un&#39;altra lingua",
+      "city_unknown": "Duvete dì mi una cità da verificà (forse scriverla diversamente o riprova in un&#39;altra lingua)",
+      "from_google": "da Google",
+      "clear sky": "celu chjaru",
+      "pressure": "pressione",
+      "humidity": "umidità",
+      "temp": [
+       "temp",
+       "si sente cum&#39;è",
+       "temperatura min",
+       "temp max"
+      ],
+      "wind": [
+       "vitezza di u ventu",
+       "direzzione di u ventu",
+       "raffu di ventu"
+      ],
+      "visibility": "visibilità",
+      "sunrise": [
+       "alba",
+       "tramontu"
+      ],
+      "no": "Innò",
+      "new_lang": "Aghju rilevatu un novu codice di lingua {0}. Vulete cambià",
+      "no_info": "nisuna infurmazione",
+      "web_day_msg": "U tempu dumane:",
+      "web_days_msg": "U tempu in {0} ghjorni:",
+      "action_unknown": "Duvete dì mi chì informazioni meteorologiche cercate (cum&#39;è &quot;clima&quot;, &quot;temp&quot;, &quot;ventu&quot;)",
+      "date_unknown": "Duvete dì mi per quandu vulete l&#39;infurmazioni meteo chì cercate (cum&#39;è &quot;oghje&quot;, &quot;dumane&quot;, &quot;luni&quot;), finu à 8 ghjorni da oghje",
+      "web_msg_current": "U tempu attuale:",
+      "date_outof_range": "Scusate, aghju infurmazioni solu per 8 ghjorni da oghje",
+      "error_current": "{0} Attualmente aghju identificatu: {1} {2} {3}",
+      "error_option": "Vulete ch&#39;e adupri {0} {1}?"
+     }
+    }
+   }
+  }
+ },
+ {
+  "intents": {
+   "language": {
+    "co": {
+     "messages": [
+      {
+       "tag": "greeting",
+       "patterns": [
+        "Hi there",
+        "How are you",
+        "Is anyone there?",
+        "Hey",
+        "Hola",
+        "Hello",
+        "Good day",
+        "hi",
+        "greetings",
+        "what's up",
+        "hey"
+       ],
+       "responses": [
+        "Salute. U me nome hè WeatherBot è sò un chatbot. Se vulete sorte, scrivite &quot;Addiu&quot; Se vulete aiutu scrivite &quot;Aiutu&quot;"
+       ]
+      },
+      {
+       "tag": "goodbye",
+       "patterns": [
+        "Bye",
+        "See you later",
+        "Goodbye",
+        "Nice chatting to you, bye",
+        "Till next time",
+        "shutdown",
+        "exit",
+        "quit"
+       ],
+       "responses": [
+        "A prestu!",
+        "Bona ghjurnata",
+        "Avvedeci! Torna torna prestu."
+       ]
+      },
+      {
+       "tag": "thanks",
+       "patterns": [
+        "Thanks",
+        "Thank you",
+        "That's helpful",
+        "Awesome, thanks",
+        "Thanks for helping me"
+       ],
+       "responses": [
+        "Felice d&#39;aiutà!",
+        "Ogni mumentu!",
+        "Mi face piacè"
+       ]
+      },
+      {
+       "tag": "noanswer",
+       "patterns": [],
+       "responses": [
+        "Scusate, ùn vi possu capì",
+        "Per piacè date mi più infurmazioni",
+        "Micca sicuru di capì"
+       ]
+      },
+      {
+       "tag": "options",
+       "patterns": [
+        "How you could help me?",
+        "What you can do?",
+        "What help you provide?",
+        "How you can be helpful?",
+        "What support is offered"
+       ],
+       "responses": [
+        "Vi possu dà infurmazioni nantu à u tempu in e cità di u mondu, in a vostra lingua. Pudete dumandà nantu à i nuvuli, a pioggia, a temperatura, a pressione, l&#39;umidità, u ventu, a visibilità, l&#39;alba è finu à 8 ghjorni da oghje"
+       ]
+      },
+      {
+       "tag": "web",
+       "patterns": [],
+       "responses": [
+        "WeatherBot",
+        "Dumandate à Bot",
+        "Debug",
+        "Input d&#39;utilizatore",
+        "Tù",
+        "Bot",
+        "ID",
+        "Cunversazione"
+       ]
+      },
+      {
+       "tag": "mail",
+       "patterns": [
+        "Please send the log to drbarak@talkie.co.il"
+       ],
+       "responses": [
+        "Fattu",
+        "mandatu"
+       ]
+      },
+      {
+       "tag": "yes",
+       "patterns": [],
+       "responses": [
+        "Iè",
+        "Y",
+        "Iè",
+        "sicuru",
+        "di sicuru",
+        "va bè"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "messages": {
+   "language": {
+    "co": {
+     "messages": {
+      "web_error": "[!] Codice HTTP = {0} chjamendu [{1}]",
+      "api_error": "Qualcosa ùn hè andatu male (API)",
+      "web_msg": "In {0}, {1},",
+      "city_error": "cità [{0}] micca truvata in paese [{1}] - pruvate un&#39;ortografia sfarente di a cità o in un&#39;altra lingua",
+      "city_unknown": "Duvete dì mi una cità da verificà (forse scriverla diversamente o riprova in un&#39;altra lingua)",
+      "from_google": "da Google",
+      "clear sky": "celu chjaru",
+      "pressure": "pressione",
+      "humidity": "umidità",
+      "temp": [
+       "temp",
+       "si sente cum&#39;è",
+       "temperatura min",
+       "temp max"
+      ],
+      "wind": [
+       "vitezza di u ventu",
+       "direzzione di u ventu",
+       "raffu di ventu"
+      ],
+      "visibility": "visibilità",
+      "sunrise": [
+       "alba",
+       "tramontu"
+      ],
+      "no": "Innò",
+      "new_lang": "Aghju rilevatu un novu codice di lingua {0}. Vulete cambià",
+      "no_info": "nisuna infurmazione",
+      "web_day_msg": "U tempu dumane:",
+      "web_days_msg": "U tempu in {0} ghjorni:",
+      "action_unknown": "Duvete dì mi chì informazioni meteorologiche cercate (cum&#39;è &quot;clima&quot;, &quot;temp&quot;, &quot;ventu&quot;)",
+      "date_unknown": "Duvete dì mi per quandu vulete l&#39;infurmazioni meteo chì cercate (cum&#39;è &quot;oghje&quot;, &quot;dumane&quot;, &quot;luni&quot;), finu à 8 ghjorni da oghje",
+      "web_msg_current": "U tempu attuale:",
+      "date_outof_range": "Scusate, aghju infurmazioni solu per 8 ghjorni da oghje",
+      "error_current": "{0} Attualmente aghju identificatu: {1} {2} {3}",
+      "error_option": "Vulete ch&#39;e adupri {0} {1}?"
+     }
+    }
+   }
+  }
+ }
+]
