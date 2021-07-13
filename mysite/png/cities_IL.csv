@@ -18,9 +18,9 @@ addirim,afula
 adi,acre
 adora,jerusalem
 afeinish,beersheba
-afeq,acre
-afiq,northern district
-afiqim,tiberias
+afek,acre
+afik,northern district
+afikim,tiberias
 afula,afula
 agur,jerusalem
 ahawa,ashkelon
@@ -37,7 +37,7 @@ allon hagalil,afula
 allon shevut,jerusalem
 allone abba,afula
 allone habashan,northern district
-allone yizhaq,hadera
+allone yizhak,hadera
 allonim,afula
 alma,northern district
 almagor,tiberias
@@ -52,10 +52,10 @@ amirim,northern district
 ammi'ad,northern district
 ammi'oz,beersheba
 amminadav,jerusalem
-ammiqam,hadera
+ammikam,hadera
 amnun,tiberias
 amqa,acre
-amuqqa,northern district
+amukka,northern district
 ani'am,northern district
 ar'ara,hadera
 ar'ara-banegev,beersheba
@@ -73,10 +73,10 @@ asefar,jerusalem
 aseret,rehovot
 ashalim,beersheba
 ashdod,ashkelon
-ashdot ya'aqov(ihud),tiberias
-ashdot ya'aqov(me'uh,tiberias
+ashdot ya'akov(ihud),tiberias
+ashdot ya'akov(me'uh,tiberias
 asherat,acre
-ashqelon,ashkelon
+ashkelon,ashkelon
 atawne,beersheba
 ateret,jerusalem
 atlit,hadera
@@ -99,16 +99,16 @@ ayyelet hashahar,northern district
 azarya,ramla
 azor,holon
 azri'el,netanya
-azriqam,ashkelon
+azrikam,ashkelon
 bahan,netanya
 balfuriyya,afula
 bar giyyora,jerusalem
 bar yohay,northern district
 bar'am,northern district
-baraq,afula
-bareqet,petah tikva
-barqan,netanya
-barqay,hadera
+barak,afula
+bareket,petah tikva
+barkan,netanya
+barkay,hadera
 basma,hadera
 basmat tab'un,afula
 bat ayin,jerusalem
@@ -122,9 +122,9 @@ bazra,netanya
 be'er ora,beersheba
 be'er sheva,beersheba
 be'er tuveya,ashkelon
-be'er ya'aqov,ramla
+be'er ya'akov,ramla
 be'eri,beersheba
-be'erot yizhaq,petah tikva
+be'erot yizhak,petah tikva
 be'erotayim,netanya
 beit jann,acre
 ben ammi,acre
@@ -134,15 +134,15 @@ ben zakkay,rehovot
 benaya,rehovot
 bene atarot,petah tikva
 bene ayish,rehovot
-bene beraq,ramat gan
+bene berak,ramat gan
 bene darom,rehovot
 bene deror,netanya
 bene nezarim,beersheba
 bene re'em,rehovot
 bene yehuda,northern district
 bene ziyyon,netanya
-beqa'ot,tiberias
-beqoa,jerusalem
+beka'ot,tiberias
+bekoa,jerusalem
 berakha,hadera
 berekhya,ashkelon
 beror hayil,ashkelon
@@ -158,7 +158,7 @@ bet ezra,ashkelon
 bet gamli'el,rehovot
 bet guvrin,ashkelon
 bet haarava,tiberias
-bet haemeq,acre
+bet haemek,acre
 bet hagaddi,beersheba
 bet halevi,netanya
 bet hanan,rehovot
@@ -167,27 +167,27 @@ bet hashitta,afula
 bet hashmonay,ramla
 bet herut,netanya
 bet hillel,northern district
-bet hilqiyya,rehovot
+bet hilkiyya,rehovot
 bet horon,jerusalem
 bet lehem hagelilit,afula
 bet me'ir,jerusalem
 bet nehemya,ramla
-bet neqofa,jerusalem
+bet nekofa,jerusalem
 bet nir,ashkelon
 bet oren,hadera
 bet oved,rehovot
-bet qama,beersheba
-bet qeshet,tiberias
+bet kama,beersheba
+bet keshet,tiberias
 bet rabban,rehovot
 bet rimmon,afula
 bet she'an,afula
 bet she'arim,afula
 bet shemesh,jerusalem
-bet shiqma,ashkelon
+bet shikma,ashkelon
 bet uzzi'el,ramla
 bet yannay,netanya
 bet yehoshua,netanya
-bet yizhaq-sh. hefer,netanya
+bet yizhak-sh. hefer,netanya
 bet yosef,afula
 bet zayit,jerusalem
 bet zeid,afula
@@ -221,7 +221,7 @@ deir al-asad,acre
 deir hanna,acre
 deir rafat,jerusalem
 demeide,acre
-deqel,beersheba
+dekel,beersheba
 devira,beersheba
 devora,afula
 dimona,beersheba
@@ -249,10 +249,10 @@ elishama,petah tikva
 elon,acre
 elon more,hadera
 elot,beersheba
-elqana,netanya
-elqosh,acre
+elkana,netanya
+elkosh,acre
 elyakhin,netanya
-elyaqim,afula
+elyakim,afula
 elyashiv,netanya
 emunim,ashkelon
 en ayyala,hadera
@@ -260,7 +260,7 @@ en dor,afula
 en gedi,beersheba
 en gev,tiberias
 en habesor,beersheba
-en haemeq,afula
+en haemek,afula
 en hahoresh,netanya
 en hamifraz,acre
 en hanaziv,afula
@@ -277,7 +277,7 @@ en sarid,netanya
 en shemer,hadera
 en tamar,beersheba
 en wered,netanya
-en ya'aqov,acre
+en ya'akov,acre
 en yahav,beersheba
 en ziwan,northern district
 en zurim,ashkelon
@@ -296,7 +296,7 @@ even menahem,acre
 even sappir,jerusalem
 even shemu'el,ashkelon
 even yehuda,netanya
-even yizhaq(gal'ed),afula
+even yizhak(gal'ed),afula
 evron,acre
 eyal,petah tikva
 ez efrayim,netanya
@@ -315,17 +315,17 @@ gan hayyim,petah tikva
 gan ner,afula
 gan shelomo,rehovot
 gan shemu'el,hadera
-gan soreq,rehovot
+gan sorek,rehovot
 gan yavne,rehovot
 gan yoshiyya,netanya
 ganne am,petah tikva
 ganne hadar,ramla
-ganne tiqwa,petah tikva
+ganne tikwa,petah tikva
 ganne yohanan,rehovot
 gannot,ramla
 gannot hadar,netanya
 gat rimmon,petah tikva
-gat(qibbuz),ashkelon
+gat(kibbuz),ashkelon
 gazit,afula
 ge'a,ashkelon
 ge'alya,rehovot
@@ -455,7 +455,7 @@ hosha'aya,afula
 hujeirat (dahra),acre
 hulata,northern district
 hulda,ramla
-huqoq,tiberias
+hukok,tiberias
 hura,beersheba
 hurfeish,acre
 hussniyya,acre
@@ -489,7 +489,7 @@ kafar kanna,nazareth
 kafar manda,acre
 kafar misr,nazareth
 kafar qara,hadera
-kafar qasem,petah tikva
+kafar kasem,petah tikva
 kafar yasif,acre
 kahal,northern district
 kallanit,tiberias
@@ -546,7 +546,7 @@ kefar monash,netanya
 kefar mordekhay,rehovot
 kefar netter,netanya
 kefar pines,hadera
-kefar rosh haniqra,acre
+kefar rosh hanikra,acre
 kefar rozenwald(zar.,acre
 kefar ruppin,afula
 kefar rut,ramla
@@ -565,7 +565,7 @@ kefar vitkin,netanya
 kefar warburg,ashkelon
 kefar weradim,acre
 kefar ya'bez,netanya
-kefar yehezqel,afula
+kefar yehezkel,afula
 kefar yehoshua,afula
 kefar yona,netanya
 kefar zetim,tiberias
@@ -581,13 +581,13 @@ kerem yavne(yeshiva),rehovot
 kesalon,jerusalem
 khawaled,nazareth
 kinneret(moshava),tiberias
-kinneret(qevuza),tiberias
+kinneret(kevuza),tiberias
 kishor,acre
 kisra-sumei,acre
 kissufim,beersheba
 kokhav hashahar,jerusalem
 kokhav mikha'el,ashkelon
-kokhav ya'aqov,jerusalem
+kokhav ya'akov,jerusalem
 kokhav ya'ir,petah tikva
 korazim,northern district
 kuseife,beersheba
@@ -657,12 +657,12 @@ maslul,beersheba
 massad,tiberias
 massada,tiberias
 massu'a,tiberias
-massuot yizhaq,ashkelon
+massuot yizhak,ashkelon
 matta,jerusalem
 mattan,petah tikva
 mattat,acre
 mattityahu,jerusalem
-mavqi'im,ashkelon
+mavki'im,ashkelon
 mazkeret batya,rehovot
 mazliah,ramla
 mazor,petah tikva
@@ -684,7 +684,7 @@ mennara,northern district
 menuha,ashkelon
 merav,afula
 merhavya(moshav),afula
-merhavya(qibbuz),afula
+merhavya(kibbuz),afula
 merkaz shappira,ashkelon
 merom golan,northern district
 meron,northern district
@@ -710,17 +710,17 @@ midrakh oz,afula
 midreshet ben gurion,beersheba
 midreshet ruppin,netanya
 migdal,tiberias
-migdal haemeq,afula
+migdal haemek,afula
 migdal oz,jerusalem
 migdalim,hadera
 mikhmannim,acre
 mikhmoret,netanya
-miqwe yisra'el,holon
+mikwe yisra'el,holon
 misgav am,northern district
 misgav dov,rehovot
 mishmar ayyalon,ramla
 mishmar dawid,ramla
-mishmar haemeq,afula
+mishmar haemek,afula
 mishmar hanegev,beersheba
 mishmar hasharon,netanya
 mishmar hashiv'a,ramla
@@ -801,12 +801,12 @@ newe shalom,jerusalem
 newe ur,afula
 newe yam,hadera
 newe yamin,petah tikva
-newe yaraq,petah tikva
+newe yarak,petah tikva
 newe zohar,beersheba
 nezer sereni,ramla
 nili,jerusalem
 nir am,ashkelon
-nir aqiva,beersheba
+nir akiva,beersheba
 nir banim,ashkelon
 nir dawid (tel amal),afula
 nir eliyyahu,petah tikva
@@ -817,14 +817,14 @@ nir moshe,beersheba
 nir oz,beersheba
 nir yafe,afula
 nir yisra'el,ashkelon
-nir yizhaq,beersheba
+nir yizhak,beersheba
 nir zevi,ramla
 niran,tiberias
 nirim,beersheba
 nirit,petah tikva
 nizzan,ashkelon
 nizzan b,ashkelon
-nizzana (qehilat hin,beersheba
+nizzana (kehilat hin,beersheba
 nizzane oz,netanya
 nizzane sinay,beersheba
 nizzanim,ashkelon
@@ -833,12 +833,12 @@ nofekh,petah tikva
 nofim,netanya
 nofit,haifa
 nogah,ashkelon
-noqedim,jerusalem
+nokedim,jerusalem
 nordiyya,netanya
 nov,northern district
 nurit,afula
 odem,northern district
-ofaqim,beersheba
+ofakim,beersheba
 ofer,hadera
 ofra,jerusalem
 ohad,beersheba
@@ -846,7 +846,7 @@ olesh,netanya
 omen,afula
 omer,beersheba
 omez,netanya
-or aqiva,hadera
+or akiva,hadera
 or haganuz,northern district
 or haner,ashkelon
 or yehuda,ramat gan
@@ -869,12 +869,12 @@ pedu'el,netanya
 peduyim,beersheba
 pelekh,acre
 pene hever,jerusalem
-peqi'in (buqei'a),acre
-peqi'in hadasha,acre
+peki'in (buqei'a),acre
+peki'in hadasha,acre
 perazon,afula
 peri gan,beersheba
 pesagot,jerusalem
-petah tiqwa,petah tikva
+petah tikwa,petah tikva
 petahya,ramla
 peza'el,tiberias
 porat,netanya
@@ -882,42 +882,42 @@ poriyya illit,tiberias
 poriyya-kefar avoda,tiberias
 poriyya-newe oved,tiberias
 qabbo'a,beersheba
-qaddarim,tiberias
-qadima-zoran,netanya
-qalansawe,netanya
-qalya,tiberias
-qarne shomeron,netanya
+kaddarim,tiberias
+kadima-zoran,netanya
+kalansawe,netanya
+kalya,tiberias
+karne shomeron,netanya
 qawa'in,beersheba
-qazrin,northern district
-qedar,jerusalem
-qedma,ashkelon
-qedumim,netanya
-qela,northern district
-qelahim,beersheba
-qesariyya,hadera
-qeshet,northern district
-qetura,beersheba
-qevuzat yavne,rehovot
-qidmat zevi,northern district
-qidron,rehovot
-qiryat anavim,jerusalem
-qiryat arba,jerusalem
-qiryat atta,haifa
-qiryat bialik,haifa
-qiryat eqron,rehovot
-qiryat gat,ashkelon
-qiryat mal'akhi,ashkelon
-qiryat motzkin,haifa
-qiryat netafim,netanya
-qiryat ono,ramat gan
-qiryat shelomo,netanya
-qiryat shemona,northern district
-qiryat tiv'on,haifa
-qiryat yam,haifa
-qiryat ye'arim,jerusalem
-qiryat ye'arim(insti,jerusalem
-qomemiyyut,ashkelon
-qoranit,acre
+kazrin,northern district
+kedar,jerusalem
+kedma,ashkelon
+kedumim,netanya
+kela,northern district
+kelahim,beersheba
+kesariyya,hadera
+keshet,northern district
+ketura,beersheba
+kevuzat yavne,rehovot
+kidmat zevi,northern district
+kidron,rehovot
+kiryat anavim,jerusalem
+kiryat arba,jerusalem
+kiryat atta,haifa
+kiryat bialik,haifa
+kiryat ekron,rehovot
+kiryat gat,ashkelon
+kiryat mal'akhi,ashkelon
+kiryat motzkin,haifa
+kiryat netafim,netanya
+kiryat ono,ramat gan
+kiryat shelomo,netanya
+kiryat shemona,northern district
+kiryat tiv'on,haifa
+kiryat yam,haifa
+kiryat ye'arim,jerusalem
+kiryat ye'arim(insti,jerusalem
+komemiyyut,ashkelon
+koranit,acre
 qudeirat as-sani,beersheba
 ra'anana,petah tikva
 rahat,beersheba
@@ -941,7 +941,7 @@ ramot me'ir,ramla
 ramot menashe,afula
 ramot naftali,northern district
 rannen,beersheba
-raqefet,acre
+rakefet,acre
 ras ali,haifa
 ravid,tiberias
 re'im,beersheba
@@ -988,7 +988,7 @@ sawa'id (kamane),acre
 sawa'id(hamriyye),acre
 sayyid,beersheba
 sede avraham,beersheba
-sede boqer,beersheba
+sede boker,beersheba
 sede dawid,ashkelon
 sede eli'ezer,northern district
 sede eliyyahu,afula
@@ -1001,8 +1001,8 @@ sede nizzan,beersheba
 sede terumot,afula
 sede uzziyyahu,ashkelon
 sede warburg,petah tikva
-sede ya'aqov,afula
-sede yizhaq,hadera
+sede ya'akov,afula
+sede yizhak,hadera
 sede yo'av,ashkelon
 sede zevi,beersheba
 sederot,ashkelon
@@ -1015,10 +1015,10 @@ sha'ab,acre
 sha'al,northern district
 sha'alvim,ramla
 sha'ar efrayim,netanya
-sha'ar haamaqim,haifa
+sha'ar haamakim,haifa
 sha'ar hagolan,tiberias
 sha'ar menashe,hadera
-sha'are tiqwa,netanya
+sha'are tikwa,netanya
 shadmot devora,tiberias
 shadmot mehola,tiberias
 shafir,ashkelon
@@ -1029,7 +1029,7 @@ shalwa,ashkelon
 shamerat,acre
 shamir,northern district
 shani,beersheba
-shaqed,afula
+shaked,afula
 sharona,tiberias
 sharsheret,beersheba
 shave shomeron,hadera
@@ -1043,7 +1043,7 @@ sheikh dannun,acre
 shekhanya,acre
 shelomi,acre
 sheluhot,afula
-sheqef,ashkelon
+shekef,ashkelon
 shetula,acre
 shetulim,ashkelon
 shezor,acre
@@ -1057,11 +1057,11 @@ sho'eva,jerusalem
 shoham,ramla
 shomera,acre
 shomeriyya,beersheba
-shoqeda,beersheba
+shokeda,beersheba
 shorashim,acre
 shoresh,jerusalem
-shoshannat haamaqim,netanya
-shoshannat haamaqim(,netanya
+shoshannat haamakim,netanya
+shoshannat haamakim(,netanya
 shoval,beersheba
 shuva,beersheba
 sitriyya,ramla
@@ -1083,24 +1083,24 @@ tamra (yizre'el),afula
 tarabin as-sani,beersheba
 tarum,jerusalem
 tayibe,netanya
-tayibe(baemeq),afula
+tayibe(baemek),afula
 te'ashur,beersheba
 tefahot,tiberias
 tel adashim,afula
 tel aviv - yafo,tel aviv
 tel mond,netanya
-tel qazir,tiberias
+tel kazir,tiberias
 tel sheva,beersheba
 tel te'omim,afula
-tel yizhaq,netanya
+tel yizhak,netanya
 tel yosef,afula
 telalim,beersheba
 telamim,ashkelon
 telem,jerusalem
 tene,jerusalem
 tenuvot,netanya
-teqoa,jerusalem
-tequma,beersheba
+tekoa,jerusalem
+tekuma,beersheba
 tiberias,tiberias
 tidhar,beersheba
 tifrah,beersheba
@@ -1143,11 +1143,11 @@ yahel,beersheba
 yakhini,ashkelon
 yanuh-jat,acre
 yanuv,netanya
-yaqir,netanya
-yaqum,netanya
+yakir,netanya
+yakum,netanya
 yardena,afula
 yarhiv,petah tikva
-yarqona,petah tikva
+yarkona,petah tikva
 yas'ur,acre
 yashresh,ramla
 yated,beersheba
@@ -1175,8 +1175,8 @@ yizhar,hadera
 yizre'el,afula
 yodefat,acre
 yonatan,northern district
-yoqne'am illit,afula
-yoqne'am(moshava),afula
+yokne'am illit,afula
+yokne'am(moshava),afula
 yoshivya,beersheba
 yotvata,beersheba
 yuval,northern district
@@ -1196,10 +1196,10 @@ zerahya,ashkelon
 zeru'a,beersheba
 zerufa,hadera
 zetan,ramla
-zikhron ya'aqov,hadera
+zikhron ya'akov,hadera
 zimrat,beersheba
 zippori,afula
-ziqim,ashkelon
+zikim,ashkelon
 ziv'on,northern district
 zofar,beersheba
 zofit,petah tikva
@@ -1212,7 +1212,7 @@ zufin,netanya
 zur hadassa,jerusalem
 zur moshe,netanya
 zur natan,petah tikva
-zur yizhaq,petah tikva
+zur yizhak,petah tikva
 zuri'el,acre
 zurit,acre
 zviyya,acre

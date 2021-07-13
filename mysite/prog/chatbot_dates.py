@@ -12,7 +12,7 @@ from prog.chatbot_init import dayInWeek, dateToNum, listNlp, tz, NO_DAYS, datesD
 
 TODAY = 0
 
-def is_valid_date(dt, disp=False):
+def is_valid_date(dt, disp=False, round=0):
   if dt:
     try:
       dt_now = datetime.now(tz)
@@ -28,11 +28,14 @@ def is_valid_date(dt, disp=False):
       ndays = (dt2 - dt1).days
       return True, year, month, day, ndays
     except Exception as e:
+      if round == 0 and len(dt) == 8 and 'month must be in 1..12' in str(e):
+        dt = dt[4:] + dt[2:4] + dt[0:2]
+        return is_valid_date(dt, round=1)
       if 'String does not contain a date' not in str(e):
-          p(e)
+        p(e)
       if disp: p('invalid:', dt)
       return False, None, None, None, None
-  return False
+  return False, None, None, None, None
 
 def get_todayDayWeek():
   #to day of the week such that sunday=1,.. saturday=7 from monday=0...sat=5, sunday=6
@@ -297,7 +300,8 @@ def check_date(dateText, disp=False, israel=False):
       if org_days == NO_DAYS or dayInText >= 6:
         if dayInText == 7: # if sunday there is one day left in the weekend
           if israel: # sunday is not the weekend in israel, only saturday
-            days = NO_DAYS
+            range_days = 0
+            if days == 0: days = 6 # six more days till next saturday
           elif week == 1: # next week
             days -= 1 # nextweekent starts on Saturday
           else:

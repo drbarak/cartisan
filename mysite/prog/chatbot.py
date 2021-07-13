@@ -6,7 +6,6 @@ from flask_app import session
 from prog.forms import ChatForm
 
 import spacy, random, requests, bs4, time, json
-
 import pandas as pd
 
 from prog.chatbot_init import nlp, stopwords, remove_punct_dict, path
@@ -77,6 +76,7 @@ def chatbot():
             session_time = session['time']
             delta = time.time() - session_time
             if delta > IDLE_TIME or session['index'] == 0:
+                p('clear df_chat', delta > IDLE_TIME, session['index'] == 0)
                 session['df_chat'] = []
                 session['time'] = time.time()
                 session['index'] = 1
@@ -330,7 +330,7 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
 
       responses_yes = intents[LANG]["messages"][YES]['responses']
       if new_lang != '':
-        if user_msg in responses_yes or google_translate(user_msg) in responses_yes:
+        if user_msg in responses_yes or user_msg in intents[new_lang]["messages"][YES]['responses'] or google_translate(user_msg) in responses_yes:
           if new_lang not in MESSAGES_lang:
             add_language(new_lang)
           LANG = new_lang
@@ -354,7 +354,11 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
                     verify = False  # False "new langauge" - google think that 'haifa israel' is in arabic, and 'Paris, frnace' is in french
                 if verify:
                   new_lang = response
-                  answer = MESSAGES[LANG]["messages"]["new_lang"].format(new_lang.upper())
+                  answer = MESSAGES[LANG]["messages"]["new_lang"].format(new_lang.upper()) + "<br>"
+                  if new_lang in MESSAGES_lang:
+                    answer += MESSAGES[new_lang]["messages"]["new_lang"].format(new_lang.upper())
+                  else:
+                    answer += google_translate(MESSAGES['en']["messages"]["new_lang"]).format(new_lang.upper())
                   update_session(LANG, RUN_TEST, switched_lang, new_lang=new_lang, org_msg=user_msg, YES_NO=True)
                   return answer, False
 
@@ -367,7 +371,7 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
       round = 0
       answer = ''
       if YES_NO:
-        if user_msg in responses_yes or google_translate(user_msg) in responses_yes:
+        if user_msg in responses_yes or (new_lang != '' and user_msg in intents[new_lang]["messages"][YES]['responses']) or google_translate(user_msg) in responses_yes:
             user_msg = org_msg + yes_addition
         yes_addition = ''
         YES_NO = False
@@ -432,6 +436,7 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
             parts = get_parts(user_msg.lower(), LANG, VERBOSE > 0) # need to use lower() because google might return in capitalization
             if VERBOSE:  p('x:', parts, round, LANG, switched_lang)
             if len(parts.get('date')) > 0:
+              israel = False
               if 'city' in parts and 'ERROR' not in parts['city'][0][1]:
                 israel = parts.get('city')[0][1] == 'israel'
               days, range_days = check_date(parts['date'], VERBOSE, israel=israel)
@@ -474,7 +479,8 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
                 continue
         if round == 2:
           round = 3
-          user_msg = get_google(org_msg)
+          import html
+          user_msg = html.unescape(get_google(org_msg))
           if user_msg != '':
             continue
         break

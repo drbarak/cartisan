@@ -107,6 +107,8 @@ def load_CITIES_API():
   df.name = df.name.str.translate(remove_punct_dict)
 
   df = df[df['name'] != 'of']  # drop the city 'of' (in Turkey, because causes a problem when translating)
+  df = df[df['name'] != 'nine'] # drop the city 'nine' (in Italy, because causes a problem when identifying DATE)
+  df = df[df['name'] != 'four'] # drop the city 'four'
 
   CITIES_API_city = sorted(set(df.name.to_list()))
   CITIES_API_country = sorted(set(df.country.str.lower().to_list()))
@@ -212,17 +214,20 @@ def load_dates():
   fname = 'datesWords.csv'
   df = pd.read_csv(path + fname)
   df.fillna('', inplace=True)
+
+  df_str = ''
+  for s in df.values.tolist():
+    df_str += ', '.join([s1 for s1 in s if s1 != '']) + ', '
+
   listNlp = {}
   for column in df:
     listNlp.update({column: [nlp.make_doc(t) for t in df[column].tolist() if t != '']})
-  return df, listNlp
-datesDf, listNlp= load_dates()
-#p(listNlp)
-#datesDf
+  return df, df_str, listNlp
+datesDf, dates_str, listNlp= load_dates()
 
 def update_nlp():
   matcher = PhraseMatcher(nlp.vocab)
-  date_time = ['now', 'current', 'currently']
+  date_time = ['now', 'current', 'currently', 'following day']
   date_time_str = ', '.join([s for s in date_time])
   #date_time_str = "now, current, currently"
   CITIES = set(CITIES_IL + CITIES_API_city + date_time)
@@ -345,19 +350,30 @@ def send_email(text='Message from WeatherBot', subject='New Session', to="drbara
     p(e)
     return False
 
-
 def google_detect(user_msg):
-  if googletrans_api:
-    return translator.detect_language(user_msg)["language"]
-  else:
-    return translator.detect(user_msg).lang
+  p('in google_detect', user_msg)
+  try:
+    if googletrans_api:
+      response = translator.detect_language(user_msg)["language"]
+    else:
+      response = translator.detect(user_msg).lang
+    p('out google_detect', response)
+    return response
+  except Exception as e:
+    p(e)
+    return 'en'
 
 def google_translate(user_msg_, dest='en', VERBOSE=False):
-  user_msg = translator.translate(user_msg_, dest)
-  if googletrans_api:
-    if VERBOSE:  p(f"{user_msg['input']} ({user_msg['detectedSourceLanguage']}) --> {user_msg['translatedText']} ({dest})")
-    return user_msg["translatedText"]
-  else:
-    if VERBOSE:  p(f"{user_msg.origin} ({user_msg.src}) --> {user_msg.text} ({user_msg.dest})")
-    return user_msg.text
-
+  p('in google_translate', user_msg_)
+  try:
+    user_msg = translator.translate(user_msg_, dest)
+    if googletrans_api:
+      if VERBOSE:  p(f"{user_msg['input']} ({user_msg['detectedSourceLanguage']}) --> {user_msg['translatedText']} ({dest})")
+      p('out google_translate', user_msg)
+      return user_msg["translatedText"]
+    else:
+      if VERBOSE:  p(f"{user_msg.origin} ({user_msg.src}) --> {user_msg.text} ({user_msg.dest})")
+      return user_msg.text
+  except Exception as e:
+    p(e)
+    return ''

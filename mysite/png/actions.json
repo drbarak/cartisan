@@ -5,7 +5,7 @@
 		},
 		{
 			"tag": "weatherWind",
-			"patterns": ["tornedo", "hurricane", "gale", "gust", "whirlwind", "cyclone"]
+			"patterns": ["tornado", "hurricane", "gale", "gust", "whirlwind", "cyclone"]
 		},
 		{
 			"tag": "weatherPressure",
@@ -17,10 +17,10 @@
 		},
 		{
 			"tag": "weather",
-			"patterns": ["climate", "conditions", "forecast", "outlook", "thunder", "thunderstorm", "storm", "rain", "drizzle", "snow", "dry",
+			"patterns": ["climate", "conditions", "forecast", "outlook", "thunder", "thunderstorm", "storm", "rain", "drizzle", "snow", "dry", 
       "rainbow", "overcast", "shower", "lightning", "blustery", "downpour", "tropical", "water cycle", "drought", "hail",
        "icicle", "flood", "muggy", "flash flood", "atmospheric", "atmospheric", "cold front", "cold snap",
-       "condensation", "ice storm", "snowfall", "air", "balmy", "avalanche", "frost", "blizzard", "spring", "smog",
+       "condensation", "ice storm", "snowfall", "air", "balmy", "avalanche", "frost", "blizzard", "spring", "smog", 
        "ozone", "autumn", "winter", "outlook", "summer","sleet", "sky", "easterlies", "westerlies","dew","surge","monsoon","permafrost"]
 		},
 		{
@@ -53,7 +53,7 @@
 		},
 		{
 			"tag": "fahrenheit",
-			"patterns": ["fahrenheit", "farenheight", "farenheit"]
+			"patterns": ["fahrenheit"]
 		}
 	]
 }

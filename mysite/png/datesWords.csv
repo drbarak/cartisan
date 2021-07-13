@@ -1,7 +1,7 @@
 today,tomorrow,twoDays,thisweek,nextWeek
-now,tomorrow,the day after tommorow,this week,next week
+now,tomorrow,the day after tomorrow,this week,next week
 today,next day,,the weekend,week later
 tonight,following day,,,following week
 this morning,one day,,this weekend,next weekend
-current,,,,week later
+current,following,,,week later
 right now,,,,coming week

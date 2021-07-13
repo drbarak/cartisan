@@ -92,7 +92,7 @@
 				"messages": [{
 						"tag": "greeting",
 						"patterns": ["Hi there", "How are you", "Is anyone there?", "Hey", "Hola", "Hello", "Good day", "hi", "greetings", "what's up", "hey"],
-						"responses": ["Bonjour. Je m'appelle WeatherBot et je suis un chatbot. Si vous voulez quitter, tapez 'Bye' Si vous voulez de l'aide, tapez 'Help'"]
+						"responses": ["Bonjour. Je m'appelle WeatherBot et je suis un chatbot. Si vous voulez quitter, tapez 'Au revoir' Si vous voulez de l'aide, tapez 'Aidez'"]
 					},
 					{
 						"tag": "goodbye",
@@ -107,12 +107,12 @@
 					{
 						"tag": "noanswer",
 						"patterns": [],
-						"responses": ["Désolé, je ne peux pas vous comprendre", "Donnez-moi plus d'informations", "Je ne suis pas sûr de comprendre"]
+						"responses": ["Désolé, je ne vous comprendre pas", "Donnez-moi plus d'informations", "Je ne suis pas sûr de comprendre"]
 					},
 					{
 						"tag": "options",
 						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue. Vous pouvez poser des questions sur les nuages, la pluie, la température, la pression, l'humidité, le vent, la visibilité, le lever du soleil et jusqu'à 8 jours à partir d'aujourd'hui"]
+						"responses": ["Je peux vous donner des informations sur la météo des villes du monde entier, dans votre langue. Vous pouvez poser des questions sur les nuages, la pluie, la température, la pression, l'humidité, le vent, la visibilité, le lever du soleil jusqu'à 8 jours à partir d'aujourd'hui"]
 
 					},
 					{
@@ -156,7 +156,7 @@
 					{
 						"tag": "options",
 						"patterns": ["How you could help me?", "What you can do?", "What help you provide?", "How you can be helpful?", "What support is offered"],
-						"responses": ["Puedo brindarte información sobre el clima en ciudades de todo el mundo, en tu idioma. Puede preguntar sobre las nubes, la lluvia, la temperatura, la presión, la humedad, el viento, la visibilidad, el amanecer y hasta 8 días a partir de hoy."]
+						"responses": ["Puedo darte información sobre el clima en ciudades de todo el mundo, en tu idioma. Puede preguntar sobre las nubes, la lluvia, la temperatura, la presión, la humedad, el viento, la visibilidad, el amanecer, hasta 8 días a partir de hoy."]
 					},
 					{
 						"tag": "web",
@@ -215,7 +215,7 @@
 					{
 						"tag": "yes",
 						"patterns": [],
-						"responses": ["نعم" , "نعم" , "نعم" , "بالتأكيد" , "بالتأكيد" , "لا مشكلة"]
+						"responses": ["نعم", "نعم", "نعم", "بالتأكيد", "بالتأكيد", "لا مشكلة"]
 					}
 				]
 			},
@@ -316,7 +316,7 @@
 					"web_days_msg": "מזג האוויר בעוד {0} ימים: ",
 					"action_unknown": "אתה צריך לומר לי איזה מידע על מזג האוויר אתה מחפש (כגון 'מזג אוויר', 'טמפרטורה', 'רוח')",
 					"date_unknown": "אני צריך לדעת למתי נחוץ מידע מזג האוויר כגון 'היום', 'מחר', 'יום שני'), עד 8 ימים מהיום",
-					"web_msg_current": "מזג האוויר עכשו הוא: ",
+					"web_msg_current": "מזג האוויר כעת הוא: ",
 					"date_outof_range": "מצטער, יש לי מידע רק עבור עד 8 ימים מהיום",
 					"error_current": "{0}נכון לעכשו זיהיתי: {1} {2} {3}",
 					"error_option": "האם להשתמש ב- {0} {1}?"
@@ -333,7 +333,7 @@
 					"clear sky": "ciel clair",
 					"pressure": "pression",
 					"humidity": "humidité",
-					"temp": ["temp", "se sent comme", "temp min", "temp max"],
+					"temp": ["temp", "rfsentie", "temp min", "temp max"],
 					"wind": ["vitesse du vent", "direction du vent", "rafale de vent"],
 					"visibility": "visibilité",
 					"sunrise": ["lever du soleil", "coucher du soleil"],
