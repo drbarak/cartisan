@@ -3,10 +3,13 @@
 from flask import render_template, redirect, request
 from flask_app import session
 
+from flask_app import db, BotDB
+
 from prog.forms import ChatForm
 
 import spacy, random, requests, bs4, time, json
 import pandas as pd
+import pickle
 
 from prog.chatbot_init import nlp, stopwords, remove_punct_dict, path
 from prog.chatbot_init import QUESTIONS
@@ -20,146 +23,220 @@ from prog.chatbot_web import get_weather
 
 IDLE_TIME = 60 * 30 # max half an hour between questions to the bot
 
+def read_from_db(n):
+  p(f'in read_froM_db [{n}]')
+  row = BotDB.query.get(n)
+  #p('read record', n)
+  #p(row)
+  if row is None:
+    return None
+  #p(row.db_chat)
+  df_chat = pickle.loads(row.db_chat)
+  return df_chat
+
+def add_todb(df):
+  x_as_bytes = pickle.dumps(df)
+  row = BotDB(db_chat=x_as_bytes)
+  db.session.add(row)
+  db.session.commit()
+  p('new record', row.id)
+  '''
+  y = pickle.loads(x_as_bytes)
+  p(y)
+  p()
+  y = pickle.loads(row.db_chat)
+  p(y)
+  p('exit add_todb')
+  '''
+  return row.id
+
+def update_db(n, df):
+  row = BotDB.query.get(n)
+  p('in update_db', n)
+  '''
+  p(df)
+  p(row)
+  '''
+  if row is None:
+    session['df_id'] = add_todb(df)
+    return
+  row.db_chat = pickle.dumps(df)
+  db.session.commit()
+  return
+
 def chatbot():
-    if 'chat_' not in session:
-        p()
-        p('------------------------------')
-        p(f"Start ChatBot, {spacy.__version__}, user_ip={request.headers['X-Real-IP']}")
-        session['chat_'] = 'chat_'
-        session['username_'] = 'admin_'
-        session['df_chat'] = []
-        session['time'] = time.time()
+  if 'chat_' not in session:
+    p()
+    p('------------------------------')
+    p(f"Start ChatBot, {spacy.__version__}, user_ip={request.headers['X-Real-IP']}")
+    session['chat_'] = 'chat_'
+    session['username_'] = 'admin_'
+    #session['df_chat'] = []
+    #session['df_id'] = 0
+    session['time'] = time.time()
+    session['google'] = False
+    session['index'] = 1
+    session['clear'] = False
+    session['debug'] = 0
+    session['lang'] = 'en'
+    session['new_lang'] = ''
+    session['user_msg'] = ''
+    session['error'] = ''
+    session['RUN_TEST'] = 0
+    session['switched_lang'] = False
+    session['url_icon'] = ''
+    session['YES_NO'] = False
+    session['yes_addition'] = ''
+
+    p(request.headers['X-Real-IP'], request.headers['X-Forwarded-For'])
+    if request.headers['X-Real-IP'] not in ['82.81.245.207', '50.17.220.95'] : # dr barak ip - no need to get a notice each time I log in
+      #p(request.headers['X-Real-IP'] != '82.81.245.207', request.headers['X-Real-IP'], type(request.headers['X-Real-IP']))
+      send_email(ip = request.headers['X-Real-IP'])
+  else:
+    if 'google' not in session:
         session['google'] = False
-        session['index'] = 1
+    if 'clear' not in session:
         session['clear'] = False
-        session['debug'] = 0
+    if not 'lang' in session:
         session['lang'] = 'en'
+    if not 'debug' in session:
+        session['debug'] = 0
+    if not 'new_lang' in session:
         session['new_lang'] = ''
+    if not 'user_msg' in session:
         session['user_msg'] = ''
+    if not 'error' in session:
         session['error'] = ''
+    if not 'RUN_TEST' in session:
+        session['RUN_TEST'] = 0
+    if not 'switched_lang' in session:
+        session['switched_lang'] = False
+    if not 'url_icon' in session:
+        session['url_icon'] = ''
+    if not 'YES_NO' in session:
+        session['YES_NO'] = False
+        session['yes_addition'] = ''
+    if not 'df_id' in session:
+        session['df_id'] = 0
+
+    if 'time' in session:
+      session_time = session['time']
+      delta = time.time() - session_time
+      if delta > IDLE_TIME or session['index'] == 0:
+        p('clear df_chat', delta > IDLE_TIME, session['index'] == 0)
+        #session['df_chat'] = []
+        session['time'] = time.time()
+        session['index'] = 1
+        session['google'] = False
+        session['clear'] = False
         session['RUN_TEST'] = 0
         session['switched_lang'] = False
         session['url_icon'] = ''
         session['YES_NO'] = False
         session['yes_addition'] = ''
+        session['df_id'] = -session['df_id']
 
-        p(request.headers['X-Real-IP'], request.headers['X-Forwarded-For'])
-        if request.headers['X-Real-IP'] not in ['82.81.245.207', '50.17.220.95'] : # dr barak ip - no need to get a notice each time I log in
-            #p(request.headers['X-Real-IP'] != '82.81.245.207', request.headers['X-Real-IP'], type(request.headers['X-Real-IP']))
-            send_email(ip = request.headers['X-Real-IP'])
+      else:  # reset the session time as long as no delay of more than idle_time
+        session['time'] = time.time()
     else:
-        if 'google' not in session:
-            session['google'] = False
-        if 'clear' not in session:
-            session['clear'] = False
-        if not 'lang' in session:
-            session['lang'] = 'en'
-        if not 'debug' in session:
-            session['debug'] = 0
-        if not 'new_lang' in session:
-            session['new_lang'] = ''
-        if not 'user_msg' in session:
-            session['user_msg'] = ''
-        if not 'error' in session:
-            session['error'] = ''
-        if not 'RUN_TEST' in session:
-            session['RUN_TEST'] = 0
-        if not 'switched_lang' in session:
-            session['switched_lang'] = False
-        if not 'url_icon' in session:
-            session['url_icon'] = ''
-        if not 'YES_NO' in session:
-            session['YES_NO'] = False
-            session['yes_addition'] = ''
+      #session['df_chat'] = []
+      session['time'] = time.time()
+      session['google'] = False
+      session['index'] = 1
+      session['clear'] = False
+      session['RUN_TEST'] = 0
+      session['switched_lang'] = False
+      session['url_icon'] = ''
+      session['YES_NO'] = False
+      session['yes_addition'] = ''
+      session['df_id'] = 0
 
-        if 'time' in session:
-            session_time = session['time']
-            delta = time.time() - session_time
-            if delta > IDLE_TIME or session['index'] == 0:
-                p('clear df_chat', delta > IDLE_TIME, session['index'] == 0)
-                session['df_chat'] = []
-                session['time'] = time.time()
-                session['index'] = 1
-                session['google'] = False
-                session['clear'] = False
-                session['RUN_TEST'] = 0
-                session['switched_lang'] = False
-                session['url_icon'] = ''
-                session['YES_NO'] = False
-                session['yes_addition'] = ''
+  LANG = session['lang']
+  new_lang = session['new_lang']
+  user_msg = session['user_msg']
 
-            else:  # reset the session time as long as no delay of more than idle_time
-                session['time'] = time.time()
+  id = intents[LANG]["messages"][5]["responses"][6]
+  conv = intents[LANG]["messages"][5]["responses"][7]
+
+  df_chat = pd.DataFrame([], columns=['index$', 'id$', 'conv$'])
+  if not 'df_id' in session:
+    session['df_id'] = 0
+  else:
+    df = read_from_db(session['df_id'])
+    if df is not None:
+      df_chat = df
+    else:
+      p('df is None so cleared log')
+  if len(df_chat) == 0:
+    session['url_icon'] = ''
+  '''
+  if session['df_chat'] == [] or len(session['df_chat']) == 0:
+    session['url_icon'] = ''
+  df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
+  '''
+  form = ChatForm()
+  if request.method == 'POST':
+    #p('debug', session['debug'], form.google.data, form.debug.data)
+    if form.run_bot.data or form.run_test.data or form.send_log.data:
+        if form.run_test.data:
+            if session['RUN_TEST'] == 0: session['RUN_TEST'] = 1
         else:
-            session['df_chat'] = []
-            session['time'] = time.time()
-            session['google'] = False
-            session['index'] = 1
-            session['clear'] = False
             session['RUN_TEST'] = 0
-            session['switched_lang'] = False
-            session['url_icon'] = ''
-            session['YES_NO'] = False
-            session['yes_addition'] = ''
+            if form.send_log.data:
+                form.user_msg.data = 'send log to drbarak@talkie.co.il'
+        answer, goodbye = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, user_msg)
+        if session['clear']:
+          session['index'] = 1
+          #session['df_chat'] = []
+          session['df_id'] = -session['df_id']
+          session['clear'] = False
+          session['url_icon'] = ''
+        index = session['index']
+        #id = intents[LANG]["messages"][5]["responses"][6]
+        #conv = intents[LANG]["messages"][5]["responses"][7]
+        bot = intents[LANG]["messages"][5]["responses"][5]
+        you = intents[LANG]["messages"][5]["responses"][4]
 
-    LANG = session['lang']
-    new_lang = session['new_lang']
-    user_msg = session['user_msg']
-    if session['df_chat'] == [] or len(session['df_chat']) == 0:
-        session['url_icon'] = ''
+        #session['df_chat'] = [[index + 1, bot + ': ', answer], [index, you + ': ', session['user_msg']]] + session['df_chat']
+        #df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
+        df_chat_data = [[index + 1, bot + ': ', answer], [index, you + ': ', session['user_msg']]]
+        if session['df_id'] > 0:
+          df_chat_data = df_chat_data + df_chat.values.tolist()
+        else:
+          session['df_id'] = -session['df_id']
+        df_chat = pd.DataFrame(df_chat_data, columns=['index$', 'id$', 'conv$'])
+        update_db(session['df_id'], df_chat)
 
-    id = intents[LANG]["messages"][5]["responses"][6]
-    conv = intents[LANG]["messages"][5]["responses"][7]
-    df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
-    form = ChatForm()
-    if request.method == 'POST':
-        #p('debug', session['debug'], form.google.data, form.debug.data)
-        if form.run_bot.data or form.run_test.data or form.send_log.data:
-            if form.run_test.data:
-                if session['RUN_TEST'] == 0: session['RUN_TEST'] = 1
-            else:
-                session['RUN_TEST'] = 0
-                if form.send_log.data:
-                    form.user_msg.data = 'send log to drbarak@talkie.co.il'
-            answer, goodbye = run_bot(form.user_msg.data, session['debug'], LANG, new_lang, user_msg)
-            if session['clear']:
-                session['index'] = 1
-                session['df_chat'] = []
-                session['clear'] = False
-                session['url_icon'] = ''
-            index = session['index']
-            id = intents[LANG]["messages"][5]["responses"][6]
-            conv = intents[LANG]["messages"][5]["responses"][7]
-            bot = intents[LANG]["messages"][5]["responses"][5]
-            you = intents[LANG]["messages"][5]["responses"][4]
-            session['df_chat'] = [[index + 1, bot + ': ', answer], [index, you + ': ', session['user_msg']]] + session['df_chat']
-            df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
-            session['index'] = index + 2
-            if goodbye == True:
-                session['clear'] = True # clear the log after displaying this message
-            return redirect('/chatbot')  # to clear the form fields
+        session['index'] = index + 2
+        if goodbye == True:
+          session['clear'] = True # clear the log after displaying this message
+        return redirect('/chatbot')  # to clear the form fields
 
-        elif form.google.data:
-            session['google'] = False if session['google'] else True
-            #send_email('Google was clicked')
-        elif form.debug.data:
-            session['debug'] = 0 if session['debug'] > 0 else 2
-    #df_chat_html = df_chat.style.applymap(lambda attr: 'font-weight: bold;', subset=['index'])
-    df_chat_html = (df_chat.style
-                        .set_properties(subset=['index'], **{'font-weight': 'bold'})
-                        .set_properties(subset=[conv], **{'width': '500px'})
-                        .set_properties(subset=['index'], **{'width': '20px'})
-                        .hide_index()
-                        .render()
-                        .replace('index','')
-                        )
-    form.run_bot.label.text = intents[LANG]["messages"][5]["responses"][1]
-    html = render_template('chatbot.html', title='CHAT BOT', form=form, error=session['error'],
-                        df_chat=df_chat_html, length=len(df_chat), debug=session['debug'],
-                        google=session['google'], prompts=intents[LANG]["messages"][5]["responses"],
-                        lang=LANG, run_test=session['RUN_TEST'], url_icon=session['url_icon'])
-    rtl = 'rtl' if LANG in ['he', 'iw', 'ar'] else ''
-    return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
+    elif form.google.data:
+        session['google'] = False if session['google'] else True
+        #send_email('Google was clicked')
+    elif form.debug.data:
+        session['debug'] = 0 if session['debug'] > 0 else 2
+        p('debug = ', session['debug'])
+
+  df_chat_html = (df_chat.style
+      .set_properties(subset=['index$'], **{'font-weight': 'bold'})
+      .set_properties(subset=['conv$'], **{'width': '500px'})
+      .set_properties(subset=['index$'], **{'width': '20px'})
+      .hide_index()
+      .render()
+      .replace('index$','')
+      .replace('conv$',conv)
+      .replace('id$',id)
+      )
+  form.run_bot.label.text = intents[LANG]["messages"][5]["responses"][1]
+  html = render_template('chatbot.html', title='CHAT BOT', form=form, error=session['error'],
+                      df_chat=df_chat_html, length=len(df_chat), debug=session['debug'],
+                      google=session['google'], prompts=intents[LANG]["messages"][5]["responses"],
+                      lang=LANG, run_test=session['RUN_TEST'], url_icon=session['url_icon'])
+
+  rtl = 'rtl' if LANG in ['he', 'iw', 'ar'] else ''
+  return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
 
 """# Run the bot"""
 
@@ -310,7 +387,6 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
         YES_NO = False
         user_msg = QUESTIONS[LANG][RUN_TEST- 1]
         RUN_TEST += 1
-        VERBOSE = 0
         if RUN_TEST > len(QUESTIONS[LANG]): RUN_TEST = 0
         p(user_msg)
 
@@ -415,14 +491,17 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
                   to = [tk for tk in doc1 if tk.like_email][0]
                   id = intents[LANG]["messages"][5]["responses"][6]
                   conv = intents[LANG]["messages"][5]["responses"][7]
-                  df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
+                  #df_chat = pd.DataFrame(session['df_chat'], columns=['index', id, conv])
+                  df_chat = read_from_db(session['df_id'])
                   df_chat_html = (df_chat.style
-                            .set_properties(subset=['index'], **{'font-weight': 'bold'})
-                            .set_properties(subset=[conv], **{'width': '500px'})
-                            .set_properties(subset=['index'], **{'width': '20px'})
+                            .set_properties(subset=['index$'], **{'font-weight': 'bold'})
+                            .set_properties(subset=['conv$'], **{'width': '500px'})
+                            .set_properties(subset=['index$'], **{'width': '20px'})
                             .hide_index()
                             .render()
-                            .replace('index','')
+                            .replace('index$','')
+                            .replace('conv$',conv)
+                            .replace('id$',id)
                             )
                   html = render_template('chatbot_4email.html', df_chat=df_chat_html, length=len(df_chat), lang=LANG)
                   rtl = 'rtl' if LANG in ['he', 'iw', 'ar'] else ''
@@ -432,7 +511,9 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
                   else:
                     answer = random.choice(answers)
                   break
-    #        if round == 2 and session['google']: round = 3 # to know we got the answer from get_parts()
+              else:
+                  tag = ''
+            #if round == 2 and session['google']: round = 3 # to know we got the answer from get_parts()
             parts = get_parts(user_msg.lower(), LANG, VERBOSE > 0) # need to use lower() because google might return in capitalization
             if VERBOSE:  p('x:', parts, round, LANG, switched_lang)
             if len(parts.get('date')) > 0:
@@ -521,5 +602,4 @@ def run_bot(user_msg, VERBOSE, LANG, new_lang, org_msg):
         yes_addition = f',{date}{action}'
       update_session(LANG, RUN_TEST, switched_lang, org_msg=org_msg, error=error, url_icon=url_icon, YES_NO=YES_NO, yes_addition=yes_addition)
       return answer, tag=="goodbye"
-
 

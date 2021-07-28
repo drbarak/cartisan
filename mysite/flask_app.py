@@ -18,6 +18,7 @@ app.config["SQLALCHEMY_POOL_RECYCLE"] = 299
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
+#db.session.expire_on_commit = False
 conn = db.engine.connect()
 
 class HashiDB(db.Model):
@@ -33,13 +34,75 @@ class HashiDB(db.Model):
     future2 = db.Column(db.Integer)
     future3 = db.Column(db.Text)
 
+class BotDB(db.Model):
+
+    __tablename__ = "chatbot"
+
+    id = db.Column(db.Integer, primary_key=True)
+    db_chat = db.Column(db.Text)
+    '''
+    # open MySQL Bash console
+    use drbarak$hashi;
+    show tables;
+    drop table chatbot;
+    create table chatbot(id int NOT NULL AUTO_INCREMENT, db_chat blob, PRIMARY KEY (id));
+    '''
+
+class GameDB(db.Model):
+
+    __tablename__ = "game"
+
+    id = db.Column(db.Integer, primary_key=True)
+    db_chat = db.Column(db.Text)
+    '''
+    create table game(id int NOT NULL, db_chat blob, PRIMARY KEY (id));
+    select * from game;
+    delete from game;
+    '''
+
 import prog.routes, prog.chatbot, prog.chatbot_init  # leave here to prevent circular imports
 prog.chatbot_init.init_chatbot()
 
-@app.route('/', methods=['GET', 'POST'])
+#@app.route('/', methods=['GET', 'POST'])
 @app.route('/chatbot', methods=['GET', 'POST'])
 def chatbot():
     return prog.chatbot.chatbot()
+
+import prog.game
+#prog.game_init.game_init()
+
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/game', methods=['GET', 'POST'])
+def game():
+    return prog.game.home()
+@app.route('/join_game/')
+def join_game():
+    return prog.game.join_game()
+@app.route('/create_game/<int:level>')
+def create_game(level):
+    return prog.game.create_game(level)
+@app.route('/start_game/<int:game_code>/<int:player>')
+def start_game(game_code, player):
+    return prog.game.start_game(game_code, player)
+@app.route('/wait_for_joining/<int:game_code>/<int:player>')
+def wait_for_joining(game_code, player):
+    return prog.game.wait_for_joining(game_code, player)
+@app.route('/join_validation/<int:game_code>')
+def join_validation(game_code):
+    return prog.game.join_validation(game_code)
+@app.route('/wait_for_game_start/<int:game_code>/<int:player>')
+def wait_for_game_start(game_code, player):
+    return prog.game.wait_for_game_start(game_code, player)
+@app.route('/show_question/<int:game_code>/<int:player>')
+def show_question(game_code, player):
+    return prog.game.show_question(game_code, player)
+@app.route('/get_answer/<int:game_code>/<int:player>/<int:answer>')
+def get_answer(game_code, player, answer):
+    return prog.game.get_answer(game_code, player, answer)
+@app.route('/wait_for_answers/<int:game_code>/<int:player>')
+def wait_for_answers(game_code, player):
+    return prog.game.wait_for_answers(game_code, player)
+
 
 #@app.route('/', methods=['GET', 'POST'])
 @app.route('/main_menu', methods=['GET', 'POST'])

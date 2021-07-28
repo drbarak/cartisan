@@ -76,7 +76,11 @@ def get_weather_info(actions, one_call, cnt, city_weather, default, LANG):
         result += f' {default},'
     if tag in ["weatherTemp", "weatherPressure", 'temp', "pressure", "humidity", "all"]:
       data_tag = data['main'] if tag == 'all' and not one_call else data
-      #one_call, tag, data_tag, data)
+      '''
+      p('in weather info 79', one_call, cnt, tag)
+      p(data_tag)
+      p(data)
+      '''
       if tag in [ "weatherTemp", "temp", "all"]:
         for i, temp in enumerate(MESSAGES[LANG]["messages"]["temp"]):
           if i == 0:
@@ -89,7 +93,7 @@ def get_weather_info(actions, one_call, cnt, city_weather, default, LANG):
               info = data_tag["feels_like"]
             else:
               info = data_tag["feels_like"]['day']
-            if one_call  and cnt == 0:
+            if one_call and cnt == 0:
               break
           elif i == 2: info = data_tag["temp_min"] if cnt == 0 else data_tag["temp"]["min"]
           elif i == 3: info = data_tag["temp_max"] if cnt == 0 else data_tag["temp"]["max"]
@@ -147,6 +151,7 @@ def get_weather(days, location, actions, range_days, LANG):
   #p(city_w, country_code)#
 
   fahrenheit = True if len([action for action in actions if action[0] == "fahrenheit"]) > 0 else False
+  if days < 0: days = 0   # if asked for a date before today
 
   one_call = (days > 0 or range_days > 1)
   city_weather_resp = call_web(city_w, country_code, fahrenheit, one_call, LANG)

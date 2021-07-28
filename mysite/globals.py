@@ -18,3 +18,5 @@ class Globals:
     step = -1
     steps = None
     first = True
+    games = {}
+    active_games = 0

@@ -68,7 +68,7 @@ def p(msg=None, *args):
     #app.logger.warning(msg)
 
 def init_chatbot():
-    p('init chatbot')
+  p('init chatbot')
 
 """# Get cities and update model"""
 
@@ -351,25 +351,25 @@ def send_email(text='Message from WeatherBot', subject='New Session', to="drbara
     return False
 
 def google_detect(user_msg):
-  p('in google_detect', user_msg)
+  #p('in google_detect', user_msg)
   try:
     if googletrans_api:
       response = translator.detect_language(user_msg)["language"]
     else:
       response = translator.detect(user_msg).lang
-    p('out google_detect', response)
+    #p('out google_detect', response)
     return response
   except Exception as e:
     p(e)
     return 'en'
 
 def google_translate(user_msg_, dest='en', VERBOSE=False):
-  p('in google_translate', user_msg_)
+  #p('in google_translate', user_msg_)
   try:
     user_msg = translator.translate(user_msg_, dest)
     if googletrans_api:
       if VERBOSE:  p(f"{user_msg['input']} ({user_msg['detectedSourceLanguage']}) --> {user_msg['translatedText']} ({dest})")
-      p('out google_translate', user_msg)
+      #p('out google_translate', user_msg)
       return user_msg["translatedText"]
     else:
       if VERBOSE:  p(f"{user_msg.origin} ({user_msg.src}) --> {user_msg.text} ({user_msg.dest})")
