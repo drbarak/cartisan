@@ -35,7 +35,7 @@ if GAME_DB:
                 }
     load_movies()
 
-    def read_from_db():
+    def read_from_db(lock = False):
       n = -1
       #p(f'in read_from_db [{n}], [{text}]')
       row = GameDB.query.get(n)
@@ -45,8 +45,11 @@ if GAME_DB:
         db.session.add(row)
         db.session.commit()
         db.engine.connect()
-      if row is None or row.db_chat is None:
-        return {}, 0
+      if not lock or row is None or row.db_chat is None:
+        db.session.close()  # unlock the record
+        db.engine.connect()
+        if row is None or row.db_chat is None:
+            return {}, 0
       df_chat = pickle.loads(row.db_chat)
       return df_chat, df_chat[-1]
 
@@ -70,7 +73,7 @@ TODO:
 2. what url is in 'summary.html' href='home' - no direct in app.py - I changed to 'game' = the start screen
 3. SOLVED: why do we need the 'wait_for_joining'? caused lose of global - worked 10 hours until I gave up and eliminated it all together - SOLVED: to know if another game was started or if somebody joined the game meanwhile
 4. SOLVED: When creating a game it shows intially 1 player but then changes to 0. Why? - SOLVED: needed to update db after adding the player
-5. to do show_summary() from show_question()
+5. DONE: to do show_summary() from show_question()
 '''
 
 question_delay = 15  # seconds for each question until time is up
@@ -78,16 +81,15 @@ answer_delay = 3  # seconds to remain in screen after showing each answer
 comm_delay = 10  # maximum communication delay allowed before moving to next question
 
 # remove old games if overall time allocated for their questions (+1 for summary screen) is due
-def clear_games():
+def clear_games(games):
     #global games#, question_delay, answer_delay, comm_delay
-    if GAME_DB: games, active_games = read_from_db()
     #p('in clear_games', games)
     for game in list(games):
         if game == -1: continue  # skip active_games field
         if datetime.now() - games[game].start_time() > \
                 timedelta(seconds=sum([question_delay, answer_delay, comm_delay]) * (games[game].total_questions()+1)):
             games.pop(game)
-            if GAME_DB:  update_db(games, active_games)
+    return games
 
 #app = Flask(__name__, static_folder='static')
 
@@ -101,25 +103,25 @@ def home():
 #@app.route('/create_game/<int:level>')
 def create_game(level):
     #global games, active_games
-    if GAME_DB:   games, active_games = read_from_db()
+    if GAME_DB: games, active_games = read_from_db(True)
     valid_game_code = False
     while not valid_game_code:
         game_code = random.randint(1000, 9999)
         valid_game_code = game_code not in games
     # before creating new games, take this opportunity to remove inactive ones
-    clear_games()
+    games = clear_games(games)
     game = Game(game_level=level)
     games[game_code] = game
     active_games += 1
     player = game.add_player()
-    if GAME_DB: update_db(games, active_games)
+    if GAME_DB: update_db(games, active_games)  # update and unlock the record
     #p('in create_game', game_code, games, active_games)
     return render_template('game/create_game.html', game_code=game_code, player=player, players=game.number_of_players())
 
 #@app.route('/start_game/<int:game_code>/<int:player>')
 def start_game(game_code, player):
     #global games
-    if GAME_DB:  games, active_games = read_from_db()
+    if GAME_DB: games, active_games = read_from_db(True)
     game = games[game_code]
     game.start()
     if GAME_DB:  update_db(games, active_games)
@@ -149,8 +151,10 @@ def join_game():
 #@app.route('/join_validation/<int:game_code>')
 def join_validation(game_code):
     #global games
-    if GAME_DB:  games, active_games = read_from_db()
+    if GAME_DB: games, active_games = read_from_db(True)
     if game_code not in games:
+        db.session.close()
+        db.engine.connect()
         message = 'Invalid game code'
         return render_template('game/join_game.html', game_code=game_code, message=message)
     game = games[game_code]
@@ -171,7 +175,9 @@ def wait_for_game_start(game_code, player):
 #@app.route('/show_question/<int:game_code>/<int:player>')
 def show_question(game_code, player):
     #global games, active_games
-    if GAME_DB:  games, active_games = read_from_db()
+    if GAME_DB:
+        games, active_games = read_from_db(True)
+        locked = True
     game = games[game_code]
     #p('in show_question', game_code, game.game_is_on, game.is_on(), games, active_games)
     # the first player asking for a new question after already answering the last question of the quiz -
@@ -179,14 +185,22 @@ def show_question(game_code, player):
     if game.is_on() and game.last_answer_number(player) == game.total_questions():
         game.end()
         active_games -= 1
-        if GAME_DB:  update_db(games, active_games)
+        if GAME_DB:
+            update_db(games, active_games)
+            locked = False
     #p('in show_question', game_code, active_games, game.is_on(), games)
     if not game.is_on():
         return show_summary(game_code, player)
     # while game is on, the first player requesting a new question triggers advancing the game to the next question
     if game.last_answer_number(player) == game.current_question():
         game.new_question()
-        if GAME_DB:  update_db(games, active_games)
+        if GAME_DB:
+            update_db(games, active_games)
+            locked = False
+    if GAME_DB:
+        if locked:
+            db.session.close()
+            db.engine.connect()
     question_info = f"question {game.current_question()} out of {game.total_questions()}"
     #p('in show_question1:', game_code, active_games, game.is_on(), question_info, game.video_source(), games)
     return render_template('game/question.html', game_code=game_code, player=player, video_source=game.video_source(),
@@ -195,7 +209,7 @@ def show_question(game_code, player):
 #@app.route('/get_answer/<int:game_code>/<int:player>/<int:answer>')
 def get_answer(game_code, player, answer):
     #global games
-    if GAME_DB: games, active_games = read_from_db()
+    if GAME_DB:  games, active_games = read_from_db(True)
     game = games[game_code]
     game.save_answer(player, answer)
     if GAME_DB: update_db(games, active_games)
@@ -237,13 +251,16 @@ def wait_for_answers(game_code, player):
 #@app.route('/get_answer/<int:game_code>/<int:player>')
 def show_summary(game_code, player):
     #global games
-    if GAME_DB: games, active_games = read_from_db()
+    if GAME_DB:  games, active_games = read_from_db(True)
     game = games[game_code]
     scores = game.scores()
     if not bool(scores):
         game.calc_scores()
         if GAME_DB: update_db(games, active_games)
         scores = game.scores()
+    elif GAME_DB:
+            db.session.close()
+            db.engine.connect()
     all_players_scores_info = game.winner_info() if game.number_of_players() > 1 else str()
     #x = game.winner_info() if game.number_of_players() > 1 else str()
     scores_dict = dict(scores)
@@ -314,6 +331,7 @@ class Game:
             self.answers[player] = {}
         self.answers[player][self.current_question()] = \
             {'answer': answer, 'is_correct': self.is_answer_correct(answer)}
+        p(self.answers[player])
 
     def is_answer_correct(self, answer):
         return answer == movies[self.game_level][self.current_question()]['correct_answer']
