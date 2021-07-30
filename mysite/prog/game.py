@@ -45,11 +45,13 @@ if GAME_DB:
         db.session.add(row)
         db.session.commit()
         db.engine.connect()
-      if not lock or row is None or row.db_chat is None:
+      if row is None or row.db_chat is None:
         db.session.close()  # unlock the record
         db.engine.connect()
-        if row is None or row.db_chat is None:
-            return {}, 0
+        return {}, 0
+      if not lock:
+        db.session.close()  # unlock the record
+        db.engine.connect()
       df_chat = pickle.loads(row.db_chat)
       return df_chat, df_chat[-1]
 
@@ -80,16 +82,23 @@ question_delay = 15  # seconds for each question until time is up
 answer_delay = 3  # seconds to remain in screen after showing each answer
 comm_delay = 10  # maximum communication delay allowed before moving to next question
 
+
+RANDOM = True
 # remove old games if overall time allocated for their questions (+1 for summary screen) is due
-def clear_games(games):
+def clear_games(games, active_games):
     #global games#, question_delay, answer_delay, comm_delay
     #p('in clear_games', games)
     for game in list(games):
         if game == -1: continue  # skip active_games field
+        #p('in clear_games', datetime.now()-games[game].start_time(), datetime.now(), games[game].start_time(), games[game].game_start_time, timedelta(seconds=sum([question_delay, answer_delay, comm_delay]) * (games[game].total_questions()+1)))
         if datetime.now() - games[game].start_time() > \
                 timedelta(seconds=sum([question_delay, answer_delay, comm_delay]) * (games[game].total_questions()+1)):
             games.pop(game)
-    return games
+            #p('pop', game, games)
+    if len(games) <= 1:
+        active_games = 0
+    p('in clear_games', games, active_games)
+    return games, active_games
 
 #app = Flask(__name__, static_folder='static')
 
@@ -102,6 +111,7 @@ def home():
 
 #@app.route('/create_game/<int:level>')
 def create_game(level):
+    if level > 2: level = 2
     #global games, active_games
     if GAME_DB: games, active_games = read_from_db(True)
     valid_game_code = False
@@ -109,7 +119,7 @@ def create_game(level):
         game_code = random.randint(1000, 9999)
         valid_game_code = game_code not in games
     # before creating new games, take this opportunity to remove inactive ones
-    games = clear_games(games)
+    games, active_games = clear_games(games, active_games)
     game = Game(game_level=level)
     games[game_code] = game
     active_games += 1
@@ -179,10 +189,16 @@ def show_question(game_code, player):
         games, active_games = read_from_db(True)
         locked = True
     game = games[game_code]
-    #p('in show_question', game_code, game.game_is_on, game.is_on(), games, active_games)
+    #p('in show_question', game_code, game.is_on(), game.last_answer_number(player), game.total_questions(), game.available_questions)
     # the first player asking for a new question after already answering the last question of the quiz -
     # triggers ending the game
-    if game.is_on() and game.last_answer_number(player) == game.total_questions():
+    if RANDOM and game.is_on() and len(game.available_questions) == 0: # no more questions left
+        end_game = True
+    elif not RANDOM and game.is_on() and game.last_answer_number(player) == game.total_questions():
+        end_game = True
+    else:
+        end_game = False
+    if end_game:
         game.end()
         active_games -= 1
         if GAME_DB:
@@ -283,10 +299,13 @@ class Game:
     curr_question_start_time: datetime = datetime.now()
     game_scores: list = field(default_factory=list)
     game_winner_info: str = str()
+    available_questions: list = field(default_factory=list)
 
     def start(self):
         self.game_is_on = True
         self.game_start_time = datetime.now()
+        if RANDOM:  self.available_questions = list(range(1, self.total_questions() + 1))
+        #p('in start', self.available_questions, self.game_start_time)
 
     def end(self):
         #global active_games
@@ -320,7 +339,16 @@ class Game:
         return self.players
 
     def new_question(self):
-        self.curr_question += 1
+        if RANDOM:
+            q = random.randint(1, self.total_questions())
+            while q not in self.available_questions:
+                q = random.randint(1, self.total_questions())
+            #p('new q0:', q, self.available_questions)
+            self.available_questions.pop(self.available_questions.index(q))
+            self.curr_question = q
+            #p('new q1:', q, self.available_questions)
+        else:
+            self.curr_question += 1
         self.curr_question_start_time = datetime.now()
 
     def current_question_start_time(self):
@@ -331,7 +359,7 @@ class Game:
             self.answers[player] = {}
         self.answers[player][self.current_question()] = \
             {'answer': answer, 'is_correct': self.is_answer_correct(answer)}
-        p(self.answers[player])
+        #p(self.answers[player])
 
     def is_answer_correct(self, answer):
         return answer == movies[self.game_level][self.current_question()]['correct_answer']
@@ -353,6 +381,8 @@ class Game:
     def last_answer_number(self, player):
         if player not in self.answers:
             return 0
+        if RANDOM:
+            return list(self.answers[player].keys())[-1]
         return max(self.answers[player].keys())
 
     def players_answered_yet(self):
