@@ -1,0 +1,134 @@
+{% extends 'game/base.html' %}
+
+{% block title%}Movie Quiz{% endblock %}
+
+{% block content %}
+
+<style>
+    .Center {
+        overflow-y: scroll;
+        width:50%;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 20px;
+        height:60%;
+        background: lightblue;
+        border-radius: 20px;
+        border: 2px;
+        padding: 5px;
+        #white-space: pre-wrap;
+        display: inline-block;
+        vertical-align:top
+    }
+</style>
+
+<div class="container pt-3">
+  <div class="row pt-3">
+    <div class="col-12" align="center">
+        <h2 class="text-center" style="color:white;">T-H-E &nbsp&nbsp M-O-V-I-E &nbsp&nbsp Q-U-I-Z</h2>
+    </div>
+  </div>
+  <div class="row pt-3">
+      <div class="col-12" align="center">
+          <h4 class="text-center" style="color:white;">&nbsp</h4>
+      </div>
+  </div>
+  <div class="row pt-3">
+    <div class="col-12" align="center">
+        <h3 class="text-center" style="color:white;">{{ message }}</h3>
+    </div>
+  </div>
+  <div class="row pt-3">
+      <div class="col-12" align="center">
+          <h6 class="text-center">&nbsp</h6>
+      </div>
+  </div>
+  <div class="row pt-3">
+      <div class="col-12">
+          <pre><h4 class="text-left" style="color:white;">           Select difficult level (1 to {{ max_level }}):</h4></pre>
+      </div>
+  </div>
+  <div class="row pt-1">
+      <div class="col-2" align="center">
+          <h3 class="text-center" style="color:white;">&nbsp</h3>
+      </div>
+      <div class="col-1" align="right">
+          <input type="range" id="rangeInput" name="rangeInput" min="1" max="{{ max_level }}" value="1"
+                 oninput="level.value=rangeInput.value">
+      </div>
+      <div class="col-2" align="center">
+          <input id="level" type="level" value="1" min="1" max="{{ max_level }}" oninput="rangeInput.value=level.value" />
+      </div>
+      <div class="col-7" align="center">
+          <h3 class="text-center" style="color:white;">&nbsp</h3>
+      </div>
+  </div>
+  <div class="row pt-1">
+    <div class="col-5">
+      <a id="create" class="button">
+        <span>Create Game</span>
+      </a>
+    </div>
+    <div class="col-5">
+      <a id="join" class="button" style="left: 260px;">
+        <span>Join Game</span>
+      </a>
+    </div>
+      <div class="col-2" align="center">
+            <h1 class="text-center" style="color:white;">&nbsp</h1>
+      </div>
+
+      <div class="col-2" align="center">
+            <h1 class="text-center" style="color:white;">&nbsp</h1>
+      </div>
+	  <div class="Center" align="center">
+    	Rules of the game
+        <br>
+        <div style="text-align: left;">
+            1. Create a game
+            <br>
+            2. If you want to play by yourself, just click start. Otherwise, send this website link to others, and tell them the game code. Each player enters the game code, and clicks "join"
+            <br>
+            3. You will see how many players have joined so far (including yourself). Once everybody joined, select "start"
+            <br>
+            4. The game is on! all players get the 1st question
+            <br>
+            5. In each question, all players hear a movie theme, see 2 movie posters, and need to select the poster that matches the theme
+            <br>
+            6. Each player has 15 seconds to answer. No reply counts as a wrong answer
+            <br>
+            7. When players select a poster, they see the correct poster and the number of players who answered correctly. The next question is shown when all players have answered, or when the time is up
+            <br>
+            8. After 10 questions, the quiz ends. The summary of correct answers is shown, along with the winner player's number
+            <br>
+            9. You may now quit or create and start a new quiz
+            <br>
+            10. Enjoy, and good luck !!!
+        </div>
+      </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+  <script>
+    document.getElementById('level').style.width="50px";
+    document.getElementById('level').style.height="20px";
+    $(document).ready(function() {
+        $( "#create" ).click(function() {
+            window.location.href =  "{{ url_for( 'create_game', level=0) }}".replace("0", $( "#level" ).val())
+        });
+    });
+  </script>
+
+  <script>
+    $(document).ready(function() {
+        $( "#join" ).click(function() {
+            window.location.href = "{{ url_for( 'join_game') }}"
+        });
+    });
+  </script>
+
+{% endblock javascripts %}

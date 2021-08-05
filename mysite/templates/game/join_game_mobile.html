@@ -1,0 +1,50 @@
+{% extends 'game/base.html' %}
+
+{% include 'game/base_mobile.html' %}
+
+{% block title%}Movie Quiz{% endblock %}
+
+{% block content %}
+
+<div class="text-center">
+    <div>
+        <label>Enter a game code:</label>
+        <input id="game_code" type="text" name="game_code" value={{ game_code }} size="1"/>
+    </div>
+    <div id="join_game" class="button_mobile">Join Game</div>
+    <br>
+    <br>
+    <h3_mobile>{{ message }}</h3_mobile>
+    <br>
+    <br>
+    <div id="home" class="button_mobile">Home</div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+        $( "#join_game" ).click(function() {
+          var g = $( "#game_code" ).val()
+            if (g <= 0 || g == null || g == '') {
+                g = -1;
+            }
+            //alert(g);
+            if (g > 0){
+              window.location.href =  "{{ url_for( 'join_validation', game_code=0) }}".replace("0", $( "#game_code" ).val());
+            };
+        });
+    });
+  </script>
+
+  <script>
+    $(document).ready(function() {
+        $( "#home" ).click(function() {
+            window.location.href =  "{{ url_for( 'game') }}"
+        });
+    });
+  </script>
+
+{% endblock javascripts %}

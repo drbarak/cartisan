@@ -1,0 +1,35 @@
+{% extends 'game/base.html' %}
+
+{% include 'game/base_mobile.html' %}
+
+{% block title%}Movie Quiz - wait{% endblock %}
+
+{% block content %}
+<br>
+<div class="text-center">
+    <h2_mobile>{{ response }}</h2_mobile>
+    <h3_mobile>{{ player_success_info }}</h3_mobile>
+    <br>
+    <br>
+    <img src = "{{ url_for('static', filename=poster_source) }}" style="max-width: 300px; max-height: 400px" align = "center"></img>
+    <br>
+    <br>
+    <h2_mobile>This is the right answer</h2_mobile>
+    <h3_mobile>{{ all_players_success_info }}</h3_mobile>
+</div>
+{% endblock %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+        setTimeout(nextQuestion, {{ answer_delay*1000 }});
+    });
+
+    function nextQuestion() {
+        window.location.href = "{{url_for('wait_for_other_answers', game_code=game_code, player=player)}}"
+    }
+  </script>
+
+{% endblock javascripts %}

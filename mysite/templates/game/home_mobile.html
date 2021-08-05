@@ -1,0 +1,71 @@
+{% extends 'game/base.html' %}
+
+{% include 'game/base_mobile.html' %}
+
+{% block title%}Movie Quiz{% endblock %}
+
+{% block content %}
+
+<div class="text-center">
+    <h3_mobile style="color:white;">{{ message }}</h3_mobile>
+    <br>
+    <br>
+    <div id="join" class="button_mobile">Join Game</div>
+    <br>
+    <br>
+    <h3_mobile id="or" style="color:red;">OR</h3_mobile>
+    <br>
+    <h3_mobile style="color:white;">Select difficulty</h3_mobile>
+    <h3_mobile style="color:white;">(1 to {{ max_level }}):</h3_mobile>
+    <br>
+    <input type="range" id="rangeInput" name="rangeInput" min="1" max="{{ max_level }}" value="1"
+                     oninput="level.value=rangeInput.value"/>
+    <input id="level" type="level" value="1" min="1" max="{{ max_level }}"
+                    oninput="rangeInput.value=level.value"/>
+    <br>
+    <br>
+    <div id="create" class="button_mobile">Create Game</div>
+    <br>
+    <br>
+    <div id="help" class="button_mobile">Help</div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+{% include 'game/base_pusher.html' %}
+
+  <script>
+
+    var duplicate_window = false;
+    $(document).ready(function () {
+        if (window.IsDuplicate()) {
+            alert("This is duplicate window\n\n Game functionality disabled...");
+            window.close();
+            duplicate_window = true;
+        }
+    });
+
+    document.getElementById('level').style.width="50px";
+    document.getElementById('level').style.height="20px";
+    $(document).ready(function() {
+        $( "#create" ).click(function() {
+            if (!duplicate_window){
+                window.location.href =  "{{ url_for( 'create_game', level=0) }}".replace("0", $( "#level" ).val())
+            };
+        });
+        $( "#join" ).click(function() {
+            if (!duplicate_window){
+                window.location.href = "{{ url_for( 'join_game') }}"
+            };
+        });
+        $( "#help" ).click(function() {
+            if (!duplicate_window){
+                window.location.href = "{{ url_for( 'help') }}"
+            };
+        });
+    });
+  </script>
+
+{% endblock javascripts %}

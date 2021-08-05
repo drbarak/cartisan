@@ -1,0 +1,34 @@
+<script>
+      // Enable pusher logging - don't include this in production
+  Pusher.logToConsole = true;
+
+  var pusher = new Pusher('370ad2f2bb3b0c02b4a8', {
+      cluster: 'ap2'
+  });
+
+  var socketId = null;
+  pusher.connection.bind("connected", function () {
+      socketId = pusher.connection.socket_id;
+  });
+
+  var channel = null;
+  var g = {{game_code}} + 0;  // trick to catch when game_code is undefined (eg. in home.html)
+  if (g > 0){
+      channel = pusher.subscribe('my-channel-' + g);
+      //writeToScreen(g)
+      //writeToScreen('my-channel-' + g)
+  };
+  /*
+    channel.bind('my-event', function(data) {
+      writeToScreen('data - in base_pusher')
+      writeToScreen(data)
+    });
+  */
+  // ways to display
+  //$("div#output").text("Realtime is go!");
+  //$("div#output").innerHTML(socketId);
+  //document.getElementById("output").innerHTML = socketId;
+  //alert(socketId);
+  //writeToScreen(tag)
+
+</script>

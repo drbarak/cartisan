@@ -1,0 +1,65 @@
+{% extends 'game/base.html' %}
+
+{% include 'game/base_mobile.html' %}
+
+{% block title%}Movie Quiz{% endblock %}
+
+{% block content %}
+
+<br>
+<div class="text-center">
+    <div class="col-xs-12 col-sm-12 padding-zero embed-responsive embed-responsive-16by9 video-container">
+        <video id="video1" align="center" autoplay controls>
+            <source src="{{ url_for('static', filename=video_source) }}" type="video/mp4">
+            <!-- <source src="/static/movies/1.mp4" type="video/mp4">  -->
+            Your browser does not support the video tag.
+        </video>
+
+    </div>
+    <div class="controls-container">
+        <div id="left" class="button_mobile">Select Left</div>
+        <div id="right" class="button_mobile">Select Right</div>
+    </div>
+    <div>
+        <h3_mobile>{{ question_info }}</h3_mobile>
+        <div style="align: right;">
+        {% include 'game/countdown.html' %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+<!-- Specific Page JS goes HERE  -->
+{% block javascripts %}
+
+  <script>
+    $(document).ready(function() {
+        //setTimeout(countdown, {{ 0 }});
+        countdown({{ question_delay-1 }});
+
+        setTimeout(nextQuestion, {{ question_delay*1000 }});
+    });
+
+    function nextQuestion() {
+        window.location.href = "{{url_for('get_answer', game_code=game_code, player=player, answer=0)}}"
+    }
+  </script>
+
+  <script>
+    $(document).ready(function() {
+        $( "#left" ).click(function() {
+            window.location.href =  "{{ url_for( 'get_answer', game_code=game_code, player=player, answer=1) }}"
+        });
+    });
+  </script>
+
+  <script>
+    $(document).ready(function() {
+        $( "#right" ).click(function() {
+            window.location.href =  "{{ url_for( 'get_answer', game_code=game_code, player=player, answer=2) }}"
+        });
+    });
+  </script>
+
+{% endblock javascripts %}

@@ -1,0 +1,99 @@
+{% extends 'game/base.html' %}
+
+{% include 'game/base_mobile.html' %}
+
+{% block title%}Movie Quiz{% endblock %}
+
+{% block content %}
+
+<style>
+.header {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  column-gap: 0px;
+  color: white;
+}
+.header-left {
+  justify-self: start;
+  align-self: center;
+  text-align: left;
+}
+.header-center {
+  justify-self: center;
+  align-self: center;
+  text-align: center;
+}
+.header-right {
+  justify-self: left;
+  align-self: right;
+  text-align: bottom;
+}
+</style>
+<div class="text-center">
+  <br>
+  <br>
+  <div class="header">
+  <div class="header-left"></div>
+  <div class="header-center">
+    <labels>Your game code is</labels>
+    <input id="game_code" type="text" name="game_code" value={{ game_code }} size="2" disabled="disabled" />
+    <br>
+    <br>
+    <labels>Your player number is</labels>
+    <input id="player" type="text" name="player" value={{ player }} size="2" disabled="disabled" />
+    <br>
+    <br>
+    <labels>Already Joined</labels>
+    <input id="joined" type="text" name="joined" value={{ players }} size="2" disabled="disabled" />
+  </div>
+  <div class="header-right">
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>          
+    <div id="stars" style="color: white; display: inline-block;"> *</div>
+  </div>
+  </div>
+
+  <br>
+  <div id="start" class="button_mobile">Start Game</div>
+  <br>
+  <br>
+  <div id="home" class="button_mobile">Home</div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+{% include 'game/base_pusher.html' %}
+
+  <script>     
+    var game_players = {{players}};
+    
+    channel.bind('my-event', function(data) {
+      var tag = data["tag"];
+      if (tag == 'player joined') {
+        game_players += 1;
+        document.getElementById("joined").value = game_players;
+        document.getElementById("stars").innerHTML =  "*".repeat(game_players);  
+      };
+    });
+  </script>
+
+  <script>    
+    $(document).ready(function() {
+        $( "#start" ).click(function() {
+            window.location.href =  "{{ url_for( 'start_game', game_code=game_code, player=player) }}"
+        });
+    });
+
+    $(document).ready(function() {
+        $( "#home" ).click(function() {
+            window.location.href =  "{{ url_for( 'game') }}"
+        });
+    });
+  </script>
+  
+{% endblock javascripts %}
