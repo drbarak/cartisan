@@ -48,7 +48,7 @@
     });
 
     function nextQuestion() {
-        window.location.href = "{{url_for('show_question', game_code=game_code, player=player)}}"
+        window.location.href = "{{url_for('wait_for_other_answers', game_code=game_code, player=player)}}"
     }
   </script>
 

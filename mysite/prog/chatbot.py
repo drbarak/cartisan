@@ -24,7 +24,7 @@ from prog.chatbot_web import get_weather
 IDLE_TIME = 60 * 30 # max half an hour between questions to the bot
 
 def read_from_db(n):
-  p(f'in read_froM_db [{n}]')
+  #p(f'in read_from_db [{n}]')
   row = BotDB.query.get(n)
   #p('read record', n)
   #p(row)
@@ -52,7 +52,7 @@ def add_todb(df):
 
 def update_db(n, df):
   row = BotDB.query.get(n)
-  p('in update_db', n)
+  #p('in update_db', n)
   '''
   p(df)
   p(row)
@@ -165,8 +165,7 @@ def chatbot():
     df = read_from_db(session['df_id'])
     if df is not None:
       df_chat = df
-    else:
-      p('df is None so cleared log')
+#    else: p('df is None so cleared log')
   if len(df_chat) == 0:
     session['url_icon'] = ''
   '''

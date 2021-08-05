@@ -36,7 +36,8 @@
       <h3 class="text-center" style="color:white;">Already Joined:</h3>
     </div>
     <div class="col-6" align="center">
-      <input type="text" name="joined" value={{ players }} disabled="disabled" />
+      <input id="joined" type="text" name="joined" value={{ players }} disabled="disabled" />
+      <div id="stars" style="color: white; display: inline-block;"> *</div>
     </div>
   </div>
   <div class="row pt-3">
@@ -62,14 +63,19 @@
 
 {% block javascripts %}
 
-  <script>
-    $(document).ready(function() {
-        setInterval(fetchFromServer, 1000);
-    });
+{% include 'game/base_pusher.html' %}
 
-    function fetchFromServer() {
-        window.location.href = "{{url_for('wait_for_joining', game_code=game_code, player=player)}}"
-    }
+  <script>
+    var game_players = {{players}};
+
+    channel.bind('my-event', function(data) {
+      var tag = data["tag"];
+      if (tag == 'player joined') {
+        game_players += 1;
+        document.getElementById("joined").value = game_players;
+        document.getElementById("stars").innerHTML =  "*".repeat(game_players);
+      };
+    });
   </script>
 
 {% endblock javascripts %}

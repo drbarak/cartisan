@@ -11,11 +11,6 @@
     </div>
   </div>
   <div class="row pt-3">
-      <div class="col-12" align="center">
-          <h4 class="text-center" style="color:white;">&nbsp</h4>
-      </div>
-  </div>
-  <div class="row pt-3">
     <div class="col-12" align="center">
         <h3 class="text-center" style="color:white;">{{ message }}</h3>
     </div>
@@ -27,7 +22,7 @@
   </div>
   <div class="row pt-3">
       <div class="col-12">
-          <pre><h4 class="text-left" style="color:white;">           select a quiz number:</h4></pre>
+          <pre><h4 class="text-left" style="color:white;">           Select difficulty: (1 to {{ max_level }})</h4></pre>
       </div>
   </div>
   <div class="row pt-1">
@@ -39,27 +34,72 @@
                  oninput="level.value=rangeInput.value">
       </div>
       <div class="col-2" align="center">
-          <input id="level" type="level" value="1" min="1" max="2" oninput="rangeInput.value=level.value" />
+          <input id="level" type="level" disabled value="1" min="1" max="2" oninput="rangeInput.value=level.value" />
       </div>
       <div class="col-7" align="center">
           <h3 class="text-center" style="color:white;">&nbsp</h3>
       </div>
   </div>
   <div class="row pt-1">
-      <div class="col-5">
-            <a id="create" class="button">
-                <span>Create Game</span>
-            </a>
-      </div>
-      <div class="col-5">
-          <a class="button" href="{{ url_for( 'join_game' ) }}" style="left: 260px;">
-              <span>Join Game</span>
+    <div class="col-5">
+          <a id="create" class="button">
+              <span>Create Game</span>
           </a>
-      </div>
-      <div class="col-2" align="center">
-            <h1 class="text-center" style="color:white;">&nbsp</h1>
-      </div>
+    </div>
+    {% if active_games > 0 %}
+    <div class="col-5">
+        <a  id="join" class="button" style="left: 260px;">
+            <span>Join Game</span>
+        </a>
+    </div>
+    <div class="col-2" align="center">
+          <h1 class="text-center" style="color:white;">&nbsp</h1>
+    </div>
+    {% else %}
+    <div class="col-7" align="center">
+        <h3 class="text-center" style="color:white;">&nbsp</h3>
+    </div>
+    {% endif %}
   </div>
+
+  <div class="col-md-4 col-md-offset-4 text-center">
+    <a id="help1" class="button">
+              <span>Help2</span>
+    </a>
+</div>
+
+<style>
+.button_mobile {
+  margin:0 auto;
+  display: inline-block;
+  padding: 5px 15px;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  outline: none;
+  color: black;
+  background-color: white;
+  border: 5px;
+  border-radius: 15px;
+  box-shadow: 0 9px #999;
+}
+
+.button_mobile:hover {background-color: gray;}
+
+.button_mobile:active {
+  background-color: #e7e7e7;;
+  box-shadow: 0 5px #666;
+  transform: translateY(4px);
+}
+</style>
+<div style="text-align:center">
+    <br>
+    <br>
+    <br>
+    <br>
+    <div id="help" class="button_mobile">Help</div>
 </div>
 
 {% endblock %}
@@ -67,11 +107,33 @@
 {% block javascripts %}
 
   <script>
+
+    var duplicate_window = false;
+    $(document).ready(function () {
+        if (window.IsDuplicate()) {
+            alert("This is duplicate window\n\n Game functionality disabled...");
+            window.close();
+            duplicate_window = true;
+        }
+    });
+
     document.getElementById('level').style.width="50px";
     document.getElementById('level').style.height="20px";
     $(document).ready(function() {
         $( "#create" ).click(function() {
-            window.location.href =  "{{ url_for( 'create_game', level=0) }}".replace("0", $( "#level" ).val())
+            if (!duplicate_window){
+                window.location.href =  "{{ url_for( 'create_game', level=0) }}".replace("0", $( "#level" ).val())
+            };
+        });
+        $( "#join" ).click(function() {
+            if (!duplicate_window){
+                window.location.href = "{{ url_for( 'join_game') }}"
+            };
+        });
+        $( "#help" ).click(function() {
+            if (!duplicate_window){
+                window.location.href = "{{ url_for( 'help') }}"
+            };
         });
     });
   </script>

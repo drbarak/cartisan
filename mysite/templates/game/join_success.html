@@ -39,14 +39,28 @@
 
 {% block javascripts %}
 
+{% include 'game/base_pusher.html' %}
+
   <script>
+    channel.bind('my-event', function(data) {
+      var tag = data["tag"];
+      //alert(tag)
+      if (tag == 'start') {
+        window.location.href = "{{url_for('show_question', game_code=game_code, player=player)}}"
+      };
+    });
+  </script>
+
+  <script>
+  /*
     $(document).ready(function() {
         setInterval(fetchFromServer, 1000);
     });
 
     function fetchFromServer() {
-        window.location.href = "{{url_for('wait_for_game_start', game_code=game_code, player=player)}}"
+        //window.location.href = "{{url_for('wait_for_game_start', game_code=game_code, player=player)}}"
     }
+  */
   </script>
 
 {% endblock javascripts %}

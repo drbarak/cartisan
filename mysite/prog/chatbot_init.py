@@ -56,15 +56,15 @@ icon_url = " http://openweathermap.org/img/wn/{0}@2x.png"  # 10d
 def p(msg=None, *args):
     try:
         if msg is None:
-            print('', file=sys.stderr)
+            print('', file=sys.stderr, flush=True)
             return
     except: # if there is an error (eg. msg is a DataFrame (on some version of pyhton) can not test for None)
         pass  # if the is an excpetion we know it is not None
     msg = f'{msg}'
     for k in args:
         msg = msg + f' {k}'
-    print(msg, file=sys.stderr)
-    # from flask_app import app
+    print(msg, file=sys.stderr, flush=True)
+    #from flask_app import app
     #app.logger.warning(msg)
 
 def init_chatbot():
@@ -189,7 +189,7 @@ def load_messages():
       intents.update(dic['intents']['language'])
       MESSAGES.update(dic['messages']['language'])
     MESSAGES_lang = list(MESSAGES.keys())
-  p(MESSAGES_lang)
+  #p(MESSAGES_lang)
   return MESSAGES_lang, MESSAGES, MESSAGES_en, intents, intents_en
 MESSAGES_lang, MESSAGES, MESSAGES_en, intents, intents_en = load_messages()
 

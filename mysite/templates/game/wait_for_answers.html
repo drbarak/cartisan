@@ -35,10 +35,13 @@
         <h1 class="text-center" style="color:white;">&nbsp</h1>
     </div>
   </div>
+
   <div class="row pt-3">
-    <div class="col-12" align="center">
-        <h3 class="text-center" style="color:white;">{{ time_info }}</h3>
-    </div>
+    <h3 class="col-12" align="center" style="color: white; display: inline-block;">
+        <div  style="color: white; display: inline-block;">maximum seconds remaining: </div>
+        <div id="time_info" style="color: white; display: inline-block;">{{ time_info }}</div>
+    </h3>
+
   </div>
 </div>
 
@@ -46,14 +49,29 @@
 
 {% block javascripts %}
 
+{% include 'game/base_pusher.html' %}
+
   <script>
+    var time_info = {{time_info}};
+
     $(document).ready(function() {
-        setInterval(fetchFromServer, 300);
+        setInterval(updateTime, 1000);
     });
 
-    function fetchFromServer() {
-        window.location.href = "{{url_for('wait_for_answers', game_code=game_code, player=player)}}"
-    }
+    function updateTime() {
+        time_info -= 1
+        document.getElementById("time_info").innerHTML = time_info;
+        if (time_info <= 0){
+            window.location.href = "{{url_for('show_question', game_code=game_code, player=player)}}"
+        };
+    };
+
+   channel.bind('my-event', function(data) {
+      var tag = data["tag"];
+      if (tag == 'next') {
+        window.location.href = "{{url_for('show_question', game_code=game_code, player=player)}}"
+      };
+    });
   </script>
 
 {% endblock javascripts %}

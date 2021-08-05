@@ -60,6 +60,7 @@ class GameDB(db.Model):
     delete from game;
     '''
 
+#from prog.chatbot_init import p
 import prog.routes, prog.chatbot, prog.chatbot_init  # leave here to prevent circular imports
 prog.chatbot_init.init_chatbot()
 
@@ -69,12 +70,15 @@ def chatbot():
     return prog.chatbot.chatbot()
 
 import prog.game
-#prog.game_init.game_init()
+prog.game.init_game()
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/game', methods=['GET', 'POST'])
 def game():
     return prog.game.home()
+@app.route('/help')
+def help():
+    return prog.game.help()
 @app.route('/join_game/')
 def join_game():
     return prog.game.join_game()
@@ -87,6 +91,9 @@ def start_game(game_code, player):
 @app.route('/wait_for_joining/<int:game_code>/<int:player>')
 def wait_for_joining(game_code, player):
     return prog.game.wait_for_joining(game_code, player)
+@app.route('/join_validation/')
+def join_validation_():
+    return prog.game.join_validation(0)
 @app.route('/join_validation/<int:game_code>')
 def join_validation(game_code):
     return prog.game.join_validation(game_code)
@@ -102,9 +109,12 @@ def get_answer(game_code, player, answer):
 @app.route('/wait_for_answers/<int:game_code>/<int:player>')
 def wait_for_answers(game_code, player):
     return prog.game.wait_for_answers(game_code, player)
-
+@app.route('/wait_for_other_answers/<int:game_code>/<int:player>')
+def wait_for_other_answers(game_code, player):
+    return prog.game.wait_for_answers(game_code, player, True)
 
 #@app.route('/', methods=['GET', 'POST'])
+@app.route('/hashi', methods=['GET', 'POST'])
 @app.route('/main_menu', methods=['GET', 'POST'])
 def main_menu():
     if 'init_' not in session:
