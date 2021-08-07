@@ -2,11 +2,9 @@
 
 from flask import render_template, request, session
 from dataclasses import dataclass, field
-import random, time, sys
+import random, time, sys, json
 
 from prog.chatbot_init import send_email
-
-print()
 
 def p(msg=None, *args):
     try:
@@ -68,10 +66,10 @@ else:
 
 movies = {}
 max_level = 0
+static_dir_prefix = '/home/drbarak/mysite/static'
 def load_movies():
     global movies, max_level
     #static_dir_prefix = "./static"
-    static_dir_prefix = '/home/drbarak/mysite/static'
 
     movies_dir = '/movies/'
     posters_dir = '/posters/'
@@ -101,6 +99,9 @@ comm_delay = 10  # maximum communication delay allowed before moving to next que
 max_time_to_start = 60 * 30 # max half an hour to start a game
 RANDOM = True   # pickup questions randomly and not sequentially
 
+LANG = ''
+title,  MESSAGES_lang, MESSAGES = '', '', ''
+
 import pusher
 
 pusher_client = pusher.Pusher(
@@ -111,10 +112,35 @@ pusher_client = pusher.Pusher(
   ssl=True
 )
 
+def get_json(fname):
+  with open(static_dir_prefix + fname, encoding="utf8") as f:
+    return json.loads(f.read())
+
+def load_messages():
+  fname = 'messages.json'
+  messages = get_json(fname)
+  MESSAGES = {lang: messages["messages"]["language"][lang] for lang in messages["messages"]["language"]}
+  MESSAGES_lang = list(MESSAGES.keys())
+  return MESSAGES_lang, MESSAGES
+
+def my_render_template(path, *args, **kargs):
+  html = render_template(path, **kargs)
+  rtl = 'rtl' if LANG in ['he', 'iw', 'ar'] else ''
+  return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
+
 def init_game():
+    global LANG, title, MESSAGES_lang, MESSAGES
     if max_level == 0:
         load_movies()
-    p('in game_init', max_level)
+    if LANG == '':
+        lang = request.args.get('lang')
+        if lang is None:
+          lang = LANG # remember last choice
+        LANG = 'en' if lang is None else lang
+        MESSAGES_lang, MESSAGES = load_messages()
+        title = MESSAGES[LANG]["messages"]["title"]
+    msg = f'in game_init {max_level}'
+    p(msg)
 
 '''
 TODO:
@@ -155,13 +181,20 @@ def home(msg = ''):
         session['time'] = time.time()
         session['game_code'] = 0
         session['player'] = 0
+        session['lang'] = 'en'
 
         isMobile = any(ele in request.headers['User-Agent'] for ele in ['iPhone', 'iPad', 'iPod', 'Android'])
         session["mobile"] = '_mobile' if isMobile else ''
 
-    elif 'game_code' not in session:
-        session['game_code'] = 0
-        session['player'] = 0
+        if request.headers['X-Real-IP'] not in ['82.81.245.207', '50.17.220.95'] : # dr barak ip - no need to get a notice each time I log in
+            send_email(text=msg, subject='Notice from Game', ip=request.headers['X-Real-IP'], src='Movie Quiz')
+    else:
+        if not 'game_code' in session:
+            session['game_code'] = 0
+            session['player'] = 0
+        if not 'lang' in session:
+            session['lang'] = 'en'
+
 
     if 'time' in session:
       session_time = session['time']
@@ -171,21 +204,28 @@ def home(msg = ''):
         session['player'] = 0
 
     session['time'] = time.time()
+    LANG = session['lang']
 
     #global active_games
     if GAME_DB:  games, active_games = read_from_db()  # do not clear_games, because players that want to join come here initally and created games but not started may pass the time alloted
-    message = f"Games currently running: {active_games}{msg}"
     #p('in home', message, session["mobile"])
-    return render_template(f'game/home{session["mobile"]}.html', active_games=active_games, message=message, max_level=max_level)
+    if session["mobile"] == '':
+        message = f"Games currently running: {active_games}{msg}"
+        return render_template(f'game/home{session["mobile"]}.html', active_games=active_games, message=message, max_level=max_level)
+    messages = MESSAGES[LANG]["messages"]["home"]
+    messages[0] = f'{messages[0]} {active_games}'
+    messages[3] = messages[3].format(max_level)
+    return  my_render_template(f'game/home{session["mobile"]}.html', messages=messages, title=title, lang=LANG)
+
 
 #@app.route('/help')
 def help():
-
+    '''
     log, _ = read_from_db(True, n=-2)
     send_email(text=log['log'], subject='Log from Game')
     log['log'] = ''
     update_db(log, 0, n=-2)
-
+    '''
     return render_template('game/help_mobile.html')
 
 #@app.route('/create_game/<int:level>')

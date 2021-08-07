@@ -1,0 +1,56 @@
+{
+	"messages": {
+		"language": {
+			"en": {
+				"messages": {
+    				"title": "T-H-E &nbsp;&nbsp; M-O-V-I-E &nbsp;&nbsp; Q-U-I-Z",
+					"home": ["Games currently running:", "Join Gam", "OR", "Select difficulty (1 to {0})", "Create Game", "Help"],
+					"help": ["Rules of the game<br><div style=\"text-align: left;\">1. Create a game<br>2. If you want to play by yourself, just click \"start\". Otherwise, send this website link to others, and tell them the game code. Each player enters the game code, and clicks \"join\"<br>3. You will see how many players have joined so far (including yourself). Once everybody joined, select \"start\"<br>4. The game is on! all players get the first question<br>5. In each question, all players hear a movie theme, see 2 movie posters, and need to select the poster that matches the theme <br>6. Each player has 15 seconds to answer. No reply counts as a wrong answer<br>7. When players select a poster, they see the correct poster and the number of players who answered correctly. The next question is shown when all players have answered, or when the time is up <br>8. After 10 questions, the quiz ends. The summary of correct answers is shown, along with the winner player 's number <br>9. You may now quit or create and start a new quiz <br>10. Enjoy, and good luck!!!</div>", "Home"],
+					"create": ["Your game code is", "Your player number is", "Already Joined", "Start Game", "Home"],
+					"join": ["Enter a game code:", "Join Game", "Invalid game code", "Home"],
+					"join_success": ["Welcome!", "Your player number is:", "The game will start soon..."],
+					"question": ["Your browser does not support the video tag.", "Select Left", "Select Right", "question {0} out of {1}"],
+					"summary": ["GAME OVER", "Thank you for playing quiz no. ", "You had {0} correct answers out of {1}", "Top score, with {0} correct answers: {1}", "Play Again"],
+					"answer": ["PLAYER {0}", "YOU ARE!", "You are correct", "This is the right answer", ""]
+				}
+			},
+			"he": {
+				"messages": {
+    				"title": "ח-י-ד-ו-ן &nbsp;&nbsp; ה-ס-ר-ט",
+					"home": ["משחקים פעילים כעת:", "הצטרף/י למשחק", "או", "בחר/י רמת קושי (1 עד {0})", "צור/י משחק", "עזרה"],
+					"help": ["חוקי המשחק <br> <div style = \"text-align: left;\"> 1. צור משחק <br> 2. אם אתה רוצה לשחק בעצמך, פשוט לחץ על התחל. אחרת, שלח קישור לאתר זה לאחרים, וספר להם את קוד המשחק. כל שחקן נכנס לקוד המשחק ולוחץ \"הצטרף\" <br> 3. תראה כמה שחקנים הצטרפו עד כה (כולל את עצמך). לאחר שכולם הצטרפו, בחר \"התחל\" <br> 4. המשחק נמשך! כל השחקנים מקבלים את השאלה הראשונה <br> 5. בכל שאלה, כל השחקנים שומעים נושא סרט, רואים 2 כרזות סרטים וצריכים לבחור את הפוסטר שתואם את הנושא <br> 6. לכל שחקן יש 15 שניות לענות. אי תגובה נחשבת כתשובה שגויה <br> 7. כאשר שחקנים בוחרים כרזה, הם רואים מהי הכרזה הנכונה ואת מספר השחקנים שענו נכון. השאלה הבאה מוצגת כאשר כל השחקנים ענו, או כשהזמן נגמר <br> 8. לאחר 10 שאלות מסתיים החידון. מוצג סיכום התשובות הנכונות, יחד עם מספר השחקן המנצח <br> 9. כעת תוכלו לעזוב או ליצור ולהתחיל חידון חדש <br> 10. תהנו, ובהצלחה !!! </div>", "חזרה"],
+					"create": ["קוד המשחק שלך הוא", "מספר השחקן שלך", "כבר הצטרפו", "התחל/י משחק", "חזרה"],
+					"join_success": ["ברוך/ברוכה הבא/ה!", "מספר השחקן שלך הוא:", "המשחק יתחיל בקרוב ..."],
+					"question": ["הדפדפן שלך אינו תומך בסוג הווידאו שלנו.", "כרזה שמאלית", "כרזה ימנית", "שאלה {0} מתוך {1}"],					
+					"summary": ["המשחק נגמר", "תודה ששיחקת חידון מספר", "היו לך {0} תשובות נכונות מתוך {1}", "התוצאה הכי טובה, עם {0} תשובות נכונות: {1}", "שחק/י שוב"],
+					"answer": ["שחקן {0}", "את/ה!", "צדקת", "זו התשובה הנכונה", ""]
+				}
+			},
+			"fr": {
+				"messages": {
+                    "title": "L-E &nbsp;&nbsp; F-I-L-M &nbsp;&nbsp; Q-U-I-Z",
+                    "home": ["Jeux en cours :", "Rejoindre un jeu", "OU", "Sélectionner la difficulté (1 à {0})", "Créer un jeu", "Aide"],
+                    "help": ["Règles du jeu<br><div style=\"text-align: left;\">1. Créez un jeu<br>2. Si vous voulez jouer seul, cliquez simplement sur \" start\". Sinon, envoyez ce lien de site Web à d'autres, et dites-leur le code du jeu. Chaque joueur entre le code du jeu et clique sur \"rejoindre\"<br>3. Vous verrez combien de joueurs ont rejoint jusqu'à présent ( y compris vous-même). Une fois que tout le monde a rejoint, sélectionnez \"start\"<br>4. Le jeu est lancé ! tous les joueurs reçoivent la première question<br>5. Dans chaque question, tous les joueurs entendent un thème de film, voir 2 affiches de film , et doivent sélectionner l'affiche qui correspond au thème <br>6. Chaque joueur a 15 secondes pour répondre. Aucune réponse ne compte comme une mauvaise réponse<br>7. Lorsque les joueurs sélectionnent une affiche, ils voient l'affiche correcte et le numéro des joueurs qui ont répondu correctement. La question suivante s'affiche lorsque tous les joueurs ont répondu, ou lorsque le temps est écoulé <br>8. Après 10 questions, le quiz se termine. Le résumé des bonnes réponses s'affiche, ainsi que le joueur gagnant ' s numéro <br>9. Vous pouvez maintenant quitter ou cr manger et commencer un nouveau quiz <br>10. Bonne chance !!!</div>", "Home"],
+                    "create": ["Votre code de jeu est", "Votre numéro de joueur est", "Déjà rejoint", "Démarrer le jeu", "Accueil"],
+                    "join": ["Entrez un code de jeu :", "Rejoindre le jeu", "Code de jeu invalide", "Accueil"],
+                    "join_success": ["Bienvenue !", "Votre numéro de joueur est :", "Le jeu va bientôt commencer..."],
+                    "question": ["Votre navigateur ne prend pas en charge la balise vidéo.", "Sélectionnez à gauche", "Sélectionnez à droite", "question {0} sur {1}"],
+                    "summary": ["GAME OVER", "Merci d'avoir joué au quiz n°", "Vous avez eu {0} bonnes réponses sur {1}", "Meilleur score, avec {0} bonnes réponses : {1}" , "Rejouer"],
+                    "answer": ["JOUEUR {0}", "VOUS ÊTES !", "Vous avez raison", "C'est la bonne réponse", ""]					
+				}
+			},
+			"es": {
+				"messages": {
+                    "title": "L-A & nbsp; & nbsp; P-E-L-Í-C-U-L-A & nbsp; & nbsp; Q-U-I-Z",
+                    "inicio": ["Juegos en ejecución:", "Únete a juego", "O", "Selecciona dificultad (1 a {0})", "Crear juego", "Ayuda"],
+                    "help": ["Reglas del juego<br><div style=\"text-align: left;\"> 1. Crea un juego2. Si quieres jugar solo, haz clic en \"start\". De lo contrario, envíe el enlace de este sitio web a otros y dígales el código del juego. Cada jugador ingresa el código del juego y hace clic en \"unirse\"<br> 3. Verá cuántos jugadores se han unido hasta ahora ( incluyéndote a ti mismo). Una vez que todos se hayan unido, selecciona \"iniciar\" <br> 4. ¡El juego está en marcha! Todos los jugadores reciben la primera pregunta <br> 5. En cada pregunta, todos los jugadores escuchan un tema de película, mira 2 carteles de películas , y deben seleccionar el póster que coincida con el tema <br> 6. Cada jugador tiene 15 segundos para responder. Ninguna respuesta cuenta como una respuesta incorrecta <br> 7. Cuando los jugadores seleccionan un póster, ven el póster correcto y el número de jugadores que respondieron correctamente. La siguiente pregunta se muestra cuando todos los jugadores han respondido, o cuando se agota el tiempo <br> 8. Después de 10 preguntas, el cuestionario finaliza. Se muestra el resumen de las respuestas correctas, junto con el jugador ganador ' s número <br> 9. Ahora puede salir o cr Coma y comience un nuevo cuestionario <br> 10. ¡¡¡Disfruta y buena suerte !!! </div> "," Inicio "],
+                    "crear": ["Tu código de juego es", "Tu número de jugador es", "Ya estás inscrito", "Iniciar juego", "Inicio"],
+                    "unirse": ["Ingrese un código de juego:", "Unirse al juego", "Código de juego no válido", "Inicio"],
+                    "join_success": ["¡Bienvenido!", "Tu número de jugador es:", "El juego comenzará pronto ..."],
+                    "pregunta": ["Su navegador no es compatible con la etiqueta de video", "Seleccionar a la izquierda", "Seleccionar a la derecha", "pregunta {0} de {1}"],
+                    "resumen": ["JUEGO TERMINADO", "Gracias por jugar el cuestionario número", "Tuviste {0} respuestas correctas de {1}", "Puntaje máximo, con {0} respuestas correctas: {1}" , "Juega de nuevo"],
+                    "respuesta": ["JUGADOR {0}", "¡LO ESTÁS!", "Tienes razón", "Esta es la respuesta correcta", ""]				}
+			}
+		}
+    }
+}

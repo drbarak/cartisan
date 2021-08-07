@@ -310,7 +310,7 @@ update_nlp()
 import smtplib
 from email.message import EmailMessage
 
-def send_email(text='Message from WeatherBot', subject='New Session', to="drbarak@talkie.co.il", ip=''):
+def send_email(text='Message from WeatherBot', subject='New Session', to="drbarak@talkie.co.il", ip='', src='Weatherbot'):
   msg = EmailMessage()
   msg.set_content(text)
 
@@ -334,7 +334,7 @@ def send_email(text='Message from WeatherBot', subject='New Session', to="drbara
   '''.format(subject=subject, text=text), subtype='html')
 
   msg['Subject'] = f'{subject} from_ip={ip}'
-  msg['From'] = "Weatherbot <dr.zvibarak@gmail.com>"
+  msg['From'] = f"{src} <dr.zvibarak@gmail.com>"
   msg['To'] = to
 
   try:
