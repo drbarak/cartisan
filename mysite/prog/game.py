@@ -99,8 +99,7 @@ comm_delay = 10  # maximum communication delay allowed before moving to next que
 max_time_to_start = 60 * 30 # max half an hour to start a game
 RANDOM = True   # pickup questions randomly and not sequentially
 
-LANG = ''
-title,  MESSAGES_lang, MESSAGES = '', '', ''
+LANG, title,  MESSAGES_lang, MESSAGES = '', '', '', ''
 
 import pusher
 
@@ -113,7 +112,7 @@ pusher_client = pusher.Pusher(
 )
 
 def get_json(fname):
-  with open(static_dir_prefix + fname, encoding="utf8") as f:
+  with open(static_dir_prefix + '/' + fname, encoding="utf8") as f:
     return json.loads(f.read())
 
 def load_messages():
@@ -129,16 +128,8 @@ def my_render_template(path, *args, **kargs):
   return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
 
 def init_game():
-    global LANG, title, MESSAGES_lang, MESSAGES
     if max_level == 0:
         load_movies()
-    if LANG == '':
-        lang = request.args.get('lang')
-        if lang is None:
-          lang = LANG # remember last choice
-        LANG = 'en' if lang is None else lang
-        MESSAGES_lang, MESSAGES = load_messages()
-        title = MESSAGES[LANG]["messages"]["title"]
     msg = f'in game_init {max_level}'
     p(msg)
 
@@ -175,6 +166,7 @@ def clear_games(games, active_games):
 
 #@app.route('/')
 def home(msg = ''):
+    global LANG, title, MESSAGES_lang, MESSAGES
     if 'game_' not in session:
         session['game_'] = 'game_'
         session['username_'] = 'admin_'
@@ -205,18 +197,28 @@ def home(msg = ''):
 
     session['time'] = time.time()
     LANG = session['lang']
-
+    lang = request.args.get('lang')
+    p('in home', lang, request.args, LANG)
+    if lang is None:
+        lang = LANG # remember last choice
+    LANG = 'en' if lang == '' else lang
+    session['lang'] = LANG
+    if MESSAGES_lang == '':
+        MESSAGES_lang, MESSAGES = load_messages()
+    title = MESSAGES[LANG]["messages"]["title"]
+    p('in home1', LANG, session['lang'], title, len(MESSAGES), request.headers['X-Real-IP'])
     #global active_games
     if GAME_DB:  games, active_games = read_from_db()  # do not clear_games, because players that want to join come here initally and created games but not started may pass the time alloted
     #p('in home', message, session["mobile"])
     if session["mobile"] == '':
         message = f"Games currently running: {active_games}{msg}"
         return render_template(f'game/home{session["mobile"]}.html', active_games=active_games, message=message, max_level=max_level)
-    messages = MESSAGES[LANG]["messages"]["home"]
+    import copy
+    messages = copy.deepcopy(MESSAGES[LANG]["messages"]["home"])
+    p(messages[0])
     messages[0] = f'{messages[0]} {active_games}'
     messages[3] = messages[3].format(max_level)
     return  my_render_template(f'game/home{session["mobile"]}.html', messages=messages, title=title, lang=LANG)
-
 
 #@app.route('/help')
 def help():
@@ -226,7 +228,11 @@ def help():
     log['log'] = ''
     update_db(log, 0, n=-2)
     '''
-    return render_template('game/help_mobile.html')
+    if session["mobile"] == '':
+        return render_template('game/help_mobile.html')
+    LANG = session['lang']
+    messages = MESSAGES[LANG]["messages"]["help"]
+    return my_render_template(f'game/help{session["mobile"]}.html', messages=messages, title=title, lang=LANG)
 
 #@app.route('/create_game/<int:level>')
 def create_game(level):
@@ -248,8 +254,13 @@ def create_game(level):
     active_games += 1
     player = game.add_player()
     if GAME_DB: update_db(games, active_games)  # update and unlock the record
-    #p('in create_game', game_code, games, active_games)
-    return render_template(f'game/create_game{session["mobile"]}.html', game_code=game_code, player=player, players=game.number_of_players())
+    if session["mobile"] == '':
+        return render_template(f'game/create_game{session["mobile"]}.html', game_code=game_code, player=player, players=game.number_of_players())
+    LANG = session['lang']
+    p(f"in create_game1 [{LANG}] [{session['lang']}] {len(MESSAGES)}")
+    messages = MESSAGES[LANG]["messages"]["create"]
+    p('in create_game', LANG, messages[0])
+    return my_render_template(f'game/create_game{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, player=player, players=game.number_of_players())
 
 #@app.route('/start_game/<int:game_code>/<int:player>')
 def start_game(game_code, player):
@@ -283,7 +294,12 @@ def join_game():
         game_code = list(games.keys())[0]
         if game_code == -1: game_code = list(games.keys())[1]
         p('in join_game1', game_code, list(games.keys()))
-    return render_template(f'game/join_game{session["mobile"]}.html', game_code=game_code)
+    if session["mobile"] == '':
+        return render_template(f'game/join_game{session["mobile"]}.html', game_code=game_code)
+    LANG = session['lang']
+    #p('in join game', MESSAGES[LANG]["messages"])
+    messages = MESSAGES[LANG]["messages"]["join"]
+    return my_render_template(f'game/join_game{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code)
 
 #@app.route('/join_validation/<int:game_code>')
 def join_validation(game_code):
@@ -300,8 +316,13 @@ def join_validation(game_code):
     if invalid:
         db.session.close()
         #db.engine.connect()
-        message = 'Invalid game code' if invalid == 1 else 'Game already started!'
-        return render_template(f'game/join_game{session["mobile"]}.html', game_code=game_code, message=message)
+        if session["mobile"] == '':
+            message = 'Invalid game code' if invalid == 1 else 'Game already started!'
+            return render_template(f'game/join_game{session["mobile"]}.html', game_code=game_code, message=message)
+        LANG = session['lang']
+        messages = MESSAGES[LANG]["messages"]["join"]
+        message = messages[2] if invalid == 1 else messages[4]
+        return my_render_template(f'game/join_game{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, message=message)
     game = games[game_code]
     new_player = True;
     if session['game_code'] == game_code: # prevent a user from doing refresh from his screen and thus causing to add him as a new user' loosing the previous one (this prevents multipple tabsqwindows from the same computer also)
@@ -318,7 +339,11 @@ def join_validation(game_code):
     if new_player:
         pusher_client.trigger(f'my-channel-{game_code}', 'my-event', {'tag': 'player joined', 'msg': f"game {game_code} started"})
     #p(f"in join_validation [{f'my-channel-{game_code}'}]")
-    return render_template(f'game/join_success{session["mobile"]}.html', game_code=game_code, player=player)
+    if session["mobile"] == '':
+        return render_template(f'game/join_success{session["mobile"]}.html', game_code=game_code, player=player)
+    LANG = session['lang']
+    messages = MESSAGES[LANG]["messages"]["join_success"]
+    return my_render_template(f'game/join_success{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, player=player)
 
 #@app.route('/wait_for_game_start/<int:game_code>/<int:player>')
 def wait_for_game_start(game_code, player):
@@ -345,10 +370,9 @@ def show_question(game_code, player):
         end_game = True
     elif not RANDOM and
     '''
+    end_game = False
     if game.is_on() and game.last_answer_number(player) == game.total_questions(): # no more questions left
         end_game = True
-    else:
-        end_game = False
     if end_game:
         game.end()
         active_games -= 1
@@ -369,9 +393,16 @@ def show_question(game_code, player):
         if locked:
             db.session.close()
             #db.engine.connect()
-    question_info = f"question {game.current_question()} out of {game.total_questions()}"
-    #p('in show_question1:', game_code, active_games, game.is_on(), question_info, game.video_source(), games)
-    return render_template(f'game/question{session["mobile"]}.html', game_code=game_code, player=player, video_source=game.video_source(),
+    if session["mobile"] == '':
+        question_info = f"question {game.current_question()} out of {game.total_questions()}"
+        #p('in show_question1:', game_code, active_games, game.is_on(), question_info, game.video_source(), games)
+        return render_template(f'game/question{session["mobile"]}.html', game_code=game_code, player=player, video_source=game.video_source(),
+                           question_info=question_info, question_delay=question_delay)
+    LANG = session['lang']
+    messages = MESSAGES[LANG]["messages"]["question"]
+    question_info = messages[3].format(game.current_question(), game.total_questions())
+    p(f'in show_question: lang=[{LANG}]')
+    return my_render_template(f'game/question{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, player=player, video_source=game.video_source(),
                            question_info=question_info, question_delay=question_delay)
 
 #@app.route('/get_answer/<int:game_code>/<int:player>/<int:answer>')
@@ -389,23 +420,36 @@ def wait_for_answers(game_code, player, showed_answer=False):
     if GAME_DB: games, active_games = read_from_db()
     game = games[game_code]
     last_answer = game.last_answer(player)
-
     p(f'in wait_for_answer, player={player}, showed_answer={showed_answer}, last_answer={last_answer}, question_is_due={game.question_is_due()}, curr_question={game.current_question()}, last_answer_number={game.last_answer_number(player)}')
     # if everyone already answered or player's time is up - show the answer screen
     # last_answer=0 means player did not answer until the time is due
     # if last_answer_number(player) < curr_question it means the next question is already started and no need to wait for others (they all answered or the time expired)
     if game.question_is_due() or last_answer == 0 or not showed_answer or game.current_question() > game.last_answer_number(player): # did not show correct/not correct screen
         if not showed_answer:
-            player_success_info = 'You are correct!' if game.is_answer_correct(last_answer) else str()
+            if session["mobile"] == '':
+                player_success_info = 'You are correct!' if game.is_answer_correct(last_answer) else str()
+                if game.number_of_players() == 1:
+                    all_players_success_info = str()
+                else:
+                    correct_answers_from_others = game.correct_answers(game.current_question()) -\
+                                                  game.is_answer_correct(last_answer)
+                    all_players_success_info = f"correct answers from others: {correct_answers_from_others}"
+                p(f'in wait_for_answer showing answer for: player={player}')
+                return render_template(f'game/answer{session["mobile"]}.html', game_code=game_code,\
+                               player=player,\
+                               poster_source=game.poster_source(),\
+                               answer_delay=answer_delay,\
+                               player_success_info=player_success_info,\
+                               all_players_success_info=all_players_success_info)
+            LANG = session['lang']
+            messages = MESSAGES[LANG]["messages"]["answer"]
+            player_success_info = messages[0] if game.is_answer_correct(last_answer) else str()
             if game.number_of_players() == 1:
                 all_players_success_info = str()
             else:
-                correct_answers_from_others = game.correct_answers(game.current_question()) -\
-                                              game.is_answer_correct(last_answer)
-                all_players_success_info = f"correct answers from others: {correct_answers_from_others}"
-            p(f'in wait_for_answer showing answer for: player={player}')
-            return render_template(f'game/answer{session["mobile"]}.html', game_code=game_code,\
-                               player=player,\
+                correct_answers_from_others = game.correct_answers(game.current_question()) - game.is_answer_correct(last_answer)
+                all_players_success_info = messages[2] + f"{correct_answers_from_others}"
+            return my_render_template(f'game/answer{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, player=player,\
                                poster_source=game.poster_source(),\
                                answer_delay=answer_delay,\
                                player_success_info=player_success_info,\
@@ -418,9 +462,15 @@ def wait_for_answers(game_code, player, showed_answer=False):
         int(question_delay - (time.time() - game.current_question_start_time()) + answer_delay)#.total_seconds())
     )
     #time_info = f"maximum seconds remaining: {time_remains}"
-    players_info = f"answered so far: {game.players_answered_yet()} players"
-    p(f'in wait_for_answer wait for others for: player={player}, time_remains={time_remains}')
-    return render_template(f'game/wait_for_answers{session["mobile"]}.html', game_code=game_code, player=player,
+    if session["mobile"] == '':
+        players_info = f"answered so far: {game.players_answered_yet()} players"
+        p(f'in wait_for_answer wait for others for: player={player}, time_remains={time_remains}')
+        return render_template(f'game/wait_for_answers{session["mobile"]}.html', game_code=game_code, player=player,
+                           time_info=time_remains, players_info=players_info)
+    LANG = session['lang']
+    messages = MESSAGES[LANG]["messages"]["wait"]
+    player_success_info = messages[1].format(game.players_answered_yet())
+    return my_render_template(f'game/wait_for_answers{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, player=player,
                            time_info=time_remains, players_info=players_info)
 
 #@app.route('/get_answer/<int:game_code>/<int:player>')
@@ -429,21 +479,32 @@ def show_summary(game_code, player):
     if GAME_DB:  games, active_games = read_from_db(True)
     game = games[game_code]
     scores = game.scores()
+    LANG = session['lang']
+    messages = MESSAGES[LANG]["messages"]["summary"]
     if not bool(scores):
-        game.calc_scores(player)
+        game.calc_scores(player, messages)
         if GAME_DB: update_db(games, active_games)
         scores = game.scores()
     elif GAME_DB:
             db.session.close()
             #db.engine.connect()
-    all_players_scores_info = game.winner_info() if game.number_of_players() > 1 else str()
     #x = game.winner_info() if game.number_of_players() > 1 else str()
     scores_dict = dict(scores)
+    if session["mobile"] == '':
+        all_players_scores_info = game.winner_info() if game.number_of_players() > 1 else str()
+        if player in scores_dict:
+            player_score_info = f"You had {scores_dict[player]} correct answers out of {game.total_questions()}"
+        else:
+            player_score_info = str()
+        return render_template(f'game/summary{session["mobile"]}.html', game_code=game_code, player=player, level=game.level(),
+                           player_score_info=player_score_info, all_players_scores_info=all_players_scores_info)
+    all_players_scores_info = game.winner_info() if game.number_of_players() > 1 else str()
     if player in scores_dict:
-        player_score_info = f"You had {scores_dict[player]} correct answers out of {game.total_questions()}"
+        player_score_info = messages[2].format(scores_dict[player], game.total_questions())
     else:
         player_score_info = str()
-    return render_template(f'game/summary{session["mobile"]}.html', game_code=game_code, player=player, level=game.level(),
+    p('in summary', LANG, title)
+    return my_render_template(f'game/summary{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, player=player, level=game.level(),
                            player_score_info=player_score_info, all_players_scores_info=all_players_scores_info)
 
 @dataclass
@@ -587,7 +648,7 @@ class Game:
             players_answered += 1
         return players_answered == self.number_of_players()
 
-    def calc_scores(self, curr_player):
+    def calc_scores(self, curr_player, messages=None):
         scores = dict()
         for player in self.answers:
             scores[player] = sum(player_answer['is_correct'] for player_answer in self.answers[player].values())
@@ -596,12 +657,20 @@ class Game:
 
         self.game_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         winner, top_score = self.game_scores[0]
-        winner_info = f"PLAYER {winner}" if winner != curr_player else "YOU ARE!"
-        self.game_winner_info = f"Top score, with {top_score} correct answers: {winner_info}"
-        for player, score in self.game_scores[1:]:
-            if score != top_score:
-                break
-            self.game_winner_info = f"{self.game_winner_info}, PLAYER {player}"
+        if not messages:
+            winner_info = f"PLAYER {winner}" if winner != curr_player else "YOU ARE!"
+            self.game_winner_info = f"Top score, with {top_score} correct answers: {winner_info}"
+            for player, score in self.game_scores[1:]:
+                if score != top_score:
+                    break
+                self.game_winner_info = f"{self.game_winner_info}, PLAYER {player}"
+        else:
+            winner_info = messages[5].format(winner) if winner != curr_player else messages[6]
+            self.game_winner_info = messages[3].format(top_score, winner_info)
+            for player, score in self.game_scores[1:]:
+                if score != top_score:
+                    break
+                self.game_winner_info = f"{self.game_winner_info}, {messages[5].format(player)}"
 
     def scores(self):
         return self.game_scores

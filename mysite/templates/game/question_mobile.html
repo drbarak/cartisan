@@ -10,15 +10,19 @@
 <div class="text-center">
     <div class="col-xs-12 col-sm-12 padding-zero embed-responsive embed-responsive-16by9 video-container">
         <video id="video1" align="center" autoplay controls>
-            <source src="{{ url_for('static', filename=video_source) }}" type="video/mp4">
-            <!-- <source src="/static/movies/1.mp4" type="video/mp4">  -->
-            Your browser does not support the video tag.
+          <source src="{{ url_for('static', filename=video_source) }}" type="video/mp4">
+            {{ messages[0] }}
         </video>
 
     </div>
     <div class="controls-container">
-        <div id="left" class="button_mobile">Select Left</div>
-        <div id="right" class="button_mobile">Select Right</div>
+        {% if lang in ["he", "iw", "ar"] %}
+            <div id="right" class="button_mobile">{{ messages[2] }}</div>
+            <div id="left" class="button_mobile">{{ messages[1] }}</div>
+        {% else %}
+            <div id="left" class="button_mobile">{{ messages[1] }}</div>
+            <div id="right" class="button_mobile">{{ messages[2] }}</div>
+        {% endif %}
     </div>
     <div>
         <h3_mobile>{{ question_info }}</h3_mobile>
@@ -37,7 +41,6 @@
     $(document).ready(function() {
         //setTimeout(countdown, {{ 0 }});
         countdown({{ question_delay-1 }});
-
         setTimeout(nextQuestion, {{ question_delay*1000 }});
     });
 

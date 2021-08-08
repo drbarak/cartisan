@@ -8,13 +8,13 @@
 <br>
 <div class="text-center">
     <h2_mobile>{{ response }}</h2_mobile>
-    <h3_mobile>{{ player_success_info }}</h3_mobile>
+    <h2_mobile>{{player_success_info }}</h2_mobile>
     <br>
     <br>
     <img src = "{{ url_for('static', filename=poster_source) }}" style="max-width: 300px; max-height: 400px" align = "center"></img>
     <br>
     <br>
-    <h2_mobile>This is the right answer</h2_mobile>
+    <h2_mobile>{{ messages[1] }}</h2_mobile>
     <h3_mobile>{{ all_players_success_info }}</h3_mobile>
 </div>
 {% endblock %}

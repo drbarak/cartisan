@@ -7,16 +7,35 @@
 {% block content %}
 
 <div class="text-center">
-    <h3_mobile style="color:white;">{{ message }}</h3_mobile>
+  <div class="header">
+  <div class="header-left"></div>
+  <div class="header-center">
+    <h3_mobile>{{ messages[0] }}</h3_mobile>
+  </div>
+  <div class="header-right">
+    <a href={{ url_for( 'game', lang='en') }}>
+      <img src="/static/united-states-of-america-flag-icon-16.png" width="16" height="16" >
+    </a>
+    &nbsp;&nbsp;
+    <a href={{ url_for( 'game', lang='he') }}>
+      <img src="/static/israel-flag-icon-16.png" width="16" height="16" >
+    </a>
+    &nbsp;&nbsp;
+    <a href={{ url_for( 'game', lang='fr') }}>
+      <img src="/static/france-flag-icon-16.png" width="16" height="16" >
+    </a>
+    &nbsp;&nbsp;
+    <a href={{ url_for( 'game', lang='sp') }}>
+      <img src="/static/spain-flag-icon-16.png" width="16" height="16" >
+    </a>
+  </div>
+  </div>
+    <div id="join" class="button_mobile">{{messages[1]}}</div>
     <br>
     <br>
-    <div id="join" class="button_mobile">Join Game</div>
+  <h3_mobile id="or" style="color:red;">{{messages[2]}}</h3_mobile>
     <br>
-    <br>
-    <h3_mobile id="or" style="color:red;">OR</h3_mobile>
-    <br>
-    <h3_mobile style="color:white;">Select difficulty</h3_mobile>
-    <h3_mobile style="color:white;">(1 to {{ max_level }}):</h3_mobile>
+    <h3_mobile style="color:white;">{{messages[3]}}</h3_mobile>
     <br>
     <input type="range" id="rangeInput" name="rangeInput" min="1" max="{{ max_level }}" value="1"
                      oninput="level.value=rangeInput.value"/>
@@ -24,10 +43,10 @@
                     oninput="rangeInput.value=level.value"/>
     <br>
     <br>
-    <div id="create" class="button_mobile">Create Game</div>
+    <div id="create" class="button_mobile">{{messages[4]}}</div>
     <br>
     <br>
-    <div id="help" class="button_mobile">Help</div>
+    <div id="help" class="button_mobile">{{messages[5]}}</div>
 </div>
 
 {% endblock %}

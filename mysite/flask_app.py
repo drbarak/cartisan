@@ -62,12 +62,6 @@ class GameDB(db.Model):
 
 #from prog.chatbot_init import p
 import prog.routes, prog.chatbot, prog.chatbot_init  # leave here to prevent circular imports
-prog.chatbot_init.init_chatbot()
-
-#@app.route('/', methods=['GET', 'POST'])
-@app.route('/chatbot', methods=['GET', 'POST'])
-def chatbot():
-    return prog.chatbot.chatbot()
 
 import prog.game
 prog.game.init_game()
@@ -112,6 +106,13 @@ def wait_for_answers(game_code, player):
 @app.route('/wait_for_other_answers/<int:game_code>/<int:player>')
 def wait_for_other_answers(game_code, player):
     return prog.game.wait_for_answers(game_code, player, True)
+
+prog.chatbot_init.init_chatbot()
+
+#@app.route('/', methods=['GET', 'POST'])
+@app.route('/chatbot', methods=['GET', 'POST'])
+def chatbot():
+    return prog.chatbot.chatbot()
 
 #@app.route('/', methods=['GET', 'POST'])
 @app.route('/hashi', methods=['GET', 'POST'])

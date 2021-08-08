@@ -7,13 +7,13 @@
 {% block content %}
 <br>
 <div class="text-center">
-    <h2_mobile>... waiting for other answers ...</h2_mobile>
+    <h2_mobile>{{ messages[0] }}</h2_mobile>
     <br>
     <br>
     <h3_mobile>{{ players_info }}</h3_mobile>
     <br>
     <br>
-    <h3_mobile>maximum seconds remaining:</h3_mobile>
+    <h3_mobile>{{ messages[2] }}</h3_mobile>
     <h3_mobile id="time_info">{{ time_info }}</h3_mobile>
 </div>
 

@@ -26,33 +26,11 @@
 
 <div class="text-center">
 	<div class="Center">
-    	Rules of the game
-        <br>
-        <div style="text-align: left;">
-            1. Create a game
-            <br>
-            2. If you want to play by yourself, just click start. Otherwise, send this website link to others, and tell them the game code. Each player enters the game code, and clicks "join" 
-            <br>
-            3. You will see how many players have joined so far (including yourself). Once everybody joined, select "start" 
-            <br>
-            4. The game is on! all players get the 1st question
-            <br>
-            5. In each question, all players hear a movie theme, see 2 movie posters, and need to select the poster that matches the theme
-            <br>
-            6. Each player has 15 seconds to answer. No reply counts as a wrong answer
-            <br>
-            7. When players select a poster, they see the correct poster and the number of players who answered correctly. The next question is shown when all players have answered, or when the time is up 
-            <br>
-            8. After 10 questions, the quiz ends. The summary of correct answers is shown, along with the winner player's number
-            <br>
-            9. You may now quit or create and start a new quiz
-            <br>
-            10. Enjoy, and good luck !!!
-        </div>
-    </div> 
+    	{{ messages[0]|safe }}
+    </div>
     <br>
-    <br>   
-    <div id="home" class="button_mobile">Home</div>
+    <br>
+    <div id="home" class="button_mobile"> {{messages[1]}}</div>
 </div>
 
 {% endblock %}
@@ -60,7 +38,7 @@
 {% block javascripts %}
 
 {% include 'game/base_pusher.html' %}
-  
+
   <script>
     $(document).ready(function() {
         $( "#home" ).click(function() {

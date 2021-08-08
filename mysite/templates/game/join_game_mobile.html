@@ -8,16 +8,16 @@
 
 <div class="text-center">
     <div>
-        <label>Enter a game code:</label>
+        <label>{{ messages[0] }}</label>
         <input id="game_code" type="text" name="game_code" value={{ game_code }} size="1"/>
     </div>
-    <div id="join_game" class="button_mobile">Join Game</div>
+    <div id="join_game" class="button_mobile">{{ messages[1] }}</div>
     <br>
     <br>
     <h3_mobile>{{ message }}</h3_mobile>
     <br>
     <br>
-    <div id="home" class="button_mobile">Home</div>
+    <div id="home" class="button_mobile">{{ messages[3] }}</div>
 </div>
 
 {% endblock %}
@@ -31,7 +31,6 @@
             if (g <= 0 || g == null || g == '') {
                 g = -1;
             }
-            //alert(g);
             if (g > 0){
               window.location.href =  "{{ url_for( 'join_validation', game_code=0) }}".replace("0", $( "#game_code" ).val());
             };
