@@ -31,6 +31,8 @@ def valid_user():
 
 from flask_app import db, HashiDB, conn
 
+from prog.cartisan import clear_session
+
 def main_menu():
 #    p('conn:', conn)
 #        update()
@@ -40,6 +42,7 @@ def main_menu():
         p(session)
         p('Start Hashi Web')
         session['hashi_'] = 'hashi_'
+        clear_session()
 #        globals.first = False
 #        update()
     row = HashiDB.query.filter_by(id=45).first()

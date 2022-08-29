@@ -1,0 +1,49 @@
+{% extends 'game/base.html' %}
+
+{% include 'game/base_mobile.html' %}
+
+{% block title%}Movie Quiz{% endblock %}
+
+{% block content %}
+<br>
+<div class="text-center">
+    <h2_mobile>... waiting for other answers ...</h2_mobile>
+    <br>
+    <br>
+    <h3_mobile>{{ players_info }}</h3_mobile>
+    <br>
+    <br>
+    <h3_mobile>maximum seconds remaining:</h3_mobile>
+    <h3_mobile id="time_info">{{ time_info }}</h3_mobile>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+{% include 'game/base_pusher.html' %}
+
+  <script>
+    var time_info = {{time_info}};
+
+    $(document).ready(function() {
+        setInterval(updateTime, 1000);
+    });
+
+    function updateTime() {
+        time_info -= 1
+        document.getElementById("time_info").innerHTML = time_info;
+        if (time_info <= 0){
+            window.location.href = "{{url_for('show_question', game_code=game_code, player=player)}}"
+        };
+    };
+
+   channel.bind('my-event', function(data) {
+      var tag = data["tag"];
+      if (tag == 'next') {
+        window.location.href = "{{url_for('show_question', game_code=game_code, player=player)}}"
+      };
+    });
+  </script>
+
+{% endblock javascripts %}

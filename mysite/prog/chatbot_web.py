@@ -6,7 +6,7 @@ import pandas as pd
 
 from prog.chatbot_init import api_key, URL, icon_url
 from prog.chatbot_init import df_CITIES_API, countries_df, MESSAGES
-from prog.chatbot_init import cities_il_df
+from prog.chatbot_init import cities_il_df, cities_il_df_set
 from prog.chatbot_init import p, google_translate
 
 def call_web(city_name, country_code, fahrenheit, one_call, LANG):
@@ -133,14 +133,19 @@ def get_weather(days, location, actions, range_days, LANG):
   #p(dt, location)
   city_w = city = location[0][0]  # assume one city (not handling if there are 2 cities)
   country = location[0][1]
+    # to avoid the error, when country has multiple values, 'The truth value of a Series is ambiguous. Use a.empty, a.bool(), a.item(), a.any() or a.all().'
+  if type(country) == pd.Series:
+    country = country.iloc[0]
+
   #p(city, city_w)
   result = ''
 
   #convert israeli cities to district that the API knows ('sharon' is in API because there is such city in Australia)
-  if country == 'israel' and city in cities_il_df.index.values:
-    city_w = cities_il_df.loc[city].district
-    if type(city_w) == pd.Series:
-      city_w = city_w.iloc[0]
+#  if country == 'israel' and city in cities_il_df_set: # cities_il_df.index.values: changed to SET() to improve speed (search in set is 100 times faster than in list()
+  if country == 'israel' and city in cities_il_df_set:
+        city_w = cities_il_df.loc[city].district
+        if type(city_w) == pd.Series:
+          city_w = city_w.iloc[0]
 
   #p(city_w, location)
   #p(country, len(countries_df.Name), country in list(countries_df.Name))
@@ -184,6 +189,8 @@ def get_weather(days, location, actions, range_days, LANG):
   if result == '': result = default
   if result[-1] == ',': result = result[:-1]
   country = location[0][1]
+  if type(country) == pd.Series:
+    country = country.iloc[0]
   if LANG != 'en': # in case there are parts of the answer which are not in the proper langauge
     city = google_translate(city, dest=LANG, VERBOSE=True)
     '''

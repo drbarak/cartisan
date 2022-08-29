@@ -53,6 +53,9 @@ api_key = 'c2adfa29edfd95ad16efab9218619ff3'
 URL = "http://api.openweathermap.org/data/2.5/{0}?"
 icon_url = " http://openweathermap.org/img/wn/{0}@2x.png"  # 10d
 
+from flask_app import db, logDB
+from flask_app import session
+
 def p(msg=None, *args):
     try:
         if msg is None:
@@ -64,6 +67,20 @@ def p(msg=None, *args):
     for k in args:
         msg = msg + f' {k}'
     print(msg, file=sys.stderr, flush=True)
+    try:  # if here before session is defined
+        if session['mylog']:
+            row = logDB(line=msg)
+            try:
+                db.session.add(row)
+                db.session.commit()
+                if row.id is None:
+                    msg = 'error adding user_login'
+                    print(msg, file=sys.stderr, flush=True)
+            except:
+                pass
+    except:
+        pass
+
     #from flask_app import app
     #app.logger.warning(msg)
 
@@ -85,6 +102,7 @@ def load_cities_il():
   df = df.set_index('city')
   return df, CITIES
 cities_il_df, CITIES_IL = load_cities_il()
+cities_il_df_set = set(cities_il_df.index)
 #p(cities_il_df.head())
 
 def load_CITIES_API():
@@ -340,7 +358,9 @@ def send_email(text='Message from WeatherBot', subject='New Session', to="drbara
   try:
     smtpObj = smtplib.SMTP('smtp.gmail.com', 587)
     smtpObj.starttls()
-    smtpObj.login('dr.zvibarak@gmail.com', 'shushu1952')
+#    smtpObj.login('dr.zvibarak@gmail.com', 'shushu1952')
+    smtpObj.login('dr.zvibarak@gmail.com', 'dodwlzplnuarvqij')  # app specific password, as per Google enhanced security with 2-stage verification
+            # the password was generated on 29/08/22022 at 00:30 for app named 'cartisan' in google
     smtpObj.send_message(msg)
     smtpObj.quit()
     print("Successfully sent email")

@@ -1,0 +1,98 @@
+{% extends "base_cartisan.html" %}
+
+{% block content %}
+
+<style>
+    .Center {
+        overflow-y: scroll;
+        width:50%;
+		margin-left: auto;
+		margin-right: auto;
+        height:60%;
+        background: lightgray;
+        border-radius: 40px;
+        border: 2px;
+        padding: 20px;
+        #white-space: pre-wrap;
+        display: inline-block;
+        vertical-align:top
+    }
+
+    table td {
+        text-align: left;
+    }
+
+	.center-div{
+		width: 100%;
+		text-align: center;
+	}
+
+	.wrapper{
+		margin-bottom: 40px;
+		display: inline-block;
+	}
+
+	.header{
+		width: 100%;
+		height: 100%;
+		mix-width: 480px;
+	}
+
+    .ourClasses{
+        background: lightgray;
+    }
+</style>
+
+    <div style="text-align:center">
+        <h1>אולמות</h1>
+
+        <form action="" method="post" novalidate>
+        <div class="center-div">
+            <div class="wrapper">
+                {{ form.hidden_tag() }}
+                <p><p>
+                {{ form.client_id.label }}
+                {{ form.client_id(size=2) }}
+                <p><p>
+                {{ form.hall_id.label }}
+                {{ form.hall_id(size=2, value=hall_id) }}
+                <p><p>
+                {{ form.name.label }}
+                {{ form.name(value=name) }}
+                <p><p>
+                {{ form.picture.label }}
+                {{ form.picture(value=picture) }}
+                <p><p>
+                {{ form.directions.label }}
+                {{ form.directions(value=directions) }}
+                <p><p>
+                <p><p>
+                {{ form.hall_list() }}<br><br>
+                {{ form.search() }}
+                {{ form.create() }}
+                {{ form.update() }}
+                {{ form.delete() }}
+                {{ form.load() }}<br><br>
+                {{ form.home() }}
+                </p>
+                <p></p>
+                <div style="color: red;">{{error}}</div>
+            </div>
+			<div style="display: inline-block; vertical-align:top;">
+			    {% if url_icon != '' %}
+                    <img src = "{{ url_for('static', filename=url_icon) }}" width = "40%" height="auto"> </img>
+			    {% endif %}
+			</div>
+
+        </div>
+		<div class="center-div">
+			<div class="Center">
+				{% if length > 0 %}
+					{{df_chat|safe}}
+				{% endif %}
+			</div>
+		</div>
+
+        </form>
+    </div>
+{% endblock %}

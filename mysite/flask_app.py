@@ -1,5 +1,6 @@
 from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import func
 from globals import Config
 
 app = Flask(__name__)
@@ -60,14 +61,102 @@ class GameDB(db.Model):
     delete from game;
     '''
 
-#from prog.chatbot_init import p
-import prog.routes, prog.chatbot, prog.chatbot_init  # leave here to prevent circular imports
+class hallDB(db.Model):
 
+    __tablename__ = "hall"
+
+    id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer)
+    name = db.Column(db.String(255))
+    picture = db.Column(db.String(255))
+    directions = db.Column(db.String(255))
+    '''
+CREATE TABLE hall(
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,             /* קוד אולם (ללקוח יכולים להיות מספר אולמות, כגון מספר אולמות במיתח */
+    client_id INT,                           /*  קוד לקוח (הלקוחות מנוהלים במערכת המרכזית) */
+    name VARCHAR(255) NOT NULL DEFAULT '',  /*  שם אולם */
+    picture BLOB,                           /* תמונת המקום  */
+    picture_url VARCHAR(255),
+    directions VARCHAR(255)                 /*  דרכי הגעה */
+    );
+    '''
+
+class zoneDB(db.Model):
+
+    __tablename__ = "zone"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255))
+    hall_id = db.Column(db.Integer)
+    client_id = db.Column(db.Integer)
+    marked_seats = db.Column(db.Boolean)
+    max_seats = db.Column(db.Integer)
+    '''
+CREATE TABLE zone(
+    id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,             /* קוד איזור */
+    name VARCHAR(255) NOT NULL DEFAULT '',                  /* שם איזור (יציע, אולם, VIP וכד') */
+    hall_id INT,
+    client_id INT,
+    marked_seats TINYINT,                            /* מקומות משוריינים/חופשיים */
+    max_seats INT,                                           /* מיכסה מירבית */
+    FOREIGN KEY(hall_id) REFERENCES hall(id) ON DELETE CASCADE
+    );
+    '''
+class seatDB(db.Model):
+
+    __tablename__ = "seat"
+
+    zone_id = db.Column(db.Integer, primary_key=True)
+    hall_id = db.Column(db.Integer, primary_key=True)
+    client_id = db.Column(db.Integer, primary_key=True)
+    row = db.Column(db.Integer, primary_key=True)
+    seat = db.Column(db.Integer, primary_key=True)
+    status = db.Column(db.Boolean)
+    '''
+CREATE TABLE seat(
+    zone_id INT NOT NULL PRIMARY KEY,
+    hall_id INT,
+    client_id INT,
+    row INT,
+    seat INT,
+    status TINYINT,
+    FOREIGN KEY(zone_id) REFERENCES zone(id) ON DELETE CASCADE,
+    FOREIGN KEY(hall_id) REFERENCES hall(id) ON DELETE CASCADE
+    );
+    '''
+
+class user_loginDB(db.Model):
+
+    __tablename__ = "user_login"
+
+    id = db.Column(db.Integer, primary_key=True)
+    login_dt = db.Column(db.DateTime, server_default=func.now())
+    ip_address = db.Column(db.String(20))
+    '''
+CREATE TABLE `user_login` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `login_dt` datetime NOT NULL DEFAULT NOW(),
+  `ip_address` varchar(20) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+);
+    '''
+
+class logDB(db.Model):
+
+    __tablename__ = "log"
+
+    id = db.Column(db.Integer, primary_key=True)
+    login_dt = db.Column(db.DateTime, server_default=func.now())
+    line = db.Column(db.String(255))
+
+#from prog.chatbot_init import p
+import prog.routes, prog.chatbot, prog.chatbot_init, prog.cartisan  # leave here to prevent circular imports
+
+# ---------- game ---------------
 import prog.game
 prog.game.init_game()
 
-@app.route('/', methods=['GET', 'POST'])
-@app.route('/game', methods=['GET', 'POST'])
+@app.route('/game_1986', methods=['GET', 'POST'])
 def game():
     return prog.game.home()
 @app.route('/help')
@@ -107,6 +196,7 @@ def wait_for_answers(game_code, player):
 def wait_for_other_answers(game_code, player):
     return prog.game.wait_for_answers(game_code, player, True)
 
+# ---------- chatbot ---------------
 prog.chatbot_init.init_chatbot()
 
 #@app.route('/', methods=['GET', 'POST'])
@@ -114,7 +204,9 @@ prog.chatbot_init.init_chatbot()
 def chatbot():
     return prog.chatbot.chatbot()
 
-#@app.route('/', methods=['GET', 'POST'])
+# ---------- hashi ---------------
+
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/hashi', methods=['GET', 'POST'])
 @app.route('/main_menu', methods=['GET', 'POST'])
 def main_menu():
@@ -158,3 +250,31 @@ def do_steps():
 @app.route('/display')
 def display_files():
     return prog.routes.display_files()
+
+
+# ---------- cartisan ---------------
+
+@app.route('/cartisan', methods=['GET', 'POST'])
+def cartisan():
+    if 'init_' not in session:
+        session['init_'] = 'init_'
+        session['username_'] = 'admin_'
+    return prog.cartisan.main_menu()
+
+@app.route('/hall', methods=['GET', 'POST'])
+def hall():
+    return prog.cartisan.hall()
+
+@app.route('/zone', methods=['GET', 'POST'])
+def zone():
+    return prog.cartisan.zone()
+
+@app.route('/seat', methods=['GET', 'POST'])
+def seat():
+    return prog.cartisan.seat()
+
+@app.route('/cartisan_load', methods=['GET', 'POST'])
+def cartisan_load():
+    return prog.cartisan.load()
+
+

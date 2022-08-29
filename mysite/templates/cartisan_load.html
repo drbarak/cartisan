@@ -1,0 +1,22 @@
+{% extends "base_cartisan.html" %}
+
+{% block content %}
+{% include "please_wait.html" %}
+<div id="content">
+
+    <div style="text-align:center">
+        <h1>העלאת קובץ תמונה</h1>
+        <form action="" method="post" novalidate enctype='multipart/form-data' encoding='multipart/form-data'>
+            {{ form.hidden_tag() }}
+            <p><p>
+            {{ form.file_name.label }}<br><br>
+            {{ form.file_name() }}
+            <p><p>
+            {{ form.load() }}
+            {{ form.home() }}
+            </p>
+            <br><br>
+            <div style="color: red;">{{error}}</div>
+        </form>
+    </div>
+{% endblock %}

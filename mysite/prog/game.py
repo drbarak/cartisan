@@ -26,6 +26,8 @@ def p(msg=None, *args):
     update_db(log, 0, n=-2)
     '''
 
+test_no = 0
+
 GAME_DB = True
 if GAME_DB:
     from flask_app import db, GameDB
@@ -102,7 +104,8 @@ RANDOM = True   # pickup questions randomly and not sequentially
 LANG, title,  MESSAGES_lang, MESSAGES = '', '', '', ''
 
 import pusher
-
+pusher_client = None;
+'''
 pusher_client = pusher.Pusher(
   app_id='1243958',
   key='370ad2f2bb3b0c02b4a8',
@@ -110,7 +113,7 @@ pusher_client = pusher.Pusher(
   cluster='ap2',
   ssl=True
 )
-
+'''
 def get_json(fname):
   with open(static_dir_prefix + '/' + fname, encoding="utf8") as f:
     return json.loads(f.read())
@@ -128,10 +131,28 @@ def my_render_template(path, *args, **kargs):
   return html.replace('<html',f'<html dir="{rtl}" lang="{LANG}"')
 
 def init_game():
+    global pusher_client
     if max_level == 0:
         load_movies()
     msg = f'in game_init {max_level}'
     p(msg)
+    if pusher_client is None:
+        with open('/home/drbarak/mysite/keys/pusher.json', encoding="utf8") as f:
+            pusher_data = json.loads(f.read())
+        pusher_client = pusher.Pusher(
+          app_id=pusher_data['app_id'],
+          key=pusher_data['key'],
+          secret=pusher_data['secret'],
+          cluster=pusher_data['cluster'],
+          ssl=True
+        )
+        p('loaded pusher data', pusher_data, pusher_client)
+
+def check_cookies(disp=False):
+    if disp:
+      messages = MESSAGES[LANG]["messages"]["home"]
+      return my_render_template('game/need_cookies.html', messages=messages, title=title, lang=LANG)
+    return 'mobile' in session
 
 '''
 TODO:
@@ -145,21 +166,22 @@ TODO:
 # remove old games if overall time allocated for their questions (+1 for summary screen) is due
 def clear_games(games, active_games):
     #global games#, question_delay, answer_delay, comm_delay
-    p('in clear_games', request.headers['X-Real-IP'], games)
+    #p('in clear_games', request.headers['X-Real-IP'], games)
     for game in list(games):
         if game == -1: continue  # skip active_games field
         # games that did not started yet, we do not delete
         delta = int(time.time() -games[game].start_time())
         max_time_for_game = sum([question_delay, answer_delay, comm_delay]) * (games[game].total_questions()+1)
         if (games[game].game_is_on and delta > max_time_for_game) or (not games[game].game_is_on and delta > max_time_to_start):
-            p('in clear_games', games[game].game_is_on, int(time.time() - games[game].start_time()), int(time.time()), int(games[game].start_time()), int(games[game].game_start_time), sum([question_delay, answer_delay, comm_delay]) * (games[game].total_questions()+1))
+            #p('in clear_games', games[game].game_is_on, int(time.time() - games[game].start_time()), int(time.time()), int(games[game].start_time()), int(games[game].game_start_time), sum([question_delay, answer_delay, comm_delay]) * (games[game].total_questions()+1))
             games.pop(game)
             p('pop', game, games)
     if len(games) <= 1:
         active_games = 0
         games = {-1: 0}
     else:
-        p('in clear_games', games, active_games)
+        pass
+        #p('in clear_games', games, active_games)
     return games, active_games
 
 #app = Flask(__name__, static_folder='static')
@@ -178,7 +200,7 @@ def home(msg = ''):
         isMobile = any(ele in request.headers['User-Agent'] for ele in ['iPhone', 'iPad', 'iPod', 'Android'])
         session["mobile"] = '_mobile' if isMobile else ''
 
-        if request.headers['X-Real-IP'] not in ['82.81.245.207', '50.17.220.95'] : # dr barak ip - no need to get a notice each time I log in
+        if request.headers['X-Real-IP'] not in ['82.81.245.207', '50.17.220.95'] and request.headers['X-Real-IP'][:9] != '213.137.7': # dr barak or Telzar ip - no need to get a notice each time I log in
             send_email(text=msg, subject='Notice from Game', ip=request.headers['X-Real-IP'], src='Movie Quiz')
     else:
         if not 'game_code' in session:
@@ -186,7 +208,9 @@ def home(msg = ''):
             session['player'] = 0
         if not 'lang' in session:
             session['lang'] = 'en'
-
+        if not 'mobile' in session:
+            isMobile = any(ele in request.headers['User-Agent'] for ele in ['iPhone', 'iPad', 'iPod', 'Android'])
+            session["mobile"] = '_mobile' if isMobile else ''
 
     if 'time' in session:
       session_time = session['time']
@@ -210,15 +234,17 @@ def home(msg = ''):
     #global active_games
     if GAME_DB:  games, active_games = read_from_db()  # do not clear_games, because players that want to join come here initally and created games but not started may pass the time alloted
     #p('in home', message, session["mobile"])
+#    global test_no
+#    test_no += 1
     if session["mobile"] == '':
         message = f"Games currently running: {active_games}{msg}"
-        return render_template(f'game/home{session["mobile"]}.html', active_games=active_games, message=message, max_level=max_level)
+        return render_template(f'game/home{session["mobile"]}.html', active_games=active_games, message=message, max_level=max_level)#, test_no=test_no)
     import copy
     messages = copy.deepcopy(MESSAGES[LANG]["messages"]["home"])
     p(messages[0])
     messages[0] = f'{messages[0]} {active_games}'
     messages[3] = messages[3].format(max_level)
-    return  my_render_template(f'game/home{session["mobile"]}.html', messages=messages, title=title, lang=LANG)
+    return my_render_template(f'game/home{session["mobile"]}.html', messages=messages, title=title, lang=LANG)
 
 #@app.route('/help')
 def help():
@@ -228,14 +254,18 @@ def help():
     log['log'] = ''
     update_db(log, 0, n=-2)
     '''
-    if session["mobile"] == '':
-        return render_template('game/help_mobile.html')
+    p('in help')
+    if not check_cookies():
+        return check_cookies(True)
     LANG = session['lang']
     messages = MESSAGES[LANG]["messages"]["help"]
-    return my_render_template(f'game/help{session["mobile"]}.html', messages=messages, title=title, lang=LANG)
+    return my_render_template('game/help_mobile.html', messages=messages, title=title, lang=LANG)
 
 #@app.route('/create_game/<int:level>')
 def create_game(level):
+    p('in create_game')
+    if not check_cookies():
+        return check_cookies(True)
     if level > max_level: level = max_level
     #p('in create_game', max_level, movies.keys())
     #global games, active_games
@@ -259,7 +289,7 @@ def create_game(level):
     LANG = session['lang']
     p(f"in create_game1 [{LANG}] [{session['lang']}] {len(MESSAGES)}")
     messages = MESSAGES[LANG]["messages"]["create"]
-    p('in create_game', LANG, messages[0])
+    #p('in create_game', LANG, messages[0])
     return my_render_template(f'game/create_game{session["mobile"]}.html', messages=messages, title=title, lang=LANG, game_code=game_code, player=player, players=game.number_of_players())
 
 #@app.route('/start_game/<int:game_code>/<int:player>')
@@ -286,6 +316,9 @@ def wait_for_joining(game_code, player):
 
 #@app.route('/join_game/')
 def join_game():
+    p('in join_game')
+    if not check_cookies():
+        return check_cookies(True)
     #global games
     if GAME_DB: games, active_games = read_from_db()
     if len(games) <= 1:
@@ -304,7 +337,7 @@ def join_game():
 #@app.route('/join_validation/<int:game_code>')
 def join_validation(game_code):
     #global games
-    #p(f'in join_validation [{game_code}]')
+    p(f'in join_validation [{game_code}]')
     if GAME_DB: games, active_games = read_from_db(True)
     invalid = 0
     if game_code not in games:

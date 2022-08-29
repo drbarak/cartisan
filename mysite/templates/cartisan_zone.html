@@ -1,0 +1,96 @@
+{% extends "base_cartisan.html" %}
+
+{% block content %}
+
+<style>
+    .Center {
+        overflow-y: scroll;
+        width:50%;
+		margin-left: auto;
+		margin-right: auto;
+        height:60%;
+        background: lightgray;
+        border-radius: 40px;
+        border: 2px;
+        padding: 20px;
+        #white-space: pre-wrap;
+        display: inline-block;
+        vertical-align:top
+    }
+
+    table td {
+        text-align: left;
+    }
+
+	.center-div{
+		width: 100%;
+		text-align: center;
+	}
+
+	.wrapper{
+		margin-bottom: 40px;
+		display: inline-block;
+	}
+
+	.header{
+		width: 100%;
+		height: 100%;
+		mix-width: 480px;
+	}
+
+    .ourClasses{
+        background: lightgray;
+    }
+</style>
+
+    <div style="text-align:center">
+        <h1>אזורים</h1>
+
+        <form action="" method="post" novalidate>
+        <div class="center-div">
+            <div class="wrapper">
+                {{ form.hidden_tag() }}
+                <p><p>
+                {{ form.client_id.label }}
+                {{ form.client_id(size=2) }}
+                <p><p>
+                {{ form.hall_id.label }}
+                {{ form.hall_id(size=2, value=hall_id) }}
+                <p><p>
+                {{ form.zone_id.label }}
+                {{ form.zone_id(size=2, value=zone_id) }}
+                <p><p>
+                {{ form.name.label }}
+                {{ form.name(value=name) }}
+                <p><p>
+                {{ form.marked_seats.label }}
+                {{ form.marked_seats(value=marked_seats, checked=marked_seats) }}
+                <p><p>
+                {{ form.max_seats.label }}
+                {{ form.max_seats(value=max_seats) }}
+                <p><p>
+                <p><p>
+                {{ form.zone_list() }}<br><br>
+                {{ form.search() }}
+                {{ form.create() }}
+                {{ form.update() }}
+                {{ form.delete() }}
+                <br><br>
+                {{ form.home() }}
+                </p>
+                <p></p>
+                <div style="color: red;">{{error}}</div>
+            </div>
+
+        </div>
+		<div class="center-div">
+			<div class="Center">
+				{% if length > 0 %}
+					{{df_chat|safe}}
+				{% endif %}
+			</div>
+		</div>
+
+        </form>
+    </div>
+{% endblock %}
