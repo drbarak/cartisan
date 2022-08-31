@@ -52,13 +52,15 @@
                 {{ form.hidden_tag() }}
                 <p><p>
                 {{ form.client_id.label }}
-                {{ form.client_id(size=2) }}
+                {{ form.client_id(size=2, value=client_id) }}
                 <p><p>
                 {{ form.hall_id.label }}
                 {{ form.hall_id(size=2, value=hall_id) }}
+                {{ hall_name }}
                 <p><p>
                 {{ form.zone_id.label }}
                 {{ form.zone_id(size=2, value=zone_id) }}
+                {{ zone_name }}
                 <p><p>
                 {{ form.row.label }}
                 {{ form.row(value=row) }}
@@ -73,6 +75,8 @@
                 {{ form.delete() }}
                 <br><br>
                 {{ form.home() }}
+                {{ form.hall() }}
+                {{ form.zone() }}
                 </p>
                 <p></p>
                 <div style="color: red;">{{error}}</div>
@@ -89,4 +93,22 @@
 
         </form>
     </div>
+    
+<script>
+function my_confirm(msg) {
+    if (
+        document.getElementById("client_id").value.length == 0 ||
+        document.getElementById("hall_id").value.length == 0 ||
+        document.getElementById("zone_id").value.length == 0 ||
+        document.getElementById("row").value.length == 0 ||
+        document.getElementById("seat").value.length == 0
+    )
+    {
+        return true
+    }
+    return confirm(msg);
+}
+</script>    
+    
 {% endblock %}
+

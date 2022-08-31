@@ -28,7 +28,7 @@ CREATE TABLE zone(
     hall_id INT,
     client_id INT,
     marked_seats TINYINT NOT NULL DEFAULT False,                            /* מקומות משוריינים/חופשיים */
-    max_seats INT NOT NULL,                                           /* מיכסה מירבית */
+    max_seats INT NOT NULL DEFAULT 0,                                           /* מיכסה מירבית */
     FOREIGN KEY(hall_id) REFERENCES hall(id) ON DELETE CASCADE
     );
 
@@ -51,12 +51,26 @@ INSERT INTO seat(client_id, hall_id, zone_id, row, seat) VALUES
 (1, 1, 1, 10, 3), (1, 1, 1, 10, 4);
 
 DROP TABLE IF EXISTS user_login;
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE `user` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL DEFAULT '',
+    `ip_address` varchar(20) DEFAULT NULL,
+    `insert_dt` datetime NOT NULL DEFAULT NOW(),
+    `update_dt` timestamp ON UPDATE CURRENT_TIMESTAMP,
+    log TINYINT NOT NULL DEFAULT False,
+    UNIQUE KEY `ip` (`ip_address`)
+);
+INSERT INTO user(ip_address, name) VALUES
+('82.81.245.207', 'DrBarak'), ('50.17.220.95', 'DrBarak'), ('5.29.160.29', 'DrBarak'), ('54.226.94.43', 'DrBarak');
+SELECT * FROM user;
+
 CREATE TABLE `user_login` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id int unsigned NOT NULL,
   `login_dt` datetime NOT NULL DEFAULT NOW(),
-  `ip_address` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `ip` (`ip_address`)
+  FOREIGN KEY(user_id) REFERENCES user(id)
 );
 
 DROP TABLE IF EXISTS log;

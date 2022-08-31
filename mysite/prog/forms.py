@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import SubmitField, IntegerField, StringField, BooleanField
+from wtforms import SubmitField, IntegerField, StringField, BooleanField, HiddenField
 from wtforms.validators import DataRequired, Length#, FileRequired
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 
@@ -38,6 +38,10 @@ class CartisanForm(FlaskForm):
     hall = SubmitField('אולמות')
     zone = SubmitField('אזורים')
     seat = SubmitField('מושבים')
+    
+    hidden_zone_id = HiddenField()
+    hidden_hall_id = HiddenField()
+    hidden_client_id = HiddenField()   
 
 class Cartisan_hallForm(FlaskForm):
     client_id = IntegerField('קוד לקוח (1 עד 20)',
@@ -55,9 +59,15 @@ class Cartisan_hallForm(FlaskForm):
     search = SubmitField('חפש אולם')
     create = SubmitField('הוסף אולם')
     update = SubmitField('שמור אולם')
-    delete = SubmitField('מחק אולם')
+    delete = SubmitField('מחק אולם', 
+                    render_kw={"onclick": "return my_confirm('נא אשר למחוק')"})
     load = SubmitField('העלה קובץ תמונה')
     home = SubmitField('חזרה')
+    zone = SubmitField('אזורים')
+    
+    hidden_zone_id = HiddenField()
+    hidden_hall_id = HiddenField()
+    hidden_client_id = HiddenField()
 
 class Cartisan_LoadForm(FlaskForm):
     file_name = FileField('בחר קובץ תמונה עם אחת הסיומות png, jpg, jpeg, gif', render_kw={'title':''},
@@ -65,6 +75,10 @@ class Cartisan_LoadForm(FlaskForm):
     load = SubmitField('העלה קובץ')
 #            , render_kw={"onclick": "myFunction()"})
     home = SubmitField('חזרה')
+    
+    hidden_zone_id = HiddenField()
+    hidden_hall_id = HiddenField()
+    hidden_client_id = HiddenField()
 
 class Cartisan_zoneForm(FlaskForm):
     client_id = IntegerField('קוד לקוח (1 עד 20)',
@@ -84,8 +98,15 @@ class Cartisan_zoneForm(FlaskForm):
     search = SubmitField('חפש אזור')
     create = SubmitField('הוסף אזור')
     update = SubmitField('שמור אזור')
-    delete = SubmitField('מחק אזור')
+    delete = SubmitField('מחק אזור',
+                    render_kw={"onclick": "return my_confirm('נא אשר למחוק')"})
     home = SubmitField('חזרה')
+    hall = SubmitField('אולמות')
+    seat = SubmitField('מושבים')
+    
+    hidden_zone_id = HiddenField()
+    hidden_hall_id = HiddenField()
+    hidden_client_id = HiddenField()
 
 class Cartisan_seatForm(FlaskForm):
     client_id = IntegerField('קוד לקוח (1 עד 20)',
@@ -104,5 +125,12 @@ class Cartisan_seatForm(FlaskForm):
     seat_list = SubmitField('רשימת מושבים באזור')
     search = SubmitField('חפש מושב')
     create = SubmitField('הוסף מושב')
-    delete = SubmitField('מחק מושב')
+    delete = SubmitField('מחק מושב',
+                    render_kw={"onclick": "return my_confirm('נא אשר למחוק')"})
     home = SubmitField('חזרה')
+    hall = SubmitField('אולמות')
+    zone = SubmitField('אזורים')
+
+    hidden_zone_id = HiddenField()
+    hidden_hall_id = HiddenField()
+    hidden_client_id = HiddenField()

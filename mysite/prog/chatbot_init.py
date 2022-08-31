@@ -54,7 +54,6 @@ URL = "http://api.openweathermap.org/data/2.5/{0}?"
 icon_url = " http://openweathermap.org/img/wn/{0}@2x.png"  # 10d
 
 from flask_app import db, logDB
-from flask_app import session
 
 def p(msg=None, *args):
     try:
@@ -68,7 +67,7 @@ def p(msg=None, *args):
         msg = msg + f' {k}'
     print(msg, file=sys.stderr, flush=True)
     try:  # if here before session is defined
-        if session['mylog']:
+        if globals.write_to_log:
             row = logDB(line=msg)
             try:
                 db.session.add(row)

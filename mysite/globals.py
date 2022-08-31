@@ -20,3 +20,6 @@ class Globals:
     first = True
     games = {}
     active_games = 0
+    user_id = 0
+    write_to_log = False
+    user_log = True

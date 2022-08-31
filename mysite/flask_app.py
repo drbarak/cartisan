@@ -22,6 +22,17 @@ db = SQLAlchemy(app)
 #db.session.expire_on_commit = False
 conn = db.engine.connect()
 
+db.app = app
+db.init_app(app)
+engine_container = db.get_engine(app)
+
+def cleanup(session):
+    """
+    This method cleans up the session object and also closes the connection pool using the dispose method.
+    """
+    session.close()
+    engine_container.dispose()
+
 class HashiDB(db.Model):
 
     __tablename__ = "hashi"
@@ -60,6 +71,7 @@ class GameDB(db.Model):
     select * from game;
     delete from game;
     '''
+
 
 class hallDB(db.Model):
 
@@ -125,19 +137,40 @@ CREATE TABLE seat(
     );
     '''
 
+class userDB(db.Model):
+
+    __tablename__ = "user"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), default='')
+    ip_address = db.Column(db.String(20))
+    insert_dt = db.Column(db.DateTime, server_default=func.now())
+    log = db.Column(db.Boolean, default=True)
+    '''
+CREATE TABLE `user_login` (
+    `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL DEFAULT '',
+    `ip_address` varchar(20) DEFAULT NULL,
+    `insert_dt` datetime NOT NULL DEFAULT NOW(),
+    `update_dt` timestamp ON UPDATE CURRENT_TIMESTAMP,
+    log TINYINT NOT NULL DEFAULT False,
+    UNIQUE KEY `ip` (`ip_address`)
+);
+    '''
+
 class user_loginDB(db.Model):
 
     __tablename__ = "user_login"
 
     id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer)
     login_dt = db.Column(db.DateTime, server_default=func.now())
-    ip_address = db.Column(db.String(20))
     '''
 CREATE TABLE `user_login` (
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `id` int unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  user_id int unsigned NOT NULL,
   `login_dt` datetime NOT NULL DEFAULT NOW(),
-  `ip_address` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  FOREIGN KEY(user_id) REFERENCES user(id),
 );
     '''
 
@@ -149,7 +182,6 @@ class logDB(db.Model):
     login_dt = db.Column(db.DateTime, server_default=func.now())
     line = db.Column(db.String(255))
 
-#from prog.chatbot_init import p
 import prog.routes, prog.chatbot, prog.chatbot_init, prog.cartisan  # leave here to prevent circular imports
 
 # ---------- game ---------------
@@ -254,6 +286,7 @@ def display_files():
 
 # ---------- cartisan ---------------
 
+@app.route('/', methods=['GET', 'POST'])
 @app.route('/cartisan', methods=['GET', 'POST'])
 def cartisan():
     if 'init_' not in session:

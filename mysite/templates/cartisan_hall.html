@@ -52,7 +52,7 @@
                 {{ form.hidden_tag() }}
                 <p><p>
                 {{ form.client_id.label }}
-                {{ form.client_id(size=2) }}
+                {{ form.client_id(size=2, value=client_id) }}
                 <p><p>
                 {{ form.hall_id.label }}
                 {{ form.hall_id(size=2, value=hall_id) }}
@@ -74,6 +74,7 @@
                 {{ form.delete() }}
                 {{ form.load() }}<br><br>
                 {{ form.home() }}
+                {{ form.zone() }}
                 </p>
                 <p></p>
                 <div style="color: red;">{{error}}</div>
@@ -95,4 +96,17 @@
 
         </form>
     </div>
+
+<script>
+function my_confirm(msg) {
+    if (document.getElementById("client_id").value.length == 0  ||
+        document.getElementById("hall_id").value.length == 0
+    )
+    {
+        return true
+    }
+ 
+    return confirm(msg);
+}
+</script>    
 {% endblock %}
